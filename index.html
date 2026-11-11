@@ -718,15 +718,15 @@ function surfBody(s,R,o){
    if(S.nums&&p.no){const two=(rot?lw:lh)>=f*2.5;if(two)inner=`<tspan x="${x.toFixed(3)}" dy="${(-f*0.62).toFixed(3)}" fill="#b4441b" font-weight="800">#${p.no}</tspan><tspan x="${x.toFixed(3)}" dy="${(f*1.2).toFixed(3)}">${esc(tx)}</tspan>`;else inner=`<tspan fill="#b4441b" font-weight="800">#${p.no}</tspan>`;}
    h+=`<text x="${x.toFixed(3)}" y="${y.toFixed(3)}" font-size="${f.toFixed(3)}" text-anchor="middle" dominant-baseline="central" fill="${col}" font-weight="600" font-family="${FONT}"${ang?` transform="rotate(${ang.toFixed(3)} ${x.toFixed(3)} ${y.toFixed(3)})"`:''}>${inner}</text>`;}}
  // dims
- const dimC='#3d4248',f=px(12*fs0),tk=+px(5),bb=G.bb,m=o.m;
- const yb=Math.min(bb.y0,curbOn?-s.curb.w:bb.y0)-m*0.42;
+ const dimC=(s.shape==='rect'||s.shape==='L')?'#1d5fa8':'#3d4248',f=px(12*fs0),tk=+px(5),bb=G.bb,m=o.m;
+ if(s.shape!=='walk'){ const yb=Math.min(bb.y0,curbOn?-s.curb.w:bb.y0)-m*0.42;
  h+=`<path d="M${bb.x0} ${-yb}H${bb.x1}M${bb.x0} ${-yb-tk}v${2*tk}M${bb.x1} ${-yb-tk}v${2*tk}" stroke="${dimC}" stroke-width="${px(1)}"/>`;
  h+=`<text x="${(bb.x0+bb.x1)/2}" y="${-yb-+px(5)}" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}" ${dimKey(s,'w')}>${fmt(bb.x1-bb.x0)}</text>`;
  if(o.dimV){const xl=bb.x0-m*0.42,ym=-(bb.y0+bb.y1)/2;
   h+=`<path d="M${xl} ${-bb.y0}V${-bb.y1}M${xl-tk} ${-bb.y0}h${2*tk}M${xl-tk} ${-bb.y1}h${2*tk}" stroke="${dimC}" stroke-width="${px(1)}"/>`;
-  h+=`<text x="${xl-+px(5)}" y="${ym}" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" transform="rotate(-90 ${xl-+px(5)} ${ym})" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}" ${dimKey(s,'h')}>${fmt(bb.y1-bb.y0)}</text>`;}
+  h+=`<text x="${xl-+px(5)}" y="${ym}" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" transform="rotate(-90 ${xl-+px(5)} ${ym})" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}" ${dimKey(s,'h')}>${fmt(bb.y1-bb.y0)}</text>`;}}
  if(s.shape==='walk'){const wk=walkPoly(s);wk.edges.forEach((e2,i)=>{const mx=(e2[0][0]+e2[1][0])/2,my=(e2[0][1]+e2[1][1])/2,ex=e2[1][0]-e2[0][0],ey=e2[1][1]-e2[0][1],L=Math.hypot(ex,ey);if(L<0.5)return;const sgn=wk.ccw?1:-1,nx=ey/L*sgn,ny=-ex/L*sgn,off=+px(13*fs0);
-  h+=`<text x="${(mx+nx*off).toFixed(3)}" y="${(-(my+ny*off)).toFixed(3)}" font-size="${px(11*fs0)}" text-anchor="middle" dominant-baseline="central" fill="#1d5fa8" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}" data-dim="${P.surfaces.indexOf(s)}:seg:${i}" style="cursor:pointer">${fmt(s.segs[i]?+s.segs[i].l:L)}</text>`;});}
+  h+=`<text x="${(mx+nx*off).toFixed(3)}" y="${(-(my+ny*off)).toFixed(3)}" font-size="${px(12.5*fs0)}" text-anchor="middle" dominant-baseline="central" fill="#1d5fa8" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}" data-dim="${P.surfaces.indexOf(s)}:seg:${i}" style="cursor:pointer">${fmt(s.segs[i]?+s.segs[i].l:L)}</text>`;});}
  if(o.title)h+=`<text x="${(bb.x0+bb.x1)/2}" y="${-bb.y1-+px(10*fs0)}" font-size="${Math.min(+px(13*fs0),(bb.x1-bb.x0)/((s.name.length+2)*0.62)).toFixed(3)}" text-anchor="middle" fill="#1e2226" font-weight="700" font-family="${FONT}">${esc(s.name)}${isLinked(s)?' 🔗':''}</text>`;
  return h;}
 
