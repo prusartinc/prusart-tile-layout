@@ -143,7 +143,16 @@ body.tot #stage,body.tot #stat,body.tot #legend{display:none}
 "use strict";
 /* ================= i18n ================= */
 const I18N={
-ru:{cornerA:'угол',tubOn:'Ванна / поддон у этой стены (торцевая стена)',tubHint:'Плитка над ванной + полоса за краем ванны до пола. Задняя стена над ванной — без этой галочки, у неё «Низ стены над полом» = высота ванны.',tubSide:'Где ванна на этой стене',tubSide_r:'Справа (угол справа)',tubSide_l:'Слева (угол слева)',tubD:'Глубина ванны от угла',tubH:'Высота борта от пола',tubR:'Радиус скругления угла ванны',tubStrip:'Полоса до пола',tubRF:'Подъём борта у края ванны',tubRB:'Подъём борта в углу',tubRHint:'Радиус: если внешний угол ванны скруглён — приложи угольник и измерь, где начинается скругление (обычно 1–3″). 0 = острый угол. Подъём борта — если ванна не в уровне по этой стене (0 у самой низкой точки).',ledgerFromFloor:'от пола — от неё первый целый ряд над ванной.',noteArc:'рез по радиусу',
+ru:{autoV:'авто',bondUnder:'Клей под подложкой ≈',bondTile:'Клей под плиткой ≈',subfloor:'Черновой пол',adj_hardwood:'Паркет / массив',adj_engineered:'Инженерная доска',adj_laminate:'Ламинат',adj_lvp:'LVP / винил',adj_vinyl:'Линолеум',adj_carpet:'Ковёр',adj_tile:'Плитка',adj_concrete:'Бетон',adj_custom:'Другое',
+recSame:'Высоты равны — ставь RENO-T (переход между полами одной высоты).',recHigher:'Плитка выше соседнего пола — нужен профиль со скатом (RENO-U для твёрдых полов, RENO-TK для ковра; RENO-V с регулируемым плечом, RENO-RAMP для тележек). Проверь по таблице производителя, что профиль перекрывает перепад.',recLower:'Плитка ниже соседнего пола — подними основание (варианты ниже) или выровняй чёрный пол.',
+section:'Срез',diffTxt:'Перепад',tileTop:'плитка',adjTop:'сосед',profRec:'Профиль',altsTxt:'Если поменять подложку:',transNote:'Толщины клея — оценка. Для RENO-U с мембраной Schluter толщину мембраны над анкерной полкой надо учесть при выборе высоты профиля.',
+heat:'Подогрев пола',heatSf:'Греемая площадь, sf',wsf:'Вт/кв.фт',watts:'Ватт',amps:'Ампер',runs:'Рядов кабеля',cableLen:'Кабель ≈',cablePick:'Бери кабель ближайшего размера, но не больше чем',cableNoCut:'Кабель резать нельзя — лишний уходит в зоны с шагом 3-2 у входа/душа.',heat120warn:'Больше 150 кв.фт на 120 В — нужна цепь 240 В или несколько цепей.',matIrregular:'Комната сложной формы / много сантехники — кабель удобнее мата.',heatNotes:'Схема ориентировочная: кабель не под тумбами, ванной, шкафами; не касается и не пересекается; датчик между двумя петлями + запасной; проверь сопротивление кабеля до, во время и после укладки.',
+hs_ditraheat:'Schluter DITRA-HEAT',hs_ditraheatduo:'Schluter DITRA-HEAT-DUO',hs_flexboneheat:'Ardex FLEXBONE HEAT',hs_strataheat:'Laticrete STRATA_HEAT',hs_cable:'Кабель (другой бренд)',hs_mat:'Готовый мат',
+buildUp:'Высота пирога',aboveSub:'над черновым полом',chkSpec:'толщина по данным продавца — сверь с паспортом',heatCable:'Греющий кабель',thermostat:'Термостат',thermoNote:'датчик в комплекте; запасной датчик тоже заложи в пол',
+ug_heat:'Подогрев (мембраны)',ug_mem:'Мембраны',ug_board:'Бэкерборд',ug_ply:'Фанера',noUnder:'без подложки',underTop:'Подложка под плиткой',underLow:'Нижний слой (если есть)',stackHint:'Клей «≈» — оценка по гребёнке; можно вписать своё.',addUnder:'+ Своя подложка',stackT:'Основание (пирог)',
+profType:'Профиль',profDefault:'как в проекте',profSize:'Размер (высота)',profHint:'Размер подбирается по толщине плитки — профиль не выше плитки (до ~1/32″ ниже).',
+sideN:'Сторона',edgeOf:'На какой стороне',fromStart:'От начала стороны',doorW:'Ширина проёма',adjFloor:'Соседний пол',adjT:'Толщина соседнего (с подложкой)',adjSub:'Черновой пол соседа выше(+)/ниже(−)',transProf:'Профиль перехода',transHint:'Проём, где плитка встречается с другим полом. Покажет перепад высот и подходящий профиль.',addTrans:'+ Переход',transT:'Переходы (порог)',
+heatOn:'Будет подогрев пола',heatSys:'Система',spacing:'Шаг кабеля',sp_3:'через 3 шипа (стандарт)',sp_32:'3-2-3-2 (теплее)',spacingIn:'Шаг кабеля, дюймы',volt:'Напряжение',clearWalls:'Отступ от стен',tapPlan:'Нажми на чертёж…',pickConn:'Точка подключения',showHeat:'Показывать схему',heatHint:'Отметь зоны без подогрева (тумба, ванна, шкаф) в «Ниши и вырезы» → «Зона без подогрева». Кабель идёт змейкой от точки подключения (T), S — датчик.',on:'вкл',unit:'шт',noheat:'Зона без подогрева',cornerA:'угол',tubOn:'Ванна / поддон у этой стены (торцевая стена)',tubHint:'Плитка над ванной + полоса за краем ванны до пола. Задняя стена над ванной — без этой галочки, у неё «Низ стены над полом» = высота ванны.',tubSide:'Где ванна на этой стене',tubSide_r:'Справа (угол справа)',tubSide_l:'Слева (угол слева)',tubD:'Глубина ванны от угла',tubH:'Высота борта от пола',tubR:'Радиус скругления угла ванны',tubStrip:'Полоса до пола',tubRF:'Подъём борта у края ванны',tubRB:'Подъём борта в углу',tubRHint:'Радиус: если внешний угол ванны скруглён — приложи угольник и измерь, где начинается скругление (обычно 1–3″). 0 = острый угол. Подъём борта — если ванна не в уровне по этой стене (0 у самой низкой точки).',ledgerFromFloor:'от пола — от неё первый целый ряд над ванной.',noteArc:'рез по радиусу',
 drawBtn:'Нарисовать форму',helpBtn:'Как вводить',drawTitle:'Нарисуй форму',drawHint:'Веди пальцем по контуру или ставь точки в углах по очереди. Линии сразу выпрямляются и встают на 90°, 45°, 135°, 60°, 30° (серым — как нарисовал). Потом вводишь реальные размеры и при необходимости уточняешь угол.',drawUndoPt:'Точка',drawClear:'Очистить',drawApply:'Выпрямить и применить',drawEmpty:'Рисуй здесь',drawNeed3:'Нужно хотя бы 3 угла.',closeWalk:'Замкнуть (подогнать 2 последние стороны)',cantClose:'Не получается — проверь углы',
 helpTitle:'Как задать форму',helpHtml:'<p><b>Прямоугольник</b> — ширина и высота (для пола — ширина и длина).</p><p><b>Г-образная</b> — прямоугольник с вырезом в одном углу: ширина и глубина выреза + угол.</p><p><b>По стенам (углы)</b> — обходишь контур по кругу: длина стороны и поворот после неё (↰ налево / ↱ направо, 90°, 45°, 135° или свой). Начало — левый нижний угол, идём вправо.</p><p><b>✏️ Нарисовать</b> — рисуешь пальцем примерно, линии выпрямятся, потом вводишь реальные размеры каждой стороны (или нажимаешь на размер прямо на чертеже).</p><p><b>Свои точки</b> — углы как координаты x,y в дюймах от левого нижнего угла, по порядку, через «;».<br>Скошенный потолок 60″, слева 96, справа 72: <code>0,0; 60,0; 60,72; 0,96</code><br>Бортик ванны справа внизу 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>Торцевая стена у ванны</b> — галочка «Ванна / поддон у этой стены»: глубина, высота, радиус угла, полоса до пола считается сама.</p><p><b>Неровности</b> — «Низ не в уровне» и «Стена не в отвесе» дают клиновые подрезки.</p>',dirR:'→ лесенка вправо',dirL:'← лесенка влево',dirA:'⇄ через ряд',moveLock:'🔒 Замок',plumbOn:'Стена не в отвесе (углы завалены)',plumbHint:'Повесь уровень/лазер по углу снизу вверх. На сколько угол уходит вверху: + если внутрь стены (стена вверху уже), − если наружу.',pL:'Левый угол вверху',pR:'Правый угол вверху',noteTaperW:'клин по высоте',
 allFloor:'Весь пол',posX:'Положение на плане X',posY:'Положение на плане Y',zlink:'Единая сетка с другими зонами пола',zoneHint:'Зоны (ванная, клозет, туалет) ставятся на общий план. С единой сеткой плитка идёт через проём без сбоя; без неё — своя раскладка и порог.',
@@ -196,7 +205,16 @@ autoAll:'✦ Авто для всех стен',tileToAll:'Плитку перв
 wallsRes:'По стенами',combined:'Общий список подрезок',total:'Всего',noWalls:'Добавь хотя бы одну стену',
 pr_stack:'Стек',pr_brick:'Кирпич 1/2',pr_third:'Смещение 1/3',pr_quarter:'Смещение 1/4',pr_vstack:'Вертикальный стек',pr_voff:'Вертикально 1/2',pr_diag:'Диагональ 45°',pr_diagbrick:'Диагональ кирпич',pr_checker:'Шахматка',pr_herr45:'Ёлочка 45°',pr_herr90:'Ёлочка 90°',pr_basket:'Плетёнка',pr_pinwheel:'Пинвил',pr_chevron:'Шеврон',pr_hex:'Соты (hex)',pr_penny:'Пенни',pr_mosaic:'Мозаика',
 galHint:'Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.',unevenOn:'Низ не в уровне (ванна / акриловый поддон)',unevenHint:'Положи уровень или лазер на борт ванны/поддона, найди самую низкую точку (= 0) и измерь, на сколько выше края. Высота стены — от самой низкой точки. Для связанных стен углы должны совпадать.',uL:'Подъём у левого края',uR:'Подъём у правого края',uMidOn:'Прогиб / горб в середине',uM:'Подъём в середине',outLevel:'Перекос',onLen:'на',ledgerTxt:'Рейку (ledger) ставь строго по уровню на высоте',ledgerFrom:'от самой низкой точки — от неё первый целый ряд.',taperNote:'Нижний ряд режется клином: размеры «слева→справа».'},
-en:{cornerA:'corner',tubOn:'Tub / pan against this wall (end wall)',tubHint:'Tile above the tub + a strip past the tub edge down to the floor. The back wall above the tub does not use this — set its “Wall bottom above floor” to the tub height.',tubSide:'Where the tub is on this wall',tubSide_r:'Right (corner on the right)',tubSide_l:'Left (corner on the left)',tubD:'Tub depth from corner',tubH:'Tub rim height from floor',tubR:'Tub corner radius',tubStrip:'Strip to floor',tubRF:'Rim rise at tub edge',tubRB:'Rim rise at corner',tubRHint:'Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).',ledgerFromFloor:'above the floor — first full row above the tub starts there.',noteArc:'radius cut',
+en:{autoV:'auto',bondUnder:'Thinset under underlayment ≈',bondTile:'Thinset under tile ≈',subfloor:'Subfloor',adj_hardwood:'Hardwood',adj_engineered:'Engineered wood',adj_laminate:'Laminate',adj_lvp:'LVP / vinyl plank',adj_vinyl:'Sheet vinyl',adj_carpet:'Carpet',adj_tile:'Tile',adj_concrete:'Concrete',adj_custom:'Other',
+recSame:'Same height — use RENO-T (transition between same-height floors).',recHigher:'Tile is higher — use a sloped profile (RENO-U for hard floors, RENO-TK for carpet; RENO-V with adjustable arm, RENO-RAMP for carts). Check the manufacturer table that it covers the height difference.',recLower:'Tile is lower than the next floor — build up the base (options below) or fix the subfloor.',
+section:'Section',diffTxt:'Height difference',tileTop:'tile',adjTop:'adjacent',profRec:'Profile',altsTxt:'If you change the underlayment:',transNote:'Thinset thickness is an estimate. For RENO-U with Schluter membranes, factor in the membrane over the anchoring leg when choosing the profile height.',
+heat:'Floor heating',heatSf:'Heated area, sf',wsf:'W/sf',watts:'Watts',amps:'Amps',runs:'Cable runs',cableLen:'Cable ≈',cablePick:'Pick the cable closest to, but not over',cableNoCut:'Never cut the cable — use extra with 3-2 spacing near the entry/shower.',heat120warn:'Over 150 sf on 120 V — use a 240 V circuit or several circuits.',matIrregular:'Irregular room / many fixtures — loose cable fits better than a mat.',heatNotes:'Schematic: no cable under vanities, tubs, cabinets; runs never touch or cross; sensor between two loops + a spare; test cable resistance before, during and after install.',
+hs_ditraheat:'Schluter DITRA-HEAT',hs_ditraheatduo:'Schluter DITRA-HEAT-DUO',hs_flexboneheat:'Ardex FLEXBONE HEAT',hs_strataheat:'Laticrete STRATA_HEAT',hs_cable:'Loose cable (other brand)',hs_mat:'Pre-made mat',
+buildUp:'Build-up height',aboveSub:'above subfloor',chkSpec:'thickness from a retailer — check the data sheet',heatCable:'Heating cable',thermostat:'Thermostat',thermoNote:'sensor included; embed the spare sensor too',
+ug_heat:'Heating membranes',ug_mem:'Membranes',ug_board:'Backer board',ug_ply:'Plywood',noUnder:'no underlayment',underTop:'Underlayment under tile',underLow:'Lower layer (if any)',stackHint:'“≈” thinset is estimated from the trowel; you can enter your own.',addUnder:'+ Custom underlayment',stackT:'Base (build-up)',
+profType:'Profile',profDefault:'project default',profSize:'Size (height)',profHint:'Size is chosen from tile thickness — the profile should not be higher than the tile (up to ~1/32″ lower).',
+sideN:'Side',edgeOf:'Which side',fromStart:'From start of side',doorW:'Opening width',adjFloor:'Adjacent floor',adjT:'Adjacent thickness (incl. underlay)',adjSub:'Adjacent subfloor higher(+)/lower(−)',transProf:'Transition profile',transHint:'Doorway where tile meets another floor. Shows the height difference and a matching profile.',addTrans:'+ Transition',transT:'Transitions (threshold)',
+heatOn:'Heated floor',heatSys:'System',spacing:'Cable spacing',sp_3:'every 3 studs (standard)',sp_32:'3-2-3-2 (warmer)',spacingIn:'Cable spacing, in',volt:'Voltage',clearWalls:'Clearance from walls',tapPlan:'Tap the drawing…',pickConn:'Connection point',showHeat:'Show layout',heatHint:'Mark no-heat zones (vanity, tub, cabinet) in “Niches, cutouts” → “No-heat zone”. Cable snakes from the connection point (T); S = sensor.',on:'on',unit:'unit',noheat:'No-heat zone',cornerA:'corner',tubOn:'Tub / pan against this wall (end wall)',tubHint:'Tile above the tub + a strip past the tub edge down to the floor. The back wall above the tub does not use this — set its “Wall bottom above floor” to the tub height.',tubSide:'Where the tub is on this wall',tubSide_r:'Right (corner on the right)',tubSide_l:'Left (corner on the left)',tubD:'Tub depth from corner',tubH:'Tub rim height from floor',tubR:'Tub corner radius',tubStrip:'Strip to floor',tubRF:'Rim rise at tub edge',tubRB:'Rim rise at corner',tubRHint:'Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).',ledgerFromFloor:'above the floor — first full row above the tub starts there.',noteArc:'radius cut',
 drawBtn:'Draw shape',helpBtn:'How to enter',drawTitle:'Draw the shape',drawHint:'Trace the outline or tap the corners in order. Lines straighten live and snap to 90°, 45°, 135°, 60°, 30° (grey = what you drew). Then enter real lengths and fine-tune any angle.',drawUndoPt:'Point',drawClear:'Clear',drawApply:'Straighten & apply',drawEmpty:'Draw here',drawNeed3:'Need at least 3 corners.',closeWalk:'Close (fit last 2 sides)',cantClose:'Cannot close — check angles',
 helpTitle:'How to set the shape',helpHtml:'<p><b>Rectangle</b> — width and height (floor: width and length).</p><p><b>L-shape</b> — rectangle with a notch in one corner: notch width, depth and corner.</p><p><b>By walls (angles)</b> — walk the outline: side length and the turn after it (↰ left / ↱ right, 90°, 45°, 135° or custom). Start at the bottom-left corner going right.</p><p><b>✏️ Draw</b> — sketch with your finger, lines get straightened, then enter real side lengths (or tap a size on the drawing).</p><p><b>Custom points</b> — corners as x,y inches from the bottom-left, in order, separated by “;”.<br>Sloped ceiling 60″, 96 left, 72 right: <code>0,0; 60,0; 60,72; 0,96</code><br>Tub deck bottom-right 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>End wall at a tub</b> — check “Tub / pan against this wall”: depth, height, corner radius; the strip to the floor is computed.</p><p><b>Out of level</b> — “Bottom out of level” and “Wall out of plumb” give tapered cuts.</p>',dirR:'→ step right',dirL:'← step left',dirA:'⇄ every other row',moveLock:'🔒 Lock',plumbOn:'Wall out of plumb (corners lean)',plumbHint:'Hold a level/laser along the corner from bottom up. How far the corner is off at the top: + if it leans into the wall (narrower at top), − if outward.',pL:'Left corner at top',pR:'Right corner at top',noteTaperW:'taper by height',
 allFloor:'Whole floor',posX:'Plan position X',posY:'Plan position Y',zlink:'Shared grid with other floor zones',zoneHint:'Zones (bath, closet, toilet room) sit on a shared plan. With a shared grid the tile runs through the doorway; without it — own layout and a threshold.',
@@ -337,7 +355,8 @@ const OPT={
  toilet:{shape:'circle',dia:5,on:['floor']},
  duct:{shape:'rect',w:4,h:10,on:['floor','wall']},
  cutout:{shape:'rect',w:12,h:12,trim:false,on:['wall','floor','pan']},
- round:{shape:'circle',dia:4,on:['wall','floor','pan']}};
+ round:{shape:'circle',dia:4,on:['wall','floor','pan']},
+ noheat:{shape:'rect',w:36,h:22,on:['floor'],nohole:true}};
 const TRIMMABLE={niche:1,window:1,cutout:1};
 
 /* ================= tile engine ================= */
@@ -482,11 +501,11 @@ function countSheets(region,T){const sw=+T.sheet.w||12,sh=+T.sheet.h||12,g=+T.g|
 
 /* ================= surface geometry ================= */
 function geom(s){
- const sw=+P.sch.vis||0,outer=outerPoly(s);let region=outer;
+ const sw=edgeProf(s).vis,outer=outerPoly(s);let region=outer;
  if(isShaped(s)){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,tp=tr.t?sw:0,b=tr.b&&!isUneven(s)&&!isTub(s)?sw:0;region=wallPoly(s,l,r,tp,b);}
  else if(s.shape==='rect'){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,b=tr.b?sw:0,tp=tr.t?sw:0;region=rectPoly(l,b,s.w-l-r,s.h-b-tp);}
  const holes=[],niches=[];
- for(const o of s.openings){let poly;
+ for(const o of s.openings){if((OPT[o.type]||{}).nohole)continue;let poly;
   if(o.shape==='circle')poly=circlePoly(o.x,o.y,Math.max(0.05,(+o.dia||1)/2));
   else{const e=o.trim&&TRIMMABLE[o.type]?sw:0;poly=rectPoly(o.x-e,o.y-e,o.w+2*e,o.h+2*e);}
   holes.push({poly,type:o.type,o});if(o.type==='niche')niches.push(o);}
@@ -536,7 +555,8 @@ function compute(s){
  if(s.type==='pan'&&s.curb.on&&s.curb.trim)lf+=2*s.curb.len;
  lf+=+s.extraLF||0;
  const R={...X,err:false,main,nich,all,strips,area,full,cuts,nb,need,order,boxes,perBox,list,minc,lf,sheets,bad:all.filter(p=>p.c==='bad'&&p.k==='r').length,warn:all.filter(p=>p.c==='warn').length};
- R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);markArc(s,R);numberPieces(R);return R;}
+ R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);markArc(s,R);numberPieces(R);R.heat=heatPlan(s,R);
+ const ep=edgeProf(s);R.profs={};if(R.lf>0)R.profs[ep.key]=R.lf;(s.trans||[]).forEach(tr=>{const c=transCalc(s,tr);R.profs[c.key]=(R.profs[c.key]||0)+(+tr.len||0);});R.stack=stackOf(s);return R;}
 function markArc(s,R){const A=tubArc(s);if(!A)return;R.all.forEach(p=>{if(!p.C)return;const hit=p.C.some(q=>{const w=R.toW(q),dx=w[0]-A.c[0],dy=w[1]-A.c[1];if(Math.abs(Math.hypot(dx,dy)-A.r)>0.03)return false;const an=Math.atan2(dy,dx)*180/Math.PI;return A.side==='l'?(an>3&&an<87):(an>93&&an<177);});if(hit){p.arc=A.r;if(p.full){p.full=false;p.c='cut';}}});}
 function numberPieces(R){const ys=[...new Set(R.main.map(p=>Math.round(p.y0*100)))].sort((a,b)=>a-b);const rowOf=p=>ys.indexOf(Math.round(p.y0*100))+1;
  const ord=a=>a.filter(p=>!p.full).sort((a,b)=>(Math.round(a.y0*100)-Math.round(b.y0*100))||(a.x0-b.x0));let n=0;
@@ -609,13 +629,13 @@ function centerOn(s,x,y,joint){const T=effT(s);let ox,oy;
 
 /* ================= state ================= */
 const SKEY='prusart-tile-layout-v1';
-let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,nums:false,mode:'tiles',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres','mat','pdfs','zones']),items:[],vb:[0,0,1,1],upp:0.1};
+let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,nums:false,mode:'tiles',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres','mat','pdfs','zones','heat','trans']),items:[],vb:[0,0,1,1],upp:0.1};
 function defTile(o){return Object.assign({thick:0.375,shape:'rect',w:12,h:24,w2:6,g:0.125,pattern:'offset',off:0.5,ang:0,rot:true,ox:0,oy:0,sqftBox:0,cang:45,checker:false,sheet:{on:false,w:12,h:12}},o||{});}
 function newSurface(type,name){
  const n=P?P.surfaces.filter(x=>x.type===type).length:0;
  const s={id:uid(),type,name:name?t(name):(t(type)+(type==='wall'?' '+(n+1):'')),nk:name||type,nn:name?0:(type==='wall'?n+1:0),shape:'rect',w:60,h:96,Lw:24,Lh:24,Lc:'tr',pts:'0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
   openings:[],trim:{l:false,r:false,t:false,b:false},extraLF:0,base:0,link:true,tile:defTile(),
-  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75},wet:type!=='floor',uneven:{on:false,l:0,r:0,m:0,mOn:false},plumb:{on:false,l:0,r:0},tub:{on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0},pos:{x:0,y:0},zlink:false,segs:null};
+  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75},wet:type!=='floor',uneven:{on:false,l:0,r:0,m:0,mOn:false},plumb:{on:false,l:0,r:0},tub:{on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0},pos:{x:0,y:0},zlink:false,segs:null,stack:{under:type==='floor'?'ditra':'none',under2:'none',ub:null,tb:null},prof:{type:'inherit',size:'auto',vis:null},trans:[],heat:{on:false,sys:'ditraheat',pattern:'3',volt:'120',clear:4,conn:null,show:true,sp:3,wsf:12}};
  if(type==='floor'){s.w=96;s.h=72;s.tile=defTile({w:24,h:24,w2:12,pattern:'grid',rot:false});}
  if(type==='pan'){s.w=60;s.h=36;s.tile=defTile({w:2,h:2,w2:1,pattern:'grid',rot:false,sheet:{on:true,w:12,h:12}});s.curb.on=true;s.drain.type='center';}
  if(type!=='wall'&&P){const fl=P.surfaces.filter(x=>x.type!=='wall');if(fl.length){s.pos={x:Math.max(...fl.map(x=>(+x.pos.x||0)+bboxOf(outerPoly(x)).x1))+12,y:0};}}
@@ -623,7 +643,7 @@ function newSurface(type,name){
  if(type==='wall'&&P&&P.surfaces.length){const fw=P.surfaces.find(x=>x.type==='wall');if(fw)s.tile=JSON.parse(JSON.stringify(fw.tile));}
  return s;}
 function newProject(sample){
- const p={id:uid(),nk:sample?'sample':'newName',name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},link:{mode:'height',ox:0,oy:0},flink:{ox:0,oy:0},mat:defMat(),surfaces:[]};
+ const p={id:uid(),nk:sample?'sample':'newName',name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{type:'JOLLY',profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},customUnder:[],link:{mode:'height',ox:0,oy:0},flink:{ox:0,oy:0},mat:defMat(),surfaces:[]};
  const prev=P;P=p;
  if(sample){
   const b=newSurface('wall','backWall');b.trim.t=true;b.openings.push({id:uid(),type:'niche',shape:'rect',x:18,y:42,w:24,h:12,d:3.5,trim:true},{id:uid(),type:'valve',shape:'circle',x:30,y:48-20,dia:3},{id:uid(),type:'pipe',shape:'circle',x:30,y:80,dia:1.125});
@@ -638,7 +658,7 @@ function newProject(sample){
  P=prev;return p;}
 function arrangeFloors(p){const fl=p.surfaces.filter(x=>x.type!=='wall');if(fl.length<2)return;if(!fl.every(x=>!x.pos||(!+x.pos.x&&!+x.pos.y)))return;let x=0;fl.forEach(z=>{const b=bboxOf(outerPoly(z));z.pos={x:x-b.x0,y:0};x+=b.x1-b.x0+12;});}
 function migrate(p){
- p.link=p.link||{mode:'none',ox:0,oy:0};p.flink=p.flink||{ox:0,oy:0};p.mat=Object.assign(defMat(),p.mat||{});
+ p.link=p.link||{mode:'none',ox:0,oy:0};if(!p.sch.type)p.sch.type='JOLLY';p.customUnder=p.customUnder||[];p.flink=p.flink||{ox:0,oy:0};p.mat=Object.assign(defMat(),p.mat||{});
  const findKey=(nm,keys)=>{for(const k of keys)for(const L of ['ru','en'])if(I18N[L][k]===nm)return k;return null;};
  if(!p.nk){const k=findKey(p.name,['sample','newName']);if(k)p.nk=k;}
  p.surfaces.forEach(s=>{if(s.nk!==undefined)return;const k=findKey(s.name,['backWall','leftWall','rightWall','bathFloor','pan','floor','wall']);if(k){s.nk=k;s.nn=0;return;}
@@ -647,7 +667,7 @@ function migrate(p){
   if(!T.shape)T.shape='rect';if(T.pattern==='half'){T.pattern='offset';T.off=.5;}if(T.pattern==='third'){T.pattern='offset';T.off=1/3;}if(T.pattern==='vhalf'){T.pattern='voffset';T.off=.5;}
   if(T.off==null)T.off=.5;if(T.ang==null)T.ang=0;if(!T.sheet)T.sheet={on:false,w:12,h:12};if(T.w2==null)T.w2=(+T.w)/2;if(T.cang==null)T.cang=45;if(T.checker==null)T.checker=false;
   s.openings=(s.openings||[]).map(o=>{if(o.type==='hole')o.type='cutout';if(!o.shape)o.shape=(OPT[o.type]||{}).shape||'rect';if(o.shape==='circle'&&!o.dia)o.dia=4;return o;});
-  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.wet==null)s.wet=s.type!=='floor';if(!s.pos)s.pos={x:0,y:0};if(s.zlink==null)s.zlink=false;if(!s.segs)s.segs=polyToSegs(outerPoly(s));if(!s.plumb)s.plumb={on:false,l:0,r:0};if(!s.tub)s.tub={on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0};if(T.thick==null)T.thick=T.sheet&&T.sheet.on?0.25:0.375;if(s.link==null)s.link=true;
+  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.wet==null)s.wet=s.type!=='floor';if(!s.pos)s.pos={x:0,y:0};if(s.zlink==null)s.zlink=false;if(!s.segs)s.segs=polyToSegs(outerPoly(s));if(!s.plumb)s.plumb={on:false,l:0,r:0};if(!s.tub)s.tub={on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0};if(!s.stack)s.stack={under:s.type==='floor'?'ditra':'none',under2:'none',ub:null,tb:null};if(!s.prof)s.prof={type:'inherit',size:'auto',vis:null};if(!s.trans)s.trans=[];if(!s.heat)s.heat={on:false,sys:'ditraheat',pattern:'3',volt:120,clear:4,conn:null,show:true,sp:3,wsf:12};if(T.thick==null)T.thick=T.sheet&&T.sheet.on?0.25:0.375;if(s.link==null)s.link=true;
   s.curb=s.curb||{on:false,len:60,w:4.5,h:4.5,trim:true};s.drain=s.drain||{type:'none',x:30,y:18,len:48,wid:2.75};});
  arrangeFloors(p);return p;}
 function load(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.projects))return d;}catch(e){}return null;}
@@ -686,7 +706,7 @@ function surfBody(s,R,o){
  h+=`<g clip-path="url(#cR${id})"><g${rt}>${R.main.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;
  if(R.nich.length)h+=`<g clip-path="url(#cN${id})"><g${rt}>${R.nich.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;
  G.niches.forEach(n=>h+=`<rect x="${n.x}" y="${-(n.y+n.h)}" width="${n.w}" height="${n.h}" fill="rgba(70,50,25,.13)"/>`);
- const sw=+P.sch.vis||0,TR='fill="#c3c8d0" stroke="#7f8690" stroke-width="'+px(0.8)+'"';
+ const sw=edgeProf(s).vis,TR='fill="#c3c8d0" stroke="#7f8690" stroke-width="'+px(0.8)+'"';
  if(s.shape==='rect'&&sw>0){const q=s.trim;
   if(q.l)h+=`<rect x="0" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;if(q.r)h+=`<rect x="${s.w-sw}" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
   if(q.t)h+=`<rect x="0" y="${-s.h}" width="${s.w}" height="${sw}" ${TR}/>`;if(q.b)h+=`<rect x="0" y="${-sw}" width="${s.w}" height="${sw}" ${TR}/>`;}
@@ -699,11 +719,15 @@ function surfBody(s,R,o){
   if(op.type==='outlet'){h+=`<rect x="${op.x}" y="${-(op.y+op.h)}" width="${op.w}" height="${op.h}" fill="#fff"/><rect x="${op.x+op.w*0.3}" y="${-(op.y+op.h*0.82)}" width="${op.w*0.4}" height="${op.h*0.25}" rx="${op.w*0.08}" fill="none" stroke="#5a4129" stroke-width="${px(0.7)}"/><rect x="${op.x+op.w*0.3}" y="${-(op.y+op.h*0.43)}" width="${op.w*0.4}" height="${op.h*0.25}" rx="${op.w*0.08}" fill="none" stroke="#5a4129" stroke-width="${px(0.7)}"/>`;}
   if(op.type==='duct'){h+=`<rect x="${op.x}" y="${-(op.y+op.h)}" width="${op.w}" height="${op.h}" fill="#fff"/>`;const vert=op.h>op.w,n=Math.max(2,Math.floor((vert?op.h:op.w)/0.8));for(let i=1;i<n;i++){const u=i/n;h+=vert?`<line x1="${op.x+op.w*0.15}" x2="${op.x+op.w*0.85}" y1="${-(op.y+op.h*u)}" y2="${-(op.y+op.h*u)}" stroke="#777" stroke-width="${px(0.8)}"/>`:`<line y1="${-(op.y+op.h*0.15)}" y2="${-(op.y+op.h*0.85)}" x1="${op.x+op.w*u}" x2="${op.x+op.w*u}" stroke="#777" stroke-width="${px(0.8)}"/>`;}}
   if(e>0)h+=`<path fill-rule="evenodd" d="${pd(rectPoly(op.x-e,op.y-e,op.w+2*e,op.h+2*e))}${pd(rectPoly(op.x,op.y,op.w,op.h))}" ${TR}/>`;
-  h+=`<rect x="${op.x}" y="${-(op.y+op.h)}" width="${op.w}" height="${op.h}" fill="none" stroke="#5a4129" stroke-width="${px(1.3)}" ${op.type==='niche'?`stroke-dasharray="${px(5)} ${px(3)}"`:''}/>`;
+  h+=`<rect x="${op.x}" y="${-(op.y+op.h)}" width="${op.w}" height="${op.h}" fill="${op.type==='noheat'?'rgba(29,95,168,.07)':'none'}" stroke="${op.type==='noheat'?'#1d5fa8':'#5a4129'}" stroke-width="${px(1.3)}" ${op.type==='niche'||op.type==='noheat'?`stroke-dasharray="${px(5)} ${px(3)}"`:''}/>`;
   h+=lbl(op.x+op.w/2,-(op.y+op.h+e)-+px(4*fs0),`${t(op.type)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,Math.max(op.w*1.6,+px(120)));}
  if(s.type==='pan'){const d=s.drain;
   if(d.type==='center')h+=`<circle cx="${d.x}" cy="${-d.y}" r="2.125" fill="#6a6a6a" stroke="#333" stroke-width="${px(1)}"/><path d="M${d.x-1.4} ${-d.y}H${d.x+1.4}M${d.x} ${-d.y-1.4}V${-d.y+1.4}" stroke="#ccc" stroke-width="${px(1)}"/>`;
   if(d.type==='linear'){h+=`<rect x="${d.x}" y="${-(d.y+d.wid)}" width="${d.len}" height="${d.wid}" fill="#555" stroke="#222" stroke-width="${px(1)}"/>`;for(let x=d.x+1;x<d.x+d.len-0.5;x+=1.5)h+=`<line x1="${x}" y1="${-(d.y+d.wid*0.25)}" x2="${x}" y2="${-(d.y+d.wid*0.75)}" stroke="#999" stroke-width="${px(1)}"/>`;}}
+ h+=heatSVG(s,R,px);
+ (s.trans||[]).forEach((tr,i)=>{const O=G.outer,a=O[tr.edge%O.length],b=O[(tr.edge+1)%O.length],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1,ux=(b[0]-a[0])/L,uy=(b[1]-a[1])/L,f0=Math.max(0,Math.min(L,+tr.from||0)),f1=Math.max(0,Math.min(L,f0+(+tr.len||0)));
+  const p0=[a[0]+ux*f0,a[1]+uy*f0],p1=[a[0]+ux*f1,a[1]+uy*f1],sg=sArea(O)>0?1:-1,nx=uy*sg,ny=-ux*sg,off=+px(16*fs0),mx=(p0[0]+p1[0])/2+nx*off,my=(p0[1]+p1[1])/2+ny*off;
+  h+=`<line x1="${p0[0]}" y1="${-p0[1]}" x2="${p1[0]}" y2="${-p1[1]}" stroke="#7a4fb3" stroke-width="${px(5)}" stroke-linecap="round" opacity=".85"/><text x="${mx}" y="${-my}" font-size="${px(10.5*fs0)}" text-anchor="middle" dominant-baseline="central" fill="#7a4fb3" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="#fbfaf7" stroke-width="${px(3)}">→ ${esc(t('adj_'+tr.adj))}</text>`;});
  if(R.ledger&&R.ledger.y!=null){const y=-R.ledger.y,x0=G.bb.x0,x1=G.bb.x1;h+=`<line x1="${x0-+px(6)}" x2="${x1+ +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1+ +px(8)}" y="${y}" font-size="${px(10*o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;}
  h+=`<path d="${pd(G.outer)}" fill="none" stroke="#24272b" stroke-width="${px(1.7)}"/>`;
  // cut labels
@@ -775,9 +799,9 @@ function hitAt(cx,cy){if(!S.items||!S.items.length)return null;const w=toWorld(c
  return null;}
 const canEdit=()=>!S.client&&S.tab!=='tot';
 svg.addEventListener('touchstart',e=>{if(S.tab==='tot')return;if(e.touches.length>1||S.mode==='view'){e.preventDefault();return;}
- const tc=e.touches[0];if(S.mode==='tiles'&&canEdit()&&hitAt(tc.clientX,tc.clientY))e.preventDefault();},{passive:false});
+ const tc=e.touches[0];if(S.pickConn||(S.mode==='tiles'&&canEdit()&&hitAt(tc.clientX,tc.clientY)))e.preventDefault();},{passive:false});
 function startDrag(x,y,target,pt){const h=hitAt(x,y);const dimEl=target&&target.closest?target.closest('[data-dim]'):null;
- if(pt==='touch'&&!h&&!dimEl&&S.mode!=='view')return false;
+ if(pt==='touch'&&!h&&!dimEl&&S.mode!=='view'&&!S.pickConn)return false;
  const s=h?h.it.s:null;const T=s?effT(s):null;
  drag={x,y,s,it:h?h.it:null,op:h&&h.op!=null?h.op:null,dim:dimEl?dimEl.dataset.dim:null,ox:T?T.ox:0,oy:T?T.oy:0,px:S.view.panX,py:S.view.panY,upp:S.upp,moved:false};
  if(drag.op!=null){const o=s.openings[drag.op];drag.opx=o.x;drag.opy=o.y;}
@@ -798,6 +822,7 @@ function pEnd(e){if(!ptrs.has(e.pointerId))return;const cancel=e.type==='pointer
  if(ptrs.size===1){const a=[...ptrs.values()][0];startDrag(a.x,a.y,null,'mouse');if(drag)drag.moved=true;return;}
  if(ptrs.size===0&&drag){const d=drag;drag=null;
   if(!d.moved&&!cancel){
+   if(S.pickConn&&canEdit()){const s2=P.surfaces.find(x=>x.id===S.pickConn);const it=S.items.find(i=>i.s===s2);if(s2&&it){const w=toWorld(d.x,d.y);s2.heat.conn=[Math.round((w[0]-it.dx)*4)/4,Math.round((w[1]-it.dy)*4)/4];S.pickConn=null;changed();renderPanel();}return;}
    if(d.dim&&canEdit()){editDim(d.dim);return;}
    if(d.op!=null&&canEdit()){editOpening(P.surfaces.indexOf(d.s),d.op);return;}
    if(isMulti()&&d.it&&!S.client){S.tab=P.surfaces.indexOf(d.it.s);S.view={zoom:1,panX:0,panY:0};renderAll();}return;}
@@ -834,7 +859,7 @@ function renderClient(){const el=$('#clientCard');
  if(isMulti()){const ws=S.items.map(it=>`<b>${esc(it.s.name)}</b> — ${fmt(it.R.G.bb.x1-it.R.G.bb.x0)} × ${fmt(it.R.G.bb.y1-it.R.G.bb.y0)}`).join('<br>');
   const T=S.items[0]?S.items[0].R.T:null;el.innerHTML=`<div class="cc">${ws}${T?`<br>${t('tile')}: ${esc(tileDesc(T))}, ${esc(patName(T))}, ${t('grout')} ${fmt(+T.g)}`:''}</div>`;return;}
  const s=cur();if(!s||!R){el.innerHTML='';return;}const T=R.T;
- el.innerHTML=`<div class="cc"><b>${esc(s.name)}</b> — ${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)}<br>${t('tile')}: ${esc(tileDesc(T))}, ${esc(patName(T))}, ${t('grout')} ${fmt(+T.g)}<br>${R.lf>0?`Schluter ${esc(P.sch.profile)} ${esc(P.sch.size)}<br>`:''}${t('area')}: ${sq(R.area)}</div>`;}
+ el.innerHTML=`<div class="cc"><b>${esc(s.name)}</b> — ${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)}<br>${t('tile')}: ${esc(tileDesc(T))}, ${esc(patName(T))}, ${t('grout')} ${fmt(+T.g)}<br>${R.lf>0?`Schluter ${esc(edgeProf(s).key)}<br>`:''}${t('area')}: ${sq(R.area)}</div>`;}
 
 const F=(label,k,ty='len',sc='s',cls='')=>{const base=sc==='p'?P:cur();let v;
  if(k==='_ox'||k==='_oy')v=offs(cur())[k==='_ox'?'x':'y'];else if(k==='_offp')v=Math.round(+cur().tile.off*1000)/10;else v=getPath(base,k);
@@ -882,9 +907,39 @@ function walkEditor(s){const wk=walkPoly(s);let h=`<p class="hint" style="margin
  <button class="btn sm d" data-act="delSeg:${i}" style="margin-bottom:4px">✕</button></div>${std?'':F(t('turnDeg'),`segs.${i}.a`,'num')}</div>`;}).join('');
  h+=`<div class="btns"><button class="btn" data-act="addSeg">${t('addSeg')}</button></div>`;
  if(wk.gap>0.1)h+=`<div class="note">${t('walkGap')} ${fmt(wk.gap)} <button class="btn sm" data-act="closeWalk">${t('closeWalk')}</button></div>`;return h;}
+function optLen(label,k,auto){const v=getPath(cur(),k);return`<label class="f"><span>${label}</span><input data-k="${k}" data-sc="s" data-t="len" data-opt="1" value="${v!=null&&v!==''?fmtIn(+v):''}" placeholder="${t('autoV')} ${fmtIn(auto)}" autocomplete="off"></label>`;}
+function underSel(label,k,cls){const v=getPath(cur(),k)||'none';const grp={heat:t('ug_heat'),mem:t('ug_mem'),board:t('ug_board'),ply:t('ug_ply')};
+ let o=`<option value="none" ${v==='none'?'selected':''}>— ${t('noUnder')}</option>`;for(const g of['heat','mem','board','ply']){const it=underList().filter(u=>u.k===g);if(!it.length)continue;o+=`<optgroup label="${esc(grp[g])}">`+it.map(u=>`<option value="${u.id}" ${u.id===v?'selected':''}>${esc(u.n)} · ${fmtIn(u.t)}″</option>`).join('')+'</optgroup>';}
+ return`<label class="f ${cls||''}"><span>${label}</span><select data-k="${k}" data-sc="s" data-t="sel" data-rb="1">${o}</select></label>`;}
+function stackSection(s){s.stack=s.stack||{under:'none',under2:'none',ub:null,tb:null};const st=stackOf(s);
+ let b=`<div class="grid">${underSel(t('underTop'),'stack.under','w2')}${underSel(t('underLow'),'stack.under2','w2')}${optLen(t('bondUnder'),'stack.ub',st.ub)}${optLen(t('bondTile'),'stack.tb',st.tb)}</div>`;
+ b+=`<table style="margin-top:8px">${st.L.slice().reverse().map(l=>`<tr><td><span class="sw" style="background:${l.c}"></span>${esc(l.n)}</td><td class="n">${fmtIn(l.t)}″</td></tr>`).join('')}<tr><td><b>${t('buildUp')}</b></td><td class="n"><b>${fmt(st.total)}</b></td></tr></table>`;
+ if(st.u.chk)b+=`<p class="hint">${t('chkSpec')}</p>`;
+ b+=`<p class="hint">${t('stackHint')}</p><div class="btns"><button class="btn sm" data-act="addUnder">${t('addUnder')}</button></div>`;
+ return SEC('stack',`${t('stackT')} · ${fmt(st.total)}`,b);}
+function profFields(s){s.prof=s.prof||{type:'inherit',size:'auto',vis:null};const ep=edgeProf(s);const types=Object.keys(PROF).filter(k=>PROF[k].use==='edge');
+ const tsel=`<label class="f"><span>${t('profType')}</span><select data-k="prof.type" data-sc="s" data-t="sel" data-rb="1"><option value="inherit" ${s.prof.type==='inherit'?'selected':''}>${t('profDefault')} (${esc(P.sch.type||'JOLLY')})</option>${types.map(k=>`<option ${s.prof.type===k?'selected':''}>${k}</option>`).join('')}</select></label>`;
+ const ssel=`<label class="f"><span>${t('profSize')}</span><select data-k="prof.size" data-sc="s" data-t="sel" data-rb="1"><option value="auto" ${s.prof.size==='auto'?'selected':''}>${t('autoV')}: ${fmtIn(autoSize(+s.tile.thick||0.375))}″</option>${PSIZES.map(([v,c])=>`<option value="${v}" ${String(s.prof.size)===String(v)?'selected':''}>${fmtIn(v)}″ (${c})</option>`).join('')}</select></label>`;
+ return`<div class="grid">${tsel}${ssel}${optLen(t('schVis'),'prof.vis',ep.vis)}<div class="hint" style="align-self:end"><b>${esc(ep.key)}</b></div></div><p class="hint">${t('profHint')}</p>`;}
+function transSection(s){s.trans=s.trans||[];const O=outerPoly(s);const si=P.surfaces.indexOf(s);
+ let b=s.trans.map((tr,i)=>{const c=transCalc(s,tr);const eo=O.map((q,j)=>{const r=O[(j+1)%O.length];return`<option value="${j}" ${+tr.edge===j?'selected':''}>${t('sideN')} ${j+1} · ${fmtIn(Math.hypot(r[0]-q[0],r[1]-q[1]))}″</option>`;}).join('');
+  return`<div class="op"><div class="grid"><label class="f w2"><span>${t('edgeOf')}</span><select data-k="trans.${i}.edge" data-sc="s" data-t="selnum" data-rb="1">${eo}</select></label>${F(t('fromStart'),`trans.${i}.from`)}${F(t('doorW'),`trans.${i}.len`)}
+  ${SEL(t('adjFloor'),`trans.${i}.adj`,Object.keys(ADJ),1,'s','',o=>t('adj_'+o))}${F(t('adjT'),`trans.${i}.at`)}${F(t('adjSub'),`trans.${i}.sub`,'slen')}
+  ${SEL(t('transProf'),`trans.${i}.prof`,['auto','RENO-T','RENO-TK','RENO-U','RENO-V','RENO-RAMP'],1,'s','',o=>o==='auto'?t('autoV'):o)}</div>
+  <div class="note"><b>${c.diff>=0?'+':'−'}${fmt(Math.abs(c.diff))}</b> · ${esc(c.key)}</div><div class="btns"><button class="btn sm p" data-act="section:${si}:${i}">${t('section')}</button><button class="btn sm d" data-act="delTrans:${i}">${t('del')}</button></div></div>`;}).join('');
+ b+=`<p class="hint">${t('transHint')}</p><div class="btns"><button class="btn" data-act="addTrans">${t('addTrans')}</button></div>`;
+ return SEC('trans',`${t('transT')}${s.trans.length?' · '+s.trans.length:''}`,b);}
+function heatSection(s){s.heat=s.heat||{on:false,sys:'ditraheat',pattern:'3',volt:120,clear:4,conn:null,show:true,sp:3,wsf:12};const H=s.heat;
+ let b=CHK(t('heatOn'),'heat.on',1);
+ if(H.on){const sys=HEATSYS[H.sys]||{};b+=`<div class="grid">${SEL(t('heatSys'),'heat.sys',Object.keys(HEATSYS),1,'s','w2',o=>t('hs_'+o))}`;
+  if(sys.sp)b+=SEL(t('spacing'),'heat.pattern',['3','32'],1,'s','',o=>t('sp_'+o));else b+=F(t('spacingIn'),'heat.sp')+F(t('wsf'),'heat.wsf','num');
+  b+=SEL(t('volt'),'heat.volt',['120','240'],0,'s','',o=>o+' V')+F(t('clearWalls'),'heat.clear')+`</div>`;
+  b+=`<div class="btns"><button class="btn ${S.pickConn===s.id?'p':''}" data-act="pickConn">📍 ${S.pickConn===s.id?t('tapPlan'):t('pickConn')}</button>${CHK(t('showHeat'),'heat.show',0)}</div>`;
+  b+=`<p class="hint">${t('heatHint')}</p>`;}
+ return SEC('heat',`🔥 ${t('heat')}${H.on?' · '+t('on'):''}`,b);}
 function renderPanel(){
  const el=$('#panel');document.body.classList.toggle('tot',S.tab==='tot');
- if(S.tab==='tot'){el.innerHTML=SEC('proj',t('proj'),`<div class="grid">${F(t('projName'),'name','text','p','w2')}${F(t('clientName'),'client','text','p','w2')}${F(t('waste'),'waste','num','p')}${F(t('minCutS'),'minCut','len','p')}${F(t('edgeGap'),'edgeGap','len','p')}${F(t('kerf'),'kerf','len','p')}${F(t('schProfile'),'sch.profile','text','p')}${F(t('schSize'),'sch.size','text','p')}${F(t('schVis'),'sch.vis','len','p')}</div><p class="hint">${t('storeNote')}</p>`)+SEC('tot',t('totTitle'),'<div id="tot"></div>')+SEC('mat',t('materials'),'<div id="mat"></div>'+matSettingsHTML())+SEC('pdfs','PDF',`<div class="btns"><button class="btn p" data-act="pdf:client">${t('pdfClient')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div><p class="hint">${t('pdfHint')}</p>`);renderTot();return;}
+ if(S.tab==='tot'){el.innerHTML=SEC('proj',t('proj'),`<div class="grid">${F(t('projName'),'name','text','p','w2')}${F(t('clientName'),'client','text','p','w2')}${F(t('waste'),'waste','num','p')}${F(t('minCutS'),'minCut','len','p')}${F(t('edgeGap'),'edgeGap','len','p')}${F(t('kerf'),'kerf','len','p')}${SEL(t('schProfile'),'sch.type',Object.keys(PROF).filter(k=>PROF[k].use==='edge'),0,'p','w2',o=>o)}</div><p class="hint">${t('storeNote')}</p>`)+SEC('tot',t('totTitle'),'<div id="tot"></div>')+SEC('mat',t('materials'),'<div id="mat"></div>'+matSettingsHTML())+SEC('pdfs','PDF',`<div class="btns"><button class="btn p" data-act="pdf:client">${t('pdfClient')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div><p class="hint">${t('pdfHint')}</p>`);renderTot();return;}
  if(S.tab==='floor'){const fs=P.surfaces.filter(s=>s.type!=='wall');
   let b=`<p class="hint">${t('floorHint')}</p>`+fs.map(s=>{const i=P.surfaces.indexOf(s);return`<div class="op"><h4>${ICON[s.type]} ${esc(s.name)}</h4><div class="grid">${F(t('posX'),`surfaces.${i}.pos.x`,'slen','p')}${F(t('posY'),`surfaces.${i}.pos.y`,'slen','p')}</div>${CHK(t('zlink'),`surfaces.${i}.zlink`,1,'p')}</div>`;}).join('');
   b+=`<div class="btns"><button class="btn p" data-act="autoFloor">${t('autoFloor')}</button><button class="btn" data-act="tileToFloors">${t('tileToFloors')}</button></div>`;
@@ -924,7 +979,10 @@ function renderPanel(){
  <div><span class="hint">${t('step')}</span><div class="chips">${[1/16,1/8,1/4,1/2,1].map(v=>`<button class="btn sm ${S.step===v?'p':''}" data-act="step:${v}">${fmtIn(v)}</button>`).join('')}</div></div></div>
  <div class="grid" style="margin-top:8px">${F(t('offX'),'_ox')}${F(t('offY'),'_oy')}</div>`);
  h+=SEC('open',`${t('openings')}${s.openings.length?' · '+s.openings.length:''}`,s.openings.map(openingCard).join('')+`<div class="btns"><button class="btn p" data-act="addOpenMenu">${t('addOpen')}</button></div>`);
- h+=SEC('edges',t('edges'),(s.shape==='rect'?`<p class="hint">${t('edgeHint')}</p><div class="grid">${CHK(t('edgeL'),'trim.l')}${CHK(t('edgeR'),'trim.r')}${CHK(t('edgeT'),'trim.t')}${CHK(t('edgeB'),'trim.b')}</div>`:`<p class="hint">${t('edgeNonRect')}</p>`)+`<div class="grid">${F(t('extraLF'),'extraLF')}</div><p class="hint">${esc(P.sch.profile)} ${esc(P.sch.size)} · ${t('schVis')}: ${fmt(+P.sch.vis)}</p>`);
+ h+=stackSection(s);
+ h+=SEC('edges',t('edges'),profFields(s)+(s.shape==='rect'?`<p class="hint">${t('edgeHint')}</p><div class="grid">${CHK(t('edgeL'),'trim.l')}${CHK(t('edgeR'),'trim.r')}${CHK(t('edgeT'),'trim.t')}${CHK(t('edgeB'),'trim.b')}</div>`:`<p class="hint">${t('edgeNonRect')}</p>`)+`<div class="grid">${F(t('extraLF'),'extraLF')}</div>`);
+ if(s.type!=='wall')h+=transSection(s);
+ if(s.type==='floor')h+=heatSection(s);
  if(s.type==='pan'){const d=s.drain;
   h+=SEC('pan',t('panSec'),`${CHK(t('curbOn'),'curb.on',1)}${s.curb.on?`<div class="grid">${F(t('curbLen'),'curb.len')}${F(t('curbW'),'curb.w')}${F(t('curbH'),'curb.h')}</div>${CHK(t('curbTrim'),'curb.trim')}`:''}
   <div class="grid">${SEL(t('drain'),'drain.type',['none','center','linear'],1,'s','w2')}${d.type!=='none'?F(t('drainX'),'drain.x')+F(t('drainY'),'drain.y'):''}${d.type==='linear'?F(t('drainLen'),'drain.len')+F(t('drainWid'),'drain.wid'):''}</div>`);}
@@ -955,14 +1013,16 @@ function renderRes(){const el=$('#res');if(!el)return;
  if(R.list.length)h+=`<table><tr><th>${t('size')}</th><th class="n">${t('qty')}</th></tr>${R.list.map(r=>`<tr><td><span class="sw" style="background:${COL[r.c]}"></span>${esc(r.k)}</td><td class="n">${r.n}</td></tr>`).join('')}</table>`;
  if(R.drill.length)h+=`<p style="margin:12px 0 4px"><b>${t('drill')}</b></p>`+R.drill.map(d=>`<div class="dl">${drillTxt(d)}</div>`).join('');
  if(R.strips.length)h+=`<p style="margin:12px 0 4px"><b>${t('strips')}</b></p>`+R.strips.filter(x=>x.count||x.tiles).map(x=>`<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`).join('');
- if(R.lf>0)h+=`<p style="margin:10px 0 4px"><b>${t('sch')}</b>: ${fmt(R.lf)} = ${(R.lf/12).toFixed(1)} ft → ${sticks} ${t('sticks')}</p>`;
+ Object.keys(R.profs).forEach(k=>{const lf2=R.profs[k];h+=`<p style="margin:10px 0 4px"><b>Schluter ${esc(k)}</b>: ${fmt(lf2)} = ${(lf2/12).toFixed(1)} ft → ${Math.ceil(lf2/98.5)} ${t('sticks')}</p>`;});
+ h+=`<p class="hint" style="color:var(--ink)">${t('buildUp')}: <b>${fmt(R.stack.total)}</b> ${t('aboveSub')}</p>`;
+ h+=heatResHTML(cur(),R);
  h+=`<p class="hint">${t('gapNote')} (${fmt(+P.edgeGap)}). ${t('reuseNote')}</p><div class="btns"><button class="btn p" data-act="cutSheet">${t('cutSheet')}</button><button class="btn" data-act="copyCuts">${t('copyCuts')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div>`;
  el.innerHTML=h;}
 function renderTot(){const el=$('#tot');if(!el)return;const rows=P.surfaces.map(s=>({s,R:compute(s)}));const g={};let lf=0;
- rows.forEach(({R})=>{lf+=R.lf;for(const k in R.nb){g[k]=g[k]||{k,need:0,perBox:0};g[k].need+=R.nb[k];if(R.perBox&&Object.keys(R.nb).length===1)g[k].perBox=R.perBox;}});
+ const pf={};rows.forEach(({R})=>{lf+=R.lf;for(const k in R.profs)pf[k]=(pf[k]||0)+R.profs[k];for(const k in R.nb){g[k]=g[k]||{k,need:0,perBox:0};g[k].need+=R.nb[k];if(R.perBox&&Object.keys(R.nb).length===1)g[k].perBox=R.perBox;}});
  let h=`<p><b>${t('surfaces')}</b></p><table><tr><th>${t('name')}</th><th>${t('tile')}</th><th class="n">sf</th><th class="n">${t('need')}</th></tr>${rows.map(({s,R})=>`<tr><td>${esc(s.name)}${R.bad?' ⚠︎':''}</td><td>${esc(tileDesc(R.T))}<br><small style="color:var(--mut)">${esc(patName(R.T))}</small></td><td class="n">${sq(R.area)}</td><td class="n">${R.need}</td></tr>`).join('')}</table>`;
  h+=`<p style="margin-top:14px"><b>${t('byTile')}</b></p><table><tr><th>${t('tile')}</th><th class="n">${t('need')}</th><th class="n">${t('order')}</th><th class="n">${t('boxes')}</th></tr>${Object.values(g).map(e=>{const o=Math.ceil(e.need*(1+(+P.waste||0)/100));return`<tr><td>${esc(e.k)}</td><td class="n">${e.need}</td><td class="n"><b>${o}</b></td><td class="n">${e.perBox?Math.ceil(o/e.perBox):'—'}</td></tr>`;}).join('')}</table>`;
- h+=`<p style="margin-top:14px"><b>Schluter ${esc(P.sch.profile)} ${esc(P.sch.size)}</b>: ${fmt(lf)} = ${(lf/12).toFixed(1)} ft → ${Math.ceil(lf/98.5)} ${t('sticks')}</p>`;
+ Object.keys(pf).forEach(k=>{h+=`<p style="margin-top:10px"><b>Schluter ${esc(k)}</b>: ${(pf[k]/12).toFixed(1)} ft → ${Math.ceil(pf[k]/98.5)} ${t('sticks')}</p>`;});
  el.innerHTML=h;renderMat();}
 function syncNames(){if(P.nk)P.name=t(P.nk);P.surfaces.forEach(s=>{if(s.nk)s.name=t(s.nk)+(s.nn?' '+s.nn:'');});}
 function renderAll(){syncNames();if(S.tab==='all'&&P.surfaces.filter(s=>s.type==='wall').length<2)S.tab=0;if(S.tab==='floor'&&P.surfaces.filter(s=>s.type!=='wall').length<2)S.tab=0;if(typeof S.tab==='number'&&!P.surfaces[S.tab])S.tab=0;
@@ -973,7 +1033,8 @@ function changed(){draw();if(S.tab==='tot')renderTot();else renderRes();renderTa
 /* ================= inputs ================= */
 const panel=$('#panel');
 function onInp(e){const el=e.target,k=el.dataset.k;if(!k)return;const sc=el.dataset.sc||'s',ty=el.dataset.t,base=sc==='p'?P:cur();let v;
- if(ty==='len'||ty==='slen'){const raw=String(el.value).trim(),neg=ty==='slen'&&/^[-−]/.test(raw);v=parseLen(neg?raw.replace(/^[-−]\s*/,''):raw);if(!isFinite(v)||v<0){el.classList.add('bad');return;}if(neg)v=-v;el.classList.remove('bad');}
+ if((ty==='len')&&el.dataset.opt&&String(el.value).trim()===''){v=null;el.classList.remove('bad');}
+ else if(ty==='len'||ty==='slen'){const raw=String(el.value).trim(),neg=ty==='slen'&&/^[-−]/.test(raw);v=parseLen(neg?raw.replace(/^[-−]\s*/,''):raw);if(!isFinite(v)||v<0){el.classList.add('bad');return;}if(neg)v=-v;el.classList.remove('bad');}
  else if(ty==='num'){v=parseFloat(String(el.value).replace(',','.'));if(!isFinite(v)){el.classList.add('bad');return;}el.classList.remove('bad');}
  else if(ty==='chk'){if(e.type!=='change')return;v=el.checked;}
  else if(ty==='sel'){if(e.type!=='change')return;v=el.value;}
@@ -990,6 +1051,8 @@ function onInp(e){const el=e.target,k=el.dataset.k;if(!k)return;const sc=el.data
  if(s&&k==='drain.type'){if(v==='linear'){s.drain.len=Math.max(12,s.w-12);s.drain.x=(s.w-s.drain.len)/2;s.drain.y=s.h-s.drain.wid;}if(v==='center'){s.drain.x=s.w/2;s.drain.y=s.h/2;}}
  const m=k.match(/^openings\.(\d+)\.type$/);if(m){const o=s.openings[+m[1]],d=OPT[v];if(d.shape!==o.shape){if(d.shape==='circle'){o.x=o.x+(o.w||0)/2;o.y=o.y+(o.h||0)/2;o.dia=d.dia;}else{o.w=d.w;o.h=d.h;o.x=o.x-o.w/2;o.y=o.y-o.h/2;}o.shape=d.shape;}else if(d.shape==='circle')o.dia=d.dia;else{o.w=d.w;o.h=d.h;}o.trim=!!d.trim;if(v==='niche'&&!o.d)o.d=3.5;}
  if(s&&k==='tub.on'&&v){s.base=0;s.uneven.on=false;s.trim[s.tub.side==='r'?'l':'r']=true;if(!(s.w>+s.tub.d))s.w=(+s.tub.d||30)+5;autoLayout(s);}
+ {const mt=k.match(/^trans\.(\d+)\.adj$/);if(s&&mt)s.trans[+mt[1]].at=ADJ[v];}
+ if(s&&(k==='heat.sys'||(k==='heat.on'&&v))){const sy=HEATSYS[s.heat.sys];s.stack=s.stack||{under:'none',under2:'none'};if(sy&&sy.under)s.stack.under=sy.under;}
  if(s&&k==='tile.shape'){const T=s.tile;if(v!=='rect'&&T.mem==null)T.mem={w:12,h:24};if(v==='rect'&&T.mem&&!T.sheet.on){T.w=T.mem.w;T.h=T.mem.h;}if(v==='hex'&&(+T.w>24||+T.w<1))T.w=8;if(v==='penny'){T.w=0.75;T.sheet={on:true,w:12,h:12};T.pattern='offset';T.off=.5;}if(v==='chevron'){T.w=8.5;T.h=4.25;}if(v==='rect'&&T.sheet.on&&+T.w<1){T.w=2;T.h=2;}autoLayout(s);}
  if(s&&(k==='tile.pattern')){if(v==='pinwheel'&&!(+s.tile.w2>0&&+s.tile.w2<+s.tile.w))s.tile.w2=+s.tile.w/2;autoLayout(s);}
  if(k==='link.mode'&&v!=='none'){const fw=linkedWalls()[0];if(fw){const T=fw.tile;P.link.oy=T.oy+(+fw.base||0);P.link.ox=T.ox;autoLayout(fw);}}
@@ -1085,6 +1148,12 @@ function act(a,arg,b){const s=cur();
  case'autoFloor':{const done=new Set();P.surfaces.filter(x=>x.type!=='wall').forEach(w=>{if(isZLinked(w)){if(done.has('z'))return;done.add('z');}autoLayout(w);});changed();break;}
  case'tileToFloors':{const fs=P.surfaces.filter(x=>x.type==='floor');if(fs.length<2)break;const src=fs[0].tile;fs.slice(1).forEach(w=>{const keep={ox:w.tile.ox,oy:w.tile.oy};w.tile=Object.assign(JSON.parse(JSON.stringify(src)),keep);});act('autoFloor');renderPanel();break;}
  case'undo':doUndo();break;
+ case'addTrans':s.trans=s.trans||[];s.trans.push({id:uid(),edge:0,from:12,len:30,adj:'hardwood',at:ADJ.hardwood,sub:0,prof:'auto'});S.open.add('trans');renderPanel();changed();break;
+ case'delTrans':s.trans.splice(+arg,1);renderPanel();changed();break;
+ case'section':{const[a1,a2]=arg.split(':').map(Number);transModal(a1,a2);break;}
+ case'pickConn':S.pickConn=S.pickConn===s.id?null:s.id;renderPanel();break;
+ case'addUnder':modal(`<h3>${t('addUnder')}</h3><div class="grid"><label class="f w2"><span>${t('name')}</span><input id="cuN"></label><label class="f"><span>${t('thick')}</span><input id="cuT" placeholder="1/4"></label><label class="f"><span>sf / ${t('unit')}</span><input id="cuS" inputmode="decimal" placeholder="54"></label><label class="f w2"><span>${t('type')}</span><select id="cuK"><option value="mem">${t('ug_mem')}</option><option value="heat">${t('ug_heat')}</option><option value="board">${t('ug_board')}</option><option value="ply">${t('ug_ply')}</option></select></label></div><div class="btns"><button class="btn p" data-act="saveUnder">${t('done')}</button><button class="btn" data-act="closeModal">${t('close')}</button></div>`);break;
+ case'saveUnder':{const n=$('#cuN').value.trim(),tt=parseLen($('#cuT').value);if(!n||!isFinite(tt))break;P.customUnder=P.customUnder||[];P.customUnder.push({id:'c'+uid(),n,t:tt,sf:parseFloat($('#cuS').value)||0,k:$('#cuK').value});closeModal();renderPanel();changed();break;}
  case'drawShape':drawModal();break;
  case'drawUndo':if(DRAW){DRAW.pts.pop();renderDraw();}break;
  case'drawClear':if(DRAW){DRAW.pts=[];renderDraw();}break;
@@ -1122,7 +1191,7 @@ function act(a,arg,b){const s=cur();
   else{o.w=d.w;o.h=d.h;o.x=Math.max(0,cx-d.w/2);o.y=arg==='niche'?Math.min(42,bb.y1-d.h-6):arg==='outlet'&&s.type==='wall'?Math.min(44,bb.y1-6):Math.max(0,cy-d.h/2);if(d.d)o.d=d.d;}
   s.openings.push(o);S.open.add('open');closeModal();renderPanel();changed();break;}
  case'delOpen':s.openings.splice(+arg,1);renderPanel();changed();break;
- case'snap':{const o=s.openings[+arg],T=effT(s);if(+T.ang||T.shape!=='rect'){break;}const{tw,th}=rdims(T),px=tw+T.g,py=th+T.g,e=o.trim?+P.sch.vis:0;const j=Math.round((o.y-e-T.oy)/py);o.y=Math.round((T.oy+j*py+e)*64)/64;
+ case'snap':{const o=s.openings[+arg],T=effT(s);if(+T.ang||T.shape!=='rect'){break;}const{tw,th}=rdims(T),px=tw+T.g,py=th+T.g,e=o.trim?edgeProf(s).vis:0;const j=Math.round((o.y-e-T.oy)/py);o.y=Math.round((T.oy+j*py+e)*64)/64;
   const pat=patOf(T),f=pat==='offset'?+T.off:0,sh=offShift(T,j,f)*px;if(pat==='grid'||pat==='offset'){const i=Math.round((o.x-e-T.ox-sh)/px);o.x=Math.round((T.ox+sh+i*px+e)*64)/64;}renderPanel();changed();break;}
  case'applyAll':P.surfaces.forEach(x=>{if(x!==s&&x.type===s.type){const keep={ox:x.tile.ox,oy:x.tile.oy};x.tile=Object.assign(JSON.parse(JSON.stringify(s.tile)),keep);if(!isLinked(x))autoLayout(x);}});b.textContent=t('copied');saveSoon();break;
  case'zin':S.view.zoom=Math.min(14,S.view.zoom*1.3);draw();break;
@@ -1159,7 +1228,7 @@ function defMat(){return{covS:95,covM:70,covL:45,bb:1.2,groutBag:25,dens:0.065,w
 function matSettingsHTML(){
  return`<details data-sec="matset" ${S.open.has('matset')?'open':''} style="margin-top:10px"><summary>${t('matSettings')}</summary><div class="bd"><div class="grid">${SEL(t('wpSys'),'mat.wp',['kerdi','liquid','none'],1,'p','w2',o=>t('w'+o))}
  ${F(t('covS'),'mat.covS','num','p')}${F(t('covM'),'mat.covM','num','p')}${F(t('covL'),'mat.covL','num','p')}${F(t('groutBagLb'),'mat.groutBag','num','p')}${F(t('membRoll'),'mat.roll','num','p')}${F(t('liqSf'),'mat.liq','num','p')}${F(t('ditraRoll'),'mat.ditraSf','num','p')}${F(t('silLf'),'mat.silLf','num','p')}</div>
- ${CHK(t('boardOn'),'mat.board',0,'p')}${CHK(t('ditraOn'),'mat.ditra',0,'p')}${CHK(t('clipsOn'),'mat.clips',0,'p')}</div></details>`;}
+ ${CHK(t('clipsOn'),'mat.clips',0,'p')}</div></details>`;}
 function jointPerArea(T){const s=T.shape;if(s==='hex'){const sd=(+T.w)/Math.sqrt(3);return 2/(Math.sqrt(3)*sd);}if(s==='penny')return 2.8/(+T.w);
  if(patOf(T)==='pinwheel'){const a=+T.w,b=+T.w2;return(2*a+2*b)/(a*a+b*b);}const L=+T.w,W=+T.h||+T.w;return(L+W)/(L*W);}
 function trowelOf(T){const mx=T.sheet&&T.sheet.on?Math.max(+T.w,+T.h||+T.w):(T.shape==='hex'?+T.w*1.15:Math.max(+T.w,+T.h||+T.w,+T.w2||0));return mx<=8?'s':mx<=16?'m':'l';}
@@ -1178,7 +1247,8 @@ function materials(){const m=P.mat,rows=[];const thin={s:0,m:0,l:0};let grout=0,
  sil+=wetWalls.reduce((a,w)=>a+wallW(w),0);
  const bagsOf=(sf,cov)=>Math.ceil(sf/cov*1.05);
  const tn={s:'1/4×1/4',m:'1/4×3/8',l:'1/2×1/2'},cov={s:m.covS,m:m.covM,l:m.covL};
- let memSf=(m.wp==='kerdi'?wetSf:0)+(m.ditra?floorSf:0);
+ const und={},heats=[];P.surfaces.forEach(s2=>{const st=stackOf(s2),sf2=compute(s2).area/144;[st.u,st.u2].forEach(u=>{if(u.k!=='none')und[u.id]=(und[u.id]||0)+sf2;});if(s2.heat&&s2.heat.on){const R2=compute(s2);if(R2.heat)heats.push({s:s2,h:R2.heat});}});
+ let memSf=(m.wp==='kerdi'?wetSf:0)+Object.keys(und).filter(id=>['mem','heat','board'].includes(underOf(id).k)).reduce((a,id)=>a+und[id],0);
  for(const k of['s','m','l'])if(thin[k]>0.5)rows.push([t('thinset'),`${bagsOf(thin[k],cov[k])} ${t('bags')}`,`${t('trowel')} ${tn[k]} · ${thin[k].toFixed(0)} sf${k==='l'?' · back-butter':''}`]);
  if(memSf>0.5)rows.push([t('thinset'),`${bagsOf(memSf,m.covS)} ${t('bags')}`,t('under')]);
  if(grout>0)rows.push([t('groutM'),`${Math.ceil(grout)} ${t('lb')} → ${Math.ceil(grout/(+m.groutBag||25))} × ${m.groutBag} ${t('lb')}`,t('groutNote')]);
@@ -1187,11 +1257,12 @@ function materials(){const m=P.mat,rows=[];const thin={s:0,m:0,l:0};let grout=0,
   const ic=Math.max(0,wetWalls.length-1)*2+niches*4,oc=niches*4+curbs*2;if(ic)rows.push([t('inCorners'),String(ic),'']);if(oc)rows.push([t('outCorners'),String(oc),'']);
   if(valves||pipes)rows.push([t('seals'),`${valves+pipes}`,`${valves?valves+' valve':''}${valves&&pipes?' + ':''}${pipes?pipes+' pipe':''}`]);}
  if(m.wp==='liquid'&&wetSf>0)rows.push([t('liquidGal'),`${Math.ceil(wetSf*1.1/m.liq)}`,`${wetSf.toFixed(0)} sf ${t('wetArea')} · ${t('bandNote2')}`]);
- if(m.board&&wallSf>0)rows.push([t('boardSheets'),`${Math.ceil(wallSf*1.1/(+m.boardSf||15))}`,`${wallSf.toFixed(0)} sf`]);
- if(m.ditra&&floorSf>0)rows.push([t('ditraRolls'),`${Math.ceil(floorSf*1.1/(+m.ditraSf||54))} × ${m.ditraSf} sf`,`${floorSf.toFixed(0)} sf`]);
+ Object.keys(und).forEach(id=>{const u=underOf(id),sf2=und[id];const us=(u.u||[]).filter(q=>q[0]>0);if(!us.length){rows.push([u.n,`${sf2.toFixed(0)} sf`,'']);return;}const big=us[0],small=us[us.length-1];
+  let q;if(us.length>1&&sf2*1.1<big[0]*0.6)q=`${Math.ceil(sf2*1.1/small[0])} × ${small[1]}`;else q=`${Math.ceil(sf2*1.1/big[0])} × ${big[1]}`;rows.push([u.n,q,`${sf2.toFixed(0)} sf${u.chk?' · '+t('chkSpec'):''}`]);});
+ heats.forEach(({s:s2,h:hp})=>{rows.push([`${t('heatCable')} — ${s2.name}`,`≤ ${hp.cableSf} sf`,`${t('hs_'+s2.heat.sys)} · ${hp.volt}V · ${hp.amps.toFixed(1)} A · ≈${Math.round(hp.lenFt)} ft`]);rows.push([`${t('thermostat')} — ${s2.name}`,'1',t('thermoNote')]);});
  if(clips)rows.push([t('clipsN'),`≈ ${Math.ceil(clips/100)*100}`,t('clipsNote')]);
  if(sil>0)rows.push([t('silicone'),`${Math.ceil(sil/12/(+m.silLf||24))}`,`${(sil/12).toFixed(0)} ft ${t('silNote')}`]);
- if(lf>0)rows.push(['Schluter '+P.sch.profile+' '+P.sch.size,`${Math.ceil(lf/98.5)} × 8′2½″`,`${(lf/12).toFixed(1)} ft`]);
+ const pf={};P.surfaces.forEach(s2=>{const R2=compute(s2);for(const k in R2.profs)pf[k]=(pf[k]||0)+R2.profs[k];});Object.keys(pf).forEach(k=>rows.push(['Schluter '+k,`${Math.ceil(pf[k]/98.5)} × 8′2½″`,`${(pf[k]/12).toFixed(1)} ft`]));
  return rows;}
 function renderMat(){const el=$('#mat');if(!el)return;const rows=materials();
  el.innerHTML=`<table><tr><th>${t('matItem')}</th><th class="n">${t('matQty')}</th></tr>${rows.map(r=>`<tr><td>${esc(r[0])}${r[2]?`<br><small style="color:var(--mut)">${esc(r[2])}</small>`:''}</td><td class="n"><b>${esc(r[1])}</b></td></tr>`).join('')}</table><p class="hint">${t('matNoteAll')}</p>`;}
@@ -1245,7 +1316,7 @@ async function makePdf(kind){modal(`<h3>${t('building')}</h3><p class="hint">…
  if(walls.length>=2){rep.np();rep.text(t('allWalls'),{size:30,bold:true});await drawSurfInto(rep,allWallItems(),rep.H*0.6,'walls');}
  if(P.surfaces.filter(x=>x.type!=='wall').length>=2){rep.np();rep.text(t('allFloor'),{size:30,bold:true});await drawSurfInto(rep,floorItems(),rep.H*0.6,'floor');}
  for(const {s,R} of all){rep.np();rep.text(s.name,{size:30,bold:true,after:2});
-  rep.text(`${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)} · ${tileDesc(R.T)} · ${patName(R.T)} · ${t('grout')} ${fmt(+R.T.g)}${R.lf>0?` · Schluter ${P.sch.profile} ${P.sch.size}`:''}`,{size:19,color:'#555',after:10});
+  rep.text(`${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)} · ${tileDesc(R.T)} · ${patName(R.T)} · ${t('grout')} ${fmt(+R.T.g)}${R.lf>0?` · Schluter ${edgeProf(s).key}`:''}`,{size:19,color:'#555',after:10});
   await drawSurfInto(rep,[{s,R,dx:0,dy:0}],kind==='cut'?rep.H*0.55:rep.H*0.72);
   if(kind==='client'){rep.text(`${t('area')}: ${sq(R.area)}`,{size:20});continue;}
   rep.text(`${t('full')} ${R.full} · ${t('cuts')} ${R.cuts} · ${t('minCut')} ${R.minc<1e8?fmt(R.minc):'—'} · ${t('need')} ${R.need} · ${t('order')} ${R.order}`,{size:19,bold:true});
@@ -1346,6 +1417,106 @@ function closeWalk(s){const g=s.segs,n=g.length;if(n<3)return false;let h=0;cons
  const c1=Math.cos(H[n-2]),s1=Math.sin(H[n-2]),c2=Math.cos(H[n-1]),s2=Math.sin(H[n-1]),det=c1*s2-c2*s1;if(Math.abs(det)<1e-6)return false;
  const l1=(-vx*s2+vy*c2)/det,l2=(c1*-vy+s1*vx)/det;if(l1<=0||l2<=0)return false;g[n-2].l=Math.round(l1*16)/16;g[n-1].l=Math.round(l2*16)/16;return true;}
 function helpModal(){modal(`<h3>? ${t('helpTitle')}</h3>${t('helpHtml')}<div class="btns"><button class="btn p" data-act="closeModal">${t('close')}</button></div>`);}
+
+
+/* ================= profiles, underlayments, stack ================= */
+const PROF={JOLLY:{use:'edge',vis:0.125},RONDEC:{use:'edge',vis:0.25},QUADEC:{use:'edge',vis:0.25},SCHIENE:{use:'edge',vis:0.0625},'RENO-T':{use:'trans'},'RENO-TK':{use:'trans'},'RENO-U':{use:'trans'},'RENO-V':{use:'trans'},'RENO-RAMP':{use:'trans'}};
+const PSIZES=[[0.1875,'45'],[0.25,'60'],[0.3125,'80'],[0.375,'100'],[0.4375,'110'],[0.5,'125'],[0.6875,'175']];
+function autoSize(th){let best=null;for(const[v]of PSIZES)if(v<=th+1/32)best=v;return best==null?PSIZES[0][0]:best;}
+const sizeCode=v=>{const f=PSIZES.find(q=>Math.abs(q[0]-v)<1e-6);return f?f[1]:'';};
+function edgeProf(s){const p=s.prof||{},type=p.type&&p.type!=='inherit'?p.type:(P.sch.type||'JOLLY');const size=p.size&&p.size!=='auto'?+p.size:autoSize(+s.tile.thick||0.375);
+ const vis=p.vis!=null&&p.vis!==''&&isFinite(+p.vis)?+p.vis:((PROF[type]||{}).vis||0.125);return{type,size,vis,key:`${type} ${fmtIn(size)}″${sizeCode(size)?' ('+sizeCode(size)+')':''}`};}
+const UNDER=[
+ {id:'none',n:'—',t:0,k:'none'},
+ {id:'ditraheat',n:'Schluter DITRA-HEAT',t:0.217,k:'heat',u:[[134.5,'roll 134.5 sf'],[8.4,'sheet 8.4 sf']]},
+ {id:'ditraheatduo',n:'Schluter DITRA-HEAT-DUO',t:0.315,k:'heat',u:[[8.4,'sheet 8.4 sf']]},
+ {id:'ditra',n:'Schluter DITRA',t:0.125,k:'mem',u:[[54,'roll 54 sf'],[150,'roll 150 sf'],[323,'roll 323 sf']]},
+ {id:'ditraxl',n:'Schluter DITRA-XL',t:0.276,k:'mem',u:[[175,'roll 175 sf']]},
+ {id:'flexbone',n:'Ardex FLEXBONE UI 740',t:0.118,k:'mem',u:[[200,'roll 200 sf']]},
+ {id:'flexboneheat',n:'Ardex FLEXBONE HEAT',t:0.236,k:'heat',u:[[134.5,'roll 134.5 sf'],[8.4,'sheet 8.4 sf']]},
+ {id:'strataheat',n:'Laticrete STRATA_HEAT Mat',t:0.118,k:'heat',u:[[161,'roll 161 sf'],[8.6,'sheet 8.6 sf']],chk:true},
+ {id:'kerdi',n:'Schluter KERDI',t:0.008,k:'mem',u:[[54,'roll 54 sf']]},
+ {id:'fiberock14',n:'USG Fiberock 1/4″',t:0.25,k:'board',u:[[15,'3×5']]},
+ {id:'fiberock38',n:'USG Fiberock 3/8″',t:0.375,k:'board',u:[[15,'3×5']]},
+ {id:'fiberock12',n:'USG Fiberock 1/2″',t:0.5,k:'board',u:[[15,'3×5']]},
+ {id:'hardie14',n:'HardieBacker 1/4″',t:0.25,k:'board',u:[[15,'3×5']]},
+ {id:'hardie12',n:'HardieBacker 1/2″',t:0.5,k:'board',u:[[15,'3×5']]},
+ {id:'durock14',n:'USG Durock 1/4″',t:0.25,k:'board',u:[[15,'3×5']]},
+ {id:'durock12',n:'USG Durock 1/2″',t:0.5,k:'board',u:[[15,'3×5']]},
+ {id:'ply12',n:'Plywood 1/2″',t:0.5,k:'ply',u:[[32,'4×8']]},
+ {id:'ply34',n:'Plywood 3/4″',t:0.75,k:'ply',u:[[32,'4×8']]}];
+function underList(){return UNDER.concat((P.customUnder||[]).map(c=>({id:c.id,n:c.n,t:+c.t||0,k:c.k||'mem',u:[[+c.sf||0,c.sf?c.sf+' sf':'']],custom:true})));}
+const underOf=id=>underList().find(u=>u.id===id)||UNDER[0];
+const HEATSYS={ditraheat:{under:'ditraheat',sp:{'3':3.5,'32':2.95},wsf:{'3':12.7,'32':15.2}},ditraheatduo:{under:'ditraheatduo',sp:{'3':3.5,'32':2.95},wsf:{'3':12.7,'32':15.2}},flexboneheat:{under:'flexboneheat'},strataheat:{under:'strataheat'},cable:{},mat:{}};
+function tileBondAuto(T){return{s:0.125,m:0.1875,l:0.25}[trowelOf(T)];}
+function stackOf(s){const st=s.stack||{},u=underOf(st.under||'none'),u2=underOf(st.under2||'none'),T=s.tile;const L=[];
+ if(u2.t>0)L.push({n:u2.n,t:u2.t,c:'#e2cfa6',k:u2.k});
+ const ub=u.k==='none'?0:(st.ub!=null&&st.ub!==''?+st.ub:(u.k==='board'||u.k==='ply'?0.125:0.094));
+ if(ub>0)L.push({n:t('bondUnder'),t:ub,c:'#bdb7ad',k:'bond'});
+ if(u.t>0)L.push({n:u.n,t:u.t,c:u.k==='heat'?'#f08a24':u.k==='mem'?'#f6b24a':'#c8c8c8',k:u.k});
+ const tb=st.tb!=null&&st.tb!==''?+st.tb:tileBondAuto(T);L.push({n:t('bondTile'),t:tb,c:'#bdb7ad',k:'bond'});
+ L.push({n:t('tile')+' '+tileDesc(T),t:+T.thick||0.375,c:'#ece5d7',k:'tile'});
+ return{L,total:L.reduce((a,x)=>a+x.t,0),u,u2,ub,tb};}
+const ADJ={hardwood:0.75,engineered:0.5,laminate:0.5,lvp:0.25,vinyl:0.125,carpet:0.75,tile:0.75,concrete:0,custom:0.5};
+function transCalc(s,tr){const st=stackOf(s),tileTop=st.total,adjTop=(+tr.at||0)+(+tr.sub||0),diff=tileTop-adjTop;let type,msg;
+ if(Math.abs(diff)<=1/16){type='RENO-T';msg=t('recSame');}
+ else if(diff>0){type=tr.adj==='carpet'?'RENO-TK':'RENO-U';msg=t('recHigher');}
+ else{type='RENO-T';msg=t('recLower');}
+ if(tr.prof&&tr.prof!=='auto')type=tr.prof;
+ let size=autoSize(+s.tile.thick||0.375);if(type==='RENO-U'&&(st.u.k==='mem'||st.u.k==='heat'))size=autoSize((+s.tile.thick||0.375)+st.u.t);
+ const alts=[];if(Math.abs(diff)>1/16){underList().filter(u=>u.id!==st.u.id&&u.k!=='none'&&(s.type!=='floor'||u.k!=='board'||true)).forEach(u=>{const nd=diff-st.u.t+u.t+(st.u.k==='none'?(u.k==='board'||u.k==='ply'?0.125:0.094):0);alts.push({u,nd});});alts.sort((a,b)=>Math.abs(a.nd)-Math.abs(b.nd));}
+ return{st,tileTop,adjTop,diff,type,size,key:`${type} ${fmtIn(size)}″${sizeCode(size)?' ('+sizeCode(size)+')':''}`,msg,alts:alts.slice(0,3)};}
+function sectionSVG(s,tr){const c=transCalc(s,tr),k=90,W=360,base=230,left=20,mid=200,right=W-14;let h='';
+ const yOf=v=>base-v*k;
+ h+=`<rect x="${left}" y="${base}" width="${right-left}" height="18" fill="#d8c4a0"/><text x="${left+4}" y="${base+13}" font-size="11" fill="#5a4a30">${esc(t('subfloor'))}</text>`;
+ let y=0;c.st.L.forEach(l=>{h+=`<rect x="${left}" y="${yOf(y+l.t)}" width="${mid-left}" height="${Math.max(1,l.t*k)}" fill="${l.c}" stroke="#8a847a" stroke-width=".6"/>`;
+  if(l.t*k>=9)h+=`<text x="${left+4}" y="${yOf(y+l.t/2)+4}" font-size="10.5" fill="#222">${esc(l.n)} · ${fmtIn(l.t)}″</text>`;else h+=`<text x="${left+4}" y="${yOf(y+l.t/2)+3}" font-size="8.5" fill="#444">${esc(l.n)} ${fmtIn(l.t)}″</text>`;y+=l.t;});
+ if(s.heat&&s.heat.on){const hl=c.st.L.find(l=>l.k==='heat');if(hl){let y2=0;for(const l of c.st.L){if(l===hl)break;y2+=l.t;}for(let x=left+14;x<mid-6;x+=22)h+=`<circle cx="${x}" cy="${yOf(y2+hl.t*0.45)}" r="3" fill="#c0281c"/>`;}}
+ const sub=+tr.sub||0,at=+tr.at||0,ax=mid+16;
+ if(sub!==0)h+=`<rect x="${ax}" y="${Math.min(yOf(sub),base)}" width="${right-ax}" height="${Math.abs(sub)*k}" fill="#e2cfa6" stroke="#8a847a" stroke-width=".6"/>`;
+ if(at>0)h+=`<rect x="${ax}" y="${yOf(sub+at)}" width="${right-ax}" height="${at*k}" fill="${tr.adj==='carpet'?'#b9a6c9':'#c9a27a'}" stroke="#8a847a" stroke-width=".6"/><text x="${ax+4}" y="${yOf(sub+at/2)+4}" font-size="10.5">${esc(t('adj_'+tr.adj))} ${fmtIn(at)}″</text>`;
+ h+=`<path d="M${mid} ${yOf(c.tileTop)} L${ax} ${yOf(c.adjTop)} L${ax} ${base} L${mid} ${base} Z" fill="#c3c8d0" stroke="#7f8690" stroke-width=".8"/>`;
+ h+=`<text x="${(left+mid)/2}" y="${yOf(c.tileTop)-8}" text-anchor="middle" font-size="12" font-weight="700" fill="#1d3550">${fmt(c.tileTop)}</text><text x="${(ax+right)/2}" y="${yOf(c.adjTop)-8}" text-anchor="middle" font-size="12" font-weight="700" fill="#5a4129">${fmt(c.adjTop)}</text>`;
+ const top=Math.min(yOf(c.tileTop),yOf(c.adjTop))-40;
+ return{c,svg:`<svg viewBox="0 ${top} ${W} ${base+24-top}" style="width:100%;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;font-family:${FONT}">${h}</svg>`};}
+function transModal(si,i){const s=P.surfaces[si],tr=s.trans[i];const{c,svg}=sectionSVG(s,tr);
+ let h=`<h3>${t('section')} — ${esc(s.name)} → ${esc(t('adj_'+tr.adj))}</h3>${svg}<div class="note" style="margin-top:10px"><b>${t('diffTxt')}: ${c.diff>=0?'+':'−'}${fmt(Math.abs(c.diff))}</b> (${t('tileTop')} ${fmt(c.tileTop)}, ${t('adjTop')} ${fmt(c.adjTop)}).<br>${c.msg}<br><b>${t('profRec')}: ${esc(c.key)}</b></div>`;
+ if(c.alts.length)h+=`<p class="hint">${t('altsTxt')}</p>`+c.alts.map(a=>`<div class="dl">${esc(a.u.n)} → ${t('diffTxt').toLowerCase()} ${a.nd>=0?'+':'−'}${fmt(Math.abs(a.nd))}</div>`).join('');
+ h+=`<p class="hint">${t('transNote')}</p><div class="btns"><button class="btn p" data-act="closeModal">${t('close')}</button></div>`;modal(h);}
+
+/* ================= heating ================= */
+function segDist(px,py,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let u=L2?((px-a[0])*dx+(py-a[1])*dy)/L2:0;u=Math.max(0,Math.min(1,u));return Math.hypot(px-a[0]-u*dx,py-a[1]-u*dy);}
+function heatPlan(s,R){const H=s.heat;if(!H||!H.on)return null;const G=R.G,O=G.outer,bb=G.bb,W=bb.x1-bb.x0,Hh=bb.y1-bb.y0,res=Math.max(W,Hh)>160?2:1,clear=+H.clear||0;
+ const obs=s.openings.map(o=>({o,m:o.type==='toilet'?6:2}));
+ const ok=(x,y)=>{if(!pip(O,x,y))return false;for(let i=0;i<O.length;i++)if(segDist(x,y,O[i],O[(i+1)%O.length])<clear)return false;
+  for(const{o,m}of obs){if(o.shape==='circle'){if(Math.hypot(x-o.x,y-o.y)<o.dia/2+m)return false;}else if(x>o.x-m&&x<o.x+o.w+m&&y>o.y-m&&y<o.y+o.h+m)return false;}
+  if(s.type==='pan'&&s.drain.type==='center'&&Math.hypot(x-s.drain.x,y-s.drain.y)<4)return false;return true;};
+ let cells=0;for(let x=bb.x0+res/2;x<bb.x1;x+=res)for(let y=bb.y0+res/2;y<bb.y1;y+=res)if(ok(x,y))cells++;
+ const sf=cells*res*res/144;const sys=HEATSYS[H.sys]||{};const pat=H.pattern||'3';
+ const sp=sys.sp?sys.sp[pat]:(+H.sp||3),wsf=sys.wsf?sys.wsf[pat]:(+H.wsf||12);
+ const horiz=W>=Hh,A0=horiz?bb.y0:bb.x0,A1=horiz?bb.y1:bb.x1,B0=horiz?bb.x0:bb.y0,B1=horiz?bb.x1:bb.y1;
+ const lines=[];for(let v=A0+clear+sp/2;v<=A1-clear-sp/2+0.01;v+=sp){const iv=[];let st=null;for(let w=B0+res/2;w<B1;w+=res){const g=horiz?ok(w,v):ok(v,w);if(g&&st==null)st=w;if(!g&&st!=null){if(w-st>=4)iv.push([st,w]);st=null;}}if(st!=null&&B1-st>=4)iv.push([st,B1-res/2]);if(iv.length)lines.push({v,iv});}
+ const conn=H.conn||(horiz?[bb.x0,bb.y0]:[bb.x0,bb.y0]);const cA=horiz?conn[1]:conn[0],cB=horiz?conn[0]:conn[1];
+ if(Math.abs(cA-A1)<Math.abs(cA-A0))lines.reverse();
+ const P2=[];let fwd=Math.abs(cB-B0)<=Math.abs(cB-B1);let runLen=0;
+ lines.forEach(ln=>{const iv=fwd?ln.iv:ln.iv.slice().reverse().map(q=>[q[1],q[0]]);iv.forEach(q=>{const a=q[0],b=q[1];P2.push(horiz?[a,ln.v]:[ln.v,a],horiz?[b,ln.v]:[ln.v,b]);runLen+=Math.abs(b-a);});fwd=!fwd;});
+ let len=0;for(let i=1;i<P2.length;i++)len+=Math.hypot(P2[i][0]-P2[i-1][0],P2[i][1]-P2[i-1][1]);
+ let sensor=null;if(lines.length>=2){const k=Math.floor((lines.length-1)/2),l1=lines[k],l2=lines[k+1],iv=l1.iv[0],m=(iv[0]+iv[1])/2,v=(l1.v+l2.v)/2;sensor=horiz?[m,v]:[v,m];}
+ const watts=sf*wsf,volt=+H.volt||120,amps=watts/volt;
+ const irregular=s.shape!=='rect'||s.openings.some(o=>o.type!=='duct');
+ return{sf,sp,wsf,path:P2,lenFt:len/12,runs:lines.length,sensor,conn,watts,amps,volt,irregular,cableSf:Math.floor(sf)};}
+function heatSVG(s,R,px){const hp=R.heat;if(!hp||!s.heat.show)return'';let h='';
+ if(hp.path.length>1)h+=`<polyline points="${hp.path.map(q=>q[0].toFixed(2)+','+(-q[1]).toFixed(2)).join(' ')}" fill="none" stroke="#d6331f" stroke-width="${px(1.6)}" stroke-linejoin="round" opacity=".9"/>`;
+ const c=hp.conn;if(hp.path.length)h+=`<line x1="${c[0]}" y1="${-c[1]}" x2="${hp.path[0][0]}" y2="${-hp.path[0][1]}" stroke="#1d5fa8" stroke-width="${px(1.6)}" stroke-dasharray="${px(5)} ${px(3)}"/>`;
+ h+=`<rect x="${c[0]-+px(9)}" y="${-c[1]-+px(9)}" width="${px(18)}" height="${px(18)}" rx="${px(3)}" fill="#1d5fa8"/><text x="${c[0]}" y="${-c[1]}" font-size="${px(11)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-family="${FONT}">T</text>`;
+ if(hp.sensor)h+=`<circle cx="${hp.sensor[0]}" cy="${-hp.sensor[1]}" r="${px(6)}" fill="#fff" stroke="#1d5fa8" stroke-width="${px(1.5)}"/><text x="${hp.sensor[0]}" y="${-hp.sensor[1]}" font-size="${px(8)}" text-anchor="middle" dominant-baseline="central" fill="#1d5fa8" font-weight="700" font-family="${FONT}">S</text>`;
+ return h;}
+function heatResHTML(s,R){const hp=R.heat;if(!hp)return'';const H=s.heat,ruSys=t('hs_'+H.sys);
+ let h=`<p style="margin:12px 0 4px"><b>🔥 ${t('heat')}</b> · ${esc(ruSys)}</p><div class="kp"><div><small>${t('heatSf')}</small><b>${hp.sf.toFixed(1)}</b></div><div><small>${t('wsf')}</small><b>${hp.wsf}</b></div><div><small>${t('watts')}</small><b>${Math.round(hp.watts)}</b></div><div><small>${t('amps')} (${hp.volt}V)</small><b>${hp.amps.toFixed(1)}</b></div><div><small>${t('runs')}</small><b>${hp.runs}</b></div><div><small>${t('cableLen')}</small><b>${Math.round(hp.lenFt)} ft</b></div></div>`;
+ h+=`<div class="note">${t('cablePick')} <b>${hp.cableSf} sf</b>. ${t('cableNoCut')}</div>`;
+ if(hp.volt===120&&hp.sf>150)h+=`<div class="warnbox">${t('heat120warn')}</div>`;
+ if(H.sys==='mat'&&hp.irregular)h+=`<div class="note">${t('matIrregular')}</div>`;
+ h+=`<p class="hint">${t('heatNotes')}</p>`;return h;}
 
 /* ================= init ================= */
 (function init(){
