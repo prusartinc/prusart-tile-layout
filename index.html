@@ -518,7 +518,7 @@ let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,mode:'tiles',client:fa
 function defTile(o){return Object.assign({shape:'rect',w:12,h:24,w2:6,g:0.125,pattern:'offset',off:0.5,ang:0,rot:true,ox:0,oy:0,sqftBox:0,cang:45,checker:false,sheet:{on:false,w:12,h:12}},o||{});}
 function newSurface(type,name){
  const n=P?P.surfaces.filter(x=>x.type===type).length:0;
- const s={id:uid(),type,name:name||(t(type)+(type==='wall'?' '+(n+1):'')),shape:'rect',w:60,h:96,Lw:24,Lh:24,Lc:'tr',pts:'0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
+ const s={id:uid(),type,name:name?t(name):(t(type)+(type==='wall'?' '+(n+1):'')),nk:name||type,nn:name?0:(type==='wall'?n+1:0),shape:'rect',w:60,h:96,Lw:24,Lh:24,Lc:'tr',pts:'0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
   openings:[],trim:{l:false,r:false,t:false,b:false},extraLF:0,base:0,link:true,tile:defTile(),
   curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75}};
  if(type==='floor'){s.w=96;s.h=72;s.tile=defTile({w:24,h:24,w2:12,pattern:'grid',rot:false});}
@@ -526,21 +526,25 @@ function newSurface(type,name){
  if(type==='wall'&&P&&P.surfaces.length){const fw=P.surfaces.find(x=>x.type==='wall');if(fw)s.tile=JSON.parse(JSON.stringify(fw.tile));}
  return s;}
 function newProject(sample){
- const p={id:uid(),name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},link:{mode:'height',ox:0,oy:0},surfaces:[]};
+ const p={id:uid(),nk:sample?'sample':'newName',name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},link:{mode:'height',ox:0,oy:0},surfaces:[]};
  const prev=P;P=p;
  if(sample){
-  const b=newSurface('wall',t('backWall'));b.trim.t=true;b.openings.push({id:uid(),type:'niche',shape:'rect',x:18,y:42,w:24,h:12,d:3.5,trim:true},{id:uid(),type:'valve',shape:'circle',x:30,y:48-20,dia:3},{id:uid(),type:'pipe',shape:'circle',x:30,y:80,dia:1.125});
+  const b=newSurface('wall','backWall');b.trim.t=true;b.openings.push({id:uid(),type:'niche',shape:'rect',x:18,y:42,w:24,h:12,d:3.5,trim:true},{id:uid(),type:'valve',shape:'circle',x:30,y:48-20,dia:3},{id:uid(),type:'pipe',shape:'circle',x:30,y:80,dia:1.125});
   b.openings[1].y=30;
-  const l=newSurface('wall',t('leftWall'));l.w=36;l.trim.t=true;l.trim.r=true;
-  const r=newSurface('wall',t('rightWall'));r.w=36;r.trim.t=true;r.trim.l=true;
+  const l=newSurface('wall','leftWall');l.w=36;l.trim.t=true;l.trim.r=true;
+  const r=newSurface('wall','rightWall');r.w=36;r.trim.t=true;r.trim.l=true;
   const pn=newSurface('pan');
-  const f=newSurface('floor',t('bathFloor'));f.shape='L';f.Lw=36;f.Lh=30;f.openings.push({id:uid(),type:'toilet',shape:'circle',x:72,y:12,dia:5},{id:uid(),type:'duct',shape:'rect',x:8,y:60,w:10,h:4});
+  const f=newSurface('floor','bathFloor');f.shape='L';f.Lw=36;f.Lh=30;f.openings.push({id:uid(),type:'toilet',shape:'circle',x:72,y:12,dia:5},{id:uid(),type:'duct',shape:'rect',x:8,y:60,w:10,h:4});
   p.surfaces.push(b,l,r,pn,f);
  }else p.surfaces.push(newSurface('wall'));
  p.surfaces.forEach(s=>autoLayout(s));
  P=prev;return p;}
 function migrate(p){
- p.link=p.link||{mode:'none',ox:0,oy:0};p.sch=p.sch||{profile:'JOLLY',size:'3/8″',vis:0.125};
+ p.link=p.link||{mode:'none',ox:0,oy:0};
+ const findKey=(nm,keys)=>{for(const k of keys)for(const L of ['ru','en'])if(I18N[L][k]===nm)return k;return null;};
+ if(!p.nk){const k=findKey(p.name,['sample','newName']);if(k)p.nk=k;}
+ p.surfaces.forEach(s=>{if(s.nk!==undefined)return;const k=findKey(s.name,['backWall','leftWall','rightWall','bathFloor','pan','floor','wall']);if(k){s.nk=k;s.nn=0;return;}
+  const m=String(s.name).match(/^(Стена|Wall) (\d+)$/);if(m){s.nk='wall';s.nn=+m[2];}});p.sch=p.sch||{profile:'JOLLY',size:'3/8″',vis:0.125};
  p.surfaces.forEach(s=>{const T=s.tile=s.tile||defTile();
   if(!T.shape)T.shape='rect';if(T.pattern==='half'){T.pattern='offset';T.off=.5;}if(T.pattern==='third'){T.pattern='offset';T.off=1/3;}if(T.pattern==='vhalf'){T.pattern='voffset';T.off=.5;}
   if(T.off==null)T.off=.5;if(T.ang==null)T.ang=0;if(!T.sheet)T.sheet={on:false,w:12,h:12};if(T.w2==null)T.w2=(+T.w)/2;if(T.cang==null)T.cang=45;if(T.checker==null)T.checker=false;
@@ -803,7 +807,8 @@ function renderTot(){const el=$('#tot');if(!el)return;const rows=P.surfaces.map(
  h+=`<p style="margin-top:14px"><b>${t('byTile')}</b></p><table><tr><th>${t('tile')}</th><th class="n">${t('need')}</th><th class="n">${t('order')}</th><th class="n">${t('boxes')}</th></tr>${Object.values(g).map(e=>{const o=Math.ceil(e.need*(1+(+P.waste||0)/100));return`<tr><td>${esc(e.k)}</td><td class="n">${e.need}</td><td class="n"><b>${o}</b></td><td class="n">${e.perBox?Math.ceil(o/e.perBox):'—'}</td></tr>`;}).join('')}</table>`;
  h+=`<p style="margin-top:14px"><b>Schluter ${esc(P.sch.profile)} ${esc(P.sch.size)}</b>: ${fmt(lf)} = ${(lf/12).toFixed(1)} ft → ${Math.ceil(lf/98.5)} ${t('sticks')}</p>`;
  el.innerHTML=h;}
-function renderAll(){if(S.tab==='all'&&P.surfaces.filter(s=>s.type==='wall').length<2)S.tab=0;if(typeof S.tab==='number'&&!P.surfaces[S.tab])S.tab=0;
+function syncNames(){if(P.nk)P.name=t(P.nk);P.surfaces.forEach(s=>{if(s.nk)s.name=t(s.nk)+(s.nn?' '+s.nn:'');});}
+function renderAll(){syncNames();if(S.tab==='all'&&P.surfaces.filter(s=>s.type==='wall').length<2)S.tab=0;if(typeof S.tab==='number'&&!P.surfaces[S.tab])S.tab=0;
  renderHeader();renderTabs();renderTools();renderLegend();document.body.classList.toggle('client',S.client);document.body.classList.toggle('tot',S.tab==='tot');
  draw();renderPanel();requestAnimationFrame(()=>{draw();renderRes();});}
 function changed(){draw();if(S.tab==='tot')renderTot();else renderRes();renderTabs();renderHeader();syncOff();saveSoon();}
@@ -820,6 +825,7 @@ function onInp(e){const el=e.target,k=el.dataset.k;if(!k)return;const sc=el.data
  if(k==='_ox'||k==='_oy'){const T=effT(s),G=geom(s);setO(s,k==='_ox'?G.rb.x0+v:T.ox,k==='_oy'?G.rb.y0+v:T.oy);}
  else if(k==='_offp'){s.tile.off=Math.max(0,Math.min(100,v))/100;}
  else setPath(base,k,v);
+ if(k==='name'){if(sc==='p')delete P.nk;else if(s)delete s.nk;}
  if(s&&k==='type'&&v==='pan'&&!s.curb.on&&s.drain.type==='none'){s.curb.on=true;s.drain.type='center';s.drain.x=s.w/2;s.drain.y=s.h/2;s.curb.len=s.w;}
  if(s&&k==='drain.type'){if(v==='linear'){s.drain.len=Math.max(12,s.w-12);s.drain.x=(s.w-s.drain.len)/2;s.drain.y=s.h-s.drain.wid;}if(v==='center'){s.drain.x=s.w/2;s.drain.y=s.h/2;}}
  const m=k.match(/^openings\.(\d+)\.type$/);if(m){const o=s.openings[+m[1]],d=OPT[v];if(d.shape!==o.shape){if(d.shape==='circle'){o.x=o.x+(o.w||0)/2;o.y=o.y+(o.h||0)/2;o.dia=d.dia;}else{o.w=d.w;o.h=d.h;o.x=o.x-o.w/2;o.y=o.y-o.h/2;}o.shape=d.shape;}else if(d.shape==='circle')o.dia=d.dia;else{o.w=d.w;o.h=d.h;}o.trim=!!d.trim;if(v==='niche'&&!o.d)o.d=3.5;}
@@ -963,7 +969,8 @@ function autoLayoutX(s){const T0=effT(s),sp=spanOf(T0),T=effT(s),start=T.ox;if(P
 /* ================= init ================= */
 (function init(){
  const d=load();
- if(d){DB=d;lang=d.lang||'ru';}else DB={v:2,lang:'ru',projects:[],curId:null};
+ const nl=(navigator.language||'en').toLowerCase();const defL=/^(ru|uk|be)/.test(nl)?'ru':'en';
+ if(d){DB=d;lang=d.lang||defL;}else{lang=defL;DB={v:2,lang,projects:[],curId:null};}
  DB.projects.forEach(migrate);
  if(!DB.projects.length){const p=newProject(true);DB.projects.push(p);}
  P=DB.projects.find(p=>p.id===DB.curId)||DB.projects[0];
