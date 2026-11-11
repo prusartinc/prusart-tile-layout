@@ -34,6 +34,7 @@ header button.acc{background:var(--acc)}
 #tools button{pointer-events:auto;border:1px solid var(--line);background:rgba(255,255,255,.94);border-radius:8px;padding:7px 8px;min-width:34px;font-size:13px;cursor:pointer;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
 #tools button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 #tools .sp{flex:1}
+@media(max-width:420px){#tools button{padding:6px 7px;font-size:12.5px;min-width:30px}#tools{gap:4px}}
 #stat{padding:7px 10px;font-size:13px;background:#fff;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px 12px}
 #stat b{font-variant-numeric:tabular-nums}
 #stat .bad{color:#b3261e;font-weight:600}
@@ -177,7 +178,7 @@ linkHint:'«На одной высоте» — горизонтальные шв
 autoAll:'✦ Авто для всех стен',tileToAll:'Плитку первой стены → на все стены',tapWall:'Нажми на стену — откроется её настройка. Тащи — двигаешь швы (связанные стены двигаются вместе).',
 wallsRes:'По стенами',combined:'Общий список подрезок',total:'Всего',noWalls:'Добавь хотя бы одну стену',
 pr_stack:'Стек',pr_brick:'Кирпич 1/2',pr_third:'Смещение 1/3',pr_quarter:'Смещение 1/4',pr_vstack:'Вертикальный стек',pr_voff:'Вертикально 1/2',pr_diag:'Диагональ 45°',pr_diagbrick:'Диагональ кирпич',pr_checker:'Шахматка',pr_herr45:'Ёлочка 45°',pr_herr90:'Ёлочка 90°',pr_basket:'Плетёнка',pr_pinwheel:'Пинвил',pr_chevron:'Шеврон',pr_hex:'Соты (hex)',pr_penny:'Пенни',pr_mosaic:'Мозаика',
-galHint:'Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.'},
+galHint:'Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.',unevenOn:'Низ не в уровне (ванна / акриловый поддон)',unevenHint:'Положи уровень или лазер на борт ванны/поддона, найди самую низкую точку (= 0) и измерь, на сколько выше края. Высота стены — от самой низкой точки. Для связанных стен углы должны совпадать.',uL:'Подъём у левого края',uR:'Подъём у правого края',uMidOn:'Прогиб / горб в середине',uM:'Подъём в середине',outLevel:'Перекос',onLen:'на',ledgerTxt:'Рейку (ledger) ставь строго по уровню на высоте',ledgerFrom:'от самой низкой точки — от неё первый целый ряд.',taperNote:'Нижний ряд режется клином: размеры «слева→справа».'},
 en:{app:'Tile Layout',projects:'Projects',client:'Client view',exitClient:'← Editor',image:'Image',totals:'Summary',addSurf:'+ Surface',allWalls:'All walls',
 floor:'Floor',wall:'Wall',pan:'Shower pan',surface:'Surface',name:'Name',type:'Type',shape:'Shape',rect:'Rectangle',Lshape:'L-shape',custom:'Custom points',
 width:'Width',height:'Height',length:'Length',depth:'Depth',notchW:'Notch width',notchH:'Notch depth',corner:'Notch corner',tr:'Top-right',tl:'Top-left',br:'Bottom-right',bl:'Bottom-left',
@@ -218,7 +219,7 @@ linkHint:'“Same heights” — horizontal joints of all linked walls line up f
 autoAll:'✦ Auto for all walls',tileToAll:'First wall tile → all walls',tapWall:'Tap a wall to open it. Drag to move joints (linked walls move together).',
 wallsRes:'By wall',combined:'Combined cut list',total:'Total',noWalls:'Add at least one wall',
 pr_stack:'Stack',pr_brick:'1/2 brick',pr_third:'1/3 offset',pr_quarter:'1/4 offset',pr_vstack:'Vertical stack',pr_voff:'Vertical 1/2',pr_diag:'Diagonal 45°',pr_diagbrick:'Diagonal brick',pr_checker:'Checkerboard',pr_herr45:'Herringbone 45°',pr_herr90:'Herringbone 90°',pr_basket:'Basketweave',pr_pinwheel:'Pinwheel',pr_chevron:'Chevron',pr_hex:'Hexagon',pr_penny:'Penny round',pr_mosaic:'Mosaic sheet',
-galHint:'Tile sizes are kept. You can change angle, offset and position afterwards.'}};
+galHint:'Tile sizes are kept. You can change angle, offset and position afterwards.',unevenOn:'Bottom out of level (tub / acrylic pan)',unevenHint:'Put a level or laser on the tub/pan edge, find the lowest point (= 0) and measure how much higher each end is. Wall height is measured from the lowest point. For linked walls the corners must match.',uL:'Rise at left end',uR:'Rise at right end',uMidOn:'Sag / hump in the middle',uM:'Rise in the middle',outLevel:'Out of level',onLen:'over',ledgerTxt:'Set the ledger dead level at',ledgerFrom:'above the lowest point — first full row starts there.',taperNote:'Bottom row is cut tapered: sizes “left→right”.'}};
 let lang='ru';
 const t=k=>(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;
 
@@ -260,7 +261,11 @@ function clipConvex(subj,clip){let out=subj;
  return out;}
 function pip(p,x,y){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
 function parsePts(str){return String(str||'').split(/[;\n]+/).map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.split(',');return[parseLen(m[0]),parseLen(m[1]||'')];}).filter(q=>isFinite(q[0])&&isFinite(q[1]));}
+const isUneven=s=>s.type==='wall'&&s.shape==='rect'&&s.uneven&&s.uneven.on;
+function botY(s,x){const u=s.uneven,W=s.w,l=+u.l||0,r=+u.r||0;if(u.mOn){const m=+u.m||0;return x<=W/2?l+(m-l)*(x/(W/2)):m+(r-m)*((x-W/2)/(W/2));}return l+(r-l)*(x/W);}
+function botPts(s,x0,x1){const pts=[[x0,botY(s,x0)]];if(s.uneven.mOn&&x0<s.w/2&&x1>s.w/2)pts.push([s.w/2,botY(s,s.w/2)]);pts.push([x1,botY(s,x1)]);return pts;}
 function outerPoly(s){
+ if(isUneven(s))return botPts(s,0,s.w).concat([[s.w,s.h],[0,s.h]]);
  if(s.shape==='L'){const W=s.w,H=s.h,a=Math.max(0.5,Math.min(s.Lw,W-0.5)),b=Math.max(0.5,Math.min(s.Lh,H-0.5));
   let p=[[0,0],[W,0],[W,H-b],[W-a,H-b],[W-a,H],[0,H]];const c=s.Lc||'tr';
   if(c==='tl'||c==='bl')p=p.map(q=>[W-q[0],q[1]]);if(c==='br'||c==='bl')p=p.map(q=>[q[0],H-q[1]]);return p;}
@@ -350,7 +355,7 @@ function cellBox(C,holes,x0,y0,x1,y1){
   if(!bb)bb={x0:X[i],y0:Yv[j],x1:X[i+1],y1:Yv[j+1]};else{bb.x0=Math.min(bb.x0,X[i]);bb.y0=Math.min(bb.y0,Yv[j]);bb.x1=Math.max(bb.x1,X[i+1]);bb.y1=Math.max(bb.y1,Yv[j+1]);}}}
  if(bb)bb.lp=lp;return bb;}
 
-function pieces(region,holes,T,niche){
+function pieces(region,holes,T,niche,bot){
  const bb=bboxOf(region),gap=+P.edgeGap||0,out=[];
  const tiles=genTiles(T,bb);if(!tiles)return null;
  for(const t of tiles){const x1=t.x0+t.lw,y1=t.y0+t.lh;
@@ -366,7 +371,12 @@ function pieces(region,holes,T,niche){
   if(isR){notch=a<bw*bh*0.985;full=!cL&&!cR&&!cB&&!cT&&!notch;}
   else{full=a>=ta*0.995;if(full)cL=cR=cB=cT=false;notch=!full;}
   const cw=isR?Math.max(0,bw-gap*((cL?1:0)+(cR?1:0))):bw,ch=isR?Math.max(0,bh-gap*((cB?1:0)+(cT?1:0))):bh;
-  out.push({t,k:t.k,q:t.q,x0:t.x0,y0:t.y0,lw:t.lw,lh:t.lh,b,a,ta,lp:b.lp,cutX:cL||cR,cutY:cB||cT,notch,cw,ch,full,niche:!!niche,hl});}
+  let taper=null,chv=ch;
+  if(bot&&isR&&cB&&!hit){const xa=b.x0+0.02,xb=b.x1-0.02,ya=bot(xa),yb=bot(xb);if(Math.max(ya,yb)>t.y0+EPS){
+   const hs=[xa,xb];const sw2=bot.mid;if(sw2!=null&&sw2>xa&&sw2<xb)hs.push(sw2);
+   const H=hs.map(x=>b.y1-Math.max(bot(x),t.y0)-gap-(cT?gap:0));const hL=H[0],hR=H[1];
+   if(Math.max(...H)-Math.min(...H)>1/32){taper=H.length===3?[hL,H[2],hR]:[hL,hR];chv=Math.min(...H);notch=false;full=false;}}}
+  out.push({t,k:t.k,q:t.q,x0:t.x0,y0:t.y0,lw:t.lw,lh:t.lh,b,a,ta,lp:b.lp,cutX:cL||cR,cutY:cB||cT,notch,cw,ch:chv,taper,full,niche:!!niche,hl});}
  return out;}
 
 const RANK={full:0,cut:1,warn:2,bad:3};
@@ -382,7 +392,7 @@ function needBy(all,T){const k=+P.kerf||0,m={},xs={},ys={};const add=(key,n)=>m[
  for(const p of all){const key=sizeKey(p,T);
   if(p.full){add(key,1);continue;}
   if(p.k==='r'&&!p.notch&&p.cutX&&!p.cutY){const kk=key+'|'+p.lw;(xs[kk]=xs[kk]||[]).push(p.cw);continue;}
-  if(p.k==='r'&&!p.notch&&p.cutY&&!p.cutX){const kk=key+'|'+p.lh;(ys[kk]=ys[kk]||[]).push(p.ch);continue;}
+  if(p.k==='r'&&!p.notch&&p.cutY&&!p.cutX){const kk=key+'|'+p.lh;(ys[kk]=ys[kk]||[]).push(p.taper?Math.max(...p.taper):p.ch);continue;}
   add(key,1);}
  for(const kk in xs){const i=kk.lastIndexOf('|');add(kk.slice(0,i),ffd(xs[kk],+kk.slice(i+1),k));}
  for(const kk in ys){const i=kk.lastIndexOf('|');add(kk.slice(0,i),ffd(ys[kk],+kk.slice(i+1),k));}
@@ -406,7 +416,8 @@ function countSheets(region,T){const sw=+T.sheet.w||12,sh=+T.sheet.h||12,g=+T.g|
 /* ================= surface geometry ================= */
 function geom(s){
  const sw=+P.sch.vis||0,outer=outerPoly(s);let region=outer;
- if(s.shape==='rect'){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,b=tr.b?sw:0,tp=tr.t?sw:0;region=rectPoly(l,b,s.w-l-r,s.h-b-tp);}
+ if(isUneven(s)){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,tp=tr.t?sw:0;region=botPts(s,l,s.w-r).concat([[s.w-r,s.h-tp],[l,s.h-tp]]);}
+ else if(s.shape==='rect'){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,b=tr.b?sw:0,tp=tr.t?sw:0;region=rectPoly(l,b,s.w-l-r,s.h-b-tp);}
  const holes=[],niches=[];
  for(const o of s.openings){let poly;
   if(o.shape==='circle')poly=circlePoly(o.x,o.y,Math.max(0.05,(+o.dia||1)/2));
@@ -427,11 +438,12 @@ function prep(s){const T=effT(s),a=angOf(T),O=[+T.ox||0,+T.oy||0],G=geom(s);
  const toL=a?(p=>rotP(p,O,-a)):(p=>p),toW=a?(p=>rotP(p,O,a)):(p=>p);
  const regionL=G.region.map(toL);
  const holes=G.holes.map(h=>{const L=h.poly.map(toL);return{L,P:clipConvex(regionL,L),bb:bboxOf(L),type:h.type,o:h.o};});
- return{T,a,O,G,toL,toW,regionL,holes};}
+ let bot=null;if(isUneven(s)&&!a&&T.shape==='rect'){bot=x=>botY(s,x);bot.mid=s.uneven.mOn?s.w/2:null;}
+ return{T,a,O,G,toL,toW,regionL,holes,bot};}
 
 function compute(s){
  const X=prep(s),{T,G}=X;
- const main=pieces(X.regionL,X.holes,T,false);
+ const main=pieces(X.regionL,X.holes,T,false,X.bot);
  const empty={...X,err:true,main:[],nich:[],all:[],strips:[],area:0,full:0,cuts:0,need:0,order:0,boxes:0,list:[],minc:1e9,lf:0,bad:0,warn:0,nb:{},drill:[],sheets:0};
  if(!main)return empty;
  let nich=[];for(const n of G.niches){const r=pieces(rectPoly(n.x,n.y,n.w,n.h).map(X.toL),[],T,true);if(r)nich=nich.concat(r);}
@@ -449,7 +461,7 @@ function compute(s){
  const order=Math.ceil(need*(1+(+P.waste||0)/100));
  const unitSq=sheet?(+T.sheet.w)*(+T.sheet.h)/144:(+T.w)*(+T.h||+T.w)/144;
  const perBox=T.sqftBox>0&&unitSq>0&&patOf(T)!=='pinwheel'?Math.max(1,Math.round(T.sqftBox/unitSq)):0,boxes=perBox?Math.ceil(order/perBox):0;
- const gl={};if(T.shape==='rect'&&!sheet)all.filter(p=>!p.full).forEach(p=>{let k=(p.notch?(p.cutX||p.cutY?'L ':p.hl?'⊙ ':'◿ '):'')+fmtIn(p.cw)+' × '+fmtIn(p.ch);if(p.hl)k+=' + '+[...new Set(p.hl)].map(x=>t(x)).join(', ');const e=gl[k]||(gl[k]={k,n:0,c:p.c,cw:p.cw,ch:p.ch});e.n++;if(RANK[p.c]>RANK[e.c])e.c=p.c;});
+ const gl={};if(T.shape==='rect'&&!sheet)all.filter(p=>!p.full).forEach(p=>{let k=p.taper?(fmtIn(p.cw)+' × '+p.taper.map(fmtIn).join('→')+' ⟋'):(p.notch?(p.cutX||p.cutY?'L ':p.hl?'⊙ ':'◿ '):'')+fmtIn(p.cw)+' × '+fmtIn(p.ch);if(p.hl)k+=' + '+[...new Set(p.hl)].map(x=>t(x)).join(', ');const e=gl[k]||(gl[k]={k,n:0,c:p.c,cw:p.cw,ch:p.ch});e.n++;if(RANK[p.c]>RANK[e.c])e.c=p.c;});
  const list=Object.values(gl).sort((a,b)=>RANK[b.c]-RANK[a.c]||a.cw*a.ch-b.cw*b.ch);
  let minc=1e9;all.forEach(p=>{if(p.full)return;if(p.k==='r'){if(p.cutX)minc=Math.min(minc,p.cw);if(p.cutY)minc=Math.min(minc,p.ch);}});
  let lf=0;if(s.shape==='rect'){const q=s.trim;lf+=(q.l?s.h:0)+(q.r?s.h:0)+(q.t?s.w:0)+(q.b?s.w:0);}
@@ -457,7 +469,11 @@ function compute(s){
  if(s.type==='pan'&&s.curb.on&&s.curb.trim)lf+=2*s.curb.len;
  lf+=+s.extraLF||0;
  const R={...X,err:false,main,nich,all,strips,area,full,cuts,nb,need,order,boxes,perBox,list,minc,lf,sheets,bad:all.filter(p=>p.c==='bad'&&p.k==='r').length,warn:all.filter(p=>p.c==='warn').length};
- R.drill=drillList(s,R);return R;}
+ R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);return R;}
+function ledgerOf(s,R){if(!isUneven(s)||R.a||R.T.shape!=='rect')return null;const T=R.T,pat=patOf(T);if(!['grid','offset','voffset'].includes(pat))return null;
+ const{th}=rdims(T),py=th+(+T.g||0),u=s.uneven,hi=Math.max(+u.l||0,+u.r||0,u.mOn?+u.m||0:0),lo=Math.min(+u.l||0,+u.r||0,u.mOn?+u.m||0:0);
+ if(pat==='voffset')return{hi,lo,y:null};
+ const j=Math.ceil((hi+(+P.edgeGap||0)-T.oy)/py-1e-9);return{hi,lo,y:T.oy+j*py};}
 
 function drillList(s,R){const out=[];if(R.T.shape!=='rect'||(R.T.sheet&&R.T.sheet.on))return out;
  for(const o of s.openings){if(!(o.shape==='circle'||o.type==='outlet'||o.type==='duct'))continue;
@@ -489,7 +505,7 @@ function spanOf(T){const pat=patOf(T),{tw,th}=rdims(T),g=+T.g||0,L=Math.max(tw,t
 function symScore(pc,ax,rb){let lo=1e9,hi=1e9;for(const p of pc){if(p.k!=='r')continue;if(ax==='x'){if(p.b.x0<=rb.x0+EPS&&p.b.x0>p.x0+EPS)lo=Math.min(lo,p.cw);if(p.b.x1>=rb.x1-EPS&&p.b.x1<p.x0+p.lw-EPS)hi=Math.min(hi,p.cw);}
  else{if(p.b.y0<=rb.y0+EPS&&p.b.y0>p.y0+EPS)lo=Math.min(lo,p.ch);if(p.b.y1>=rb.y1-EPS&&p.b.y1<p.y0+p.lh-EPS)hi=Math.min(hi,p.ch);}}
  return lo<1e8&&hi<1e8?Math.abs(lo-hi):0;}
-function scoreS(w,ax){const X=prep(w);const pc=pieces(X.regionL,X.holes,X.T);if(!pc)return{mn:0,sym:0,n:0};let mn=1e4;const rot=!!X.a;
+function scoreS(w,ax){const X=prep(w);const pc=pieces(X.regionL,X.holes,X.T,false,X.bot);if(!pc)return{mn:0,sym:0,n:0};let mn=1e4;const rot=!!X.a;
  for(const p of pc){if(p.full)continue;if(p.k!=='r'){mn=Math.min(mn,Math.sqrt(p.a));continue;}
   if(p.cutX&&(rot||ax==='x'))mn=Math.min(mn,p.cw);if(p.cutY&&(rot||ax==='y'))mn=Math.min(mn,p.ch);}
  return{mn,sym:symScore(pc,ax,bboxOf(X.regionL)),n:pc.length};}
@@ -549,7 +565,7 @@ function migrate(p){
   if(!T.shape)T.shape='rect';if(T.pattern==='half'){T.pattern='offset';T.off=.5;}if(T.pattern==='third'){T.pattern='offset';T.off=1/3;}if(T.pattern==='vhalf'){T.pattern='voffset';T.off=.5;}
   if(T.off==null)T.off=.5;if(T.ang==null)T.ang=0;if(!T.sheet)T.sheet={on:false,w:12,h:12};if(T.w2==null)T.w2=(+T.w)/2;if(T.cang==null)T.cang=45;if(T.checker==null)T.checker=false;
   s.openings=(s.openings||[]).map(o=>{if(o.type==='hole')o.type='cutout';if(!o.shape)o.shape=(OPT[o.type]||{}).shape||'rect';if(o.shape==='circle'&&!o.dia)o.dia=4;return o;});
-  s.trim=s.trim||{};if(s.base==null)s.base=0;if(s.link==null)s.link=true;
+  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.link==null)s.link=true;
   s.curb=s.curb||{on:false,len:60,w:4.5,h:4.5,trim:true};s.drain=s.drain||{type:'none',x:30,y:18,len:48,wid:2.75};});
  return p;}
 function load(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.projects))return d;}catch(e){}return null;}
@@ -599,12 +615,13 @@ function surfBody(s,R,o){
  if(s.type==='pan'){const d=s.drain;
   if(d.type==='center')h+=`<circle cx="${d.x}" cy="${-d.y}" r="2.125" fill="#6a6a6a" stroke="#333" stroke-width="${px(1)}"/><path d="M${d.x-1.4} ${-d.y}H${d.x+1.4}M${d.x} ${-d.y-1.4}V${-d.y+1.4}" stroke="#ccc" stroke-width="${px(1)}"/>`;
   if(d.type==='linear'){h+=`<rect x="${d.x}" y="${-(d.y+d.wid)}" width="${d.len}" height="${d.wid}" fill="#555" stroke="#222" stroke-width="${px(1)}"/>`;for(let x=d.x+1;x<d.x+d.len-0.5;x+=1.5)h+=`<line x1="${x}" y1="${-(d.y+d.wid*0.25)}" x2="${x}" y2="${-(d.y+d.wid*0.75)}" stroke="#999" stroke-width="${px(1)}"/>`;}}
+ if(R.ledger&&R.ledger.y!=null){const y=-R.ledger.y,x0=G.bb.x0,x1=G.bb.x1;h+=`<line x1="${x0-+px(6)}" x2="${x1+ +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1+ +px(8)}" y="${y}" font-size="${px(10*o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;}
  h+=`<path d="${pd(G.outer)}" fill="none" stroke="#24272b" stroke-width="${px(1.7)}"/>`;
  // cut labels
  const sheet=T.sheet&&T.sheet.on;
  if(S.labels&&!sheet&&T.shape!=='penny'&&R.all.length<900){const fMin=+px(8.5*fs0),fMax=+px(12.5*fs0);
   for(const p of R.all){if(p.full||p.k!=='r')continue;const b=p.b;
-   let tx0=p.cutX&&p.cutY?fmtIn(p.cw)+'×'+fmtIn(p.ch):p.cutX?fmtIn(p.cw):p.cutY?fmtIn(p.ch):fmtIn(p.cw)+'×'+fmtIn(p.ch);let tx=tx0;if(p.notch)tx=(p.cutX||p.cutY?'L ':p.hl?'⊙ ':'◿ ')+tx;
+   let tx0=p.cutX&&p.cutY?fmtIn(p.cw)+'×'+fmtIn(p.ch):p.cutX?fmtIn(p.cw):p.cutY?fmtIn(p.ch):fmtIn(p.cw)+'×'+fmtIn(p.ch);let tx=tx0;if(p.taper)tx=(p.cutX?fmtIn(p.cw)+'×':'')+p.taper.map(fmtIn).join('→');else if(p.notch)tx=(p.cutX||p.cutY?'L ':p.hl?'⊙ ':'◿ ')+tx;
    const lw=p.lp?p.lp[2]:b.x1-b.x0,lh=p.lp?p.lp[3]:b.y1-b.y0,L=tx.length*0.58;let f=Math.min(fMax,lw/L*0.94,lh*0.62),rot=false;
    if(f<fMin){const f2=Math.min(fMax,lh/L*0.94,lw*0.62);if(f2>=fMin*0.9){f=f2;rot=true;}else if(f<fMin*0.75)continue;}
    const pl=p.lp?[p.lp[0],p.lp[1]]:[(b.x0+b.x1)/2,(b.y0+b.y1)/2],w=R.toW(pl),x=w[0],y=-w[1];
@@ -758,6 +775,9 @@ function renderPanel(){
  sb+='</div>';
  if(s.shape==='custom')sb+=`<label class="f" style="margin-top:8px"><span>${t('ptsHint')}</span><textarea rows="3" data-k="pts" data-sc="s" data-t="text">${esc(s.pts)}</textarea></label>`;
  if(s.type==='wall')sb+=`<div class="grid" style="margin-top:8px">${F(t('base'),'base')}<div>${P.link.mode!=='none'?CHK(t('linked'),'link',1):''}</div></div>`;
+ if(s.type==='wall'&&s.shape==='rect'){s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};sb+=`<div class="op" style="margin-top:8px">${CHK(t('unevenOn'),'uneven.on',1)}`;
+  if(s.uneven.on)sb+=`<p class="hint">${t('unevenHint')}</p><div class="grid">${F(t('uL'),'uneven.l')}${F(t('uR'),'uneven.r')}</div>${CHK(t('uMidOn'),'uneven.mOn',1)}${s.uneven.mOn?`<div class="grid">${F(t('uM'),'uneven.m')}</div>`:''}`;
+  sb+='</div>';}
  sb+=`<div class="btns"><button class="btn d" data-act="delSurf">${t('delSurf')}</button></div>`;
  h+=SEC('surf',t('surface'),sb);
  h+=tileSection(s);
@@ -795,6 +815,7 @@ function renderRes(){const el=$('#res');if(!el)return;
  if(!R){el.innerHTML=`<div class="warnbox">${t('tooMany')}</div>`;return;}
  const T=R.T,sticks=Math.ceil(R.lf/98.5);let h=kpis(R,T);
  if(R.bad)h+=`<div class="warnbox">${R.bad} ${t('sliverWarn')}</div>`;
+ if(R.ledger){const L=R.ledger,s0=cur();h+=`<div class="note"><b>${t('outLevel')}</b>: ${fmt(L.hi-L.lo)} ${t('onLen')} ${fmt(s0.w)}.${L.y!=null?` ${t('ledgerTxt')} <b>${fmt(L.y)}</b> ${t('ledgerFrom')}`:''} ${t('taperNote')}</div>`;}
  if(R.list.length)h+=`<table><tr><th>${t('size')}</th><th class="n">${t('qty')}</th></tr>${R.list.map(r=>`<tr><td><span class="sw" style="background:${COL[r.c]}"></span>${esc(r.k)}</td><td class="n">${r.n}</td></tr>`).join('')}</table>`;
  if(R.drill.length)h+=`<p style="margin:12px 0 4px"><b>${t('drill')}</b></p>`+R.drill.map(d=>`<div class="dl">${drillTxt(d)}</div>`).join('');
  if(R.strips.length)h+=`<p style="margin:12px 0 4px"><b>${t('strips')}</b></p>`+R.strips.filter(x=>x.count||x.tiles).map(x=>`<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`).join('');
