@@ -138,7 +138,14 @@ body.tot #stage,body.tot #stat,body.tot #legend{display:none}
 "use strict";
 /* ================= i18n ================= */
 const I18N={
-ru:{app:'Раскладка плитки',projects:'Проекты',client:'Клиенту',exitClient:'← Редактор',image:'Картинка',totals:'Итого',addSurf:'+ Поверхность',allWalls:'Все стены',
+ru:{showNums:'Показать номера на чертеже',fullTile:'целая плитка',cutSheet:'Лист резки по номерам',row:'Ряд',rowBottom:'(снизу)',fullN:'целых',nicheBack:'Задник ниши',noteTaper:'клин',noteL:'L-рез',noteAng:'угловой рез',
+exportT2:'Экспорт',pdfClient:'PDF для клиента',pdfCut:'PDF для резки (помощнику)',imgThis:'Картинка этого вида',building:'Готовлю PDF…',pdfReady:'PDF готов',sharePdf:'Поделиться / сохранить',dlPdf:'Скачать',pagesN:'стр.',dims:'Размер',
+pdfHint:'На iPhone: «Поделиться» → «Сохранить в Файлы» или отправь в Сообщениях. В версии внутри Claude скачивание может не работать — используй установленное приложение.',
+materials:'Материалы (оценка)',matItem:'Материал',matQty:'Кол-во',matNote:'Примечание',thinset:'Клей (thinset) 50 lb',trowel:'гребёнка',groutM:'Затирка',groutNote:'с учётом толщины плитки и ширины шва',
+wpSys:'Гидроизоляция',wkerdi:'Мембрана (Kerdi и т.п.)',wliquid:'Жидкая (RedGard / Hydro Ban)',wnone:'Не считать',membrane:'Мембрана',band:'Лента на швы и углы',bandNote:'углы стен, низ, ниши, бордюр',bandNote2:'+ сетка на углы',inCorners:'Внутренние углы (готовые)',outCorners:'Наружные углы (готовые)',seals:'Манжеты на трубы / смеситель',liquidGal:'Жидкая гидроизоляция, галлоны',
+boardSheets:'Бэкерборд 3×5, листов',ditraRolls:'Мембрана пола (DITRA)',clipsN:'Клипсы СВП',clipsNote:'≈ 2 на плитку, клинья многоразовые',silicone:'Силикон, тюбики',silNote:'углы и примыкания',wetArea:'мокрой зоны',under:'под мембрану / DITRA',
+wet:'Мокрая зона (считать гидроизоляцию)',thick:'Толщина плитки',matSettings:'Настройки расхода',covS:'Клей кв.фт/мешок: 1/4×1/4',covM:'Клей кв.фт/мешок: 1/4×3/8',covL:'Клей кв.фт/мешок: 1/2×1/2',groutBagLb:'Затирка: фунтов в мешке',membRoll:'Мембрана: кв.фт в рулоне',liqSf:'Жидкая: кв.фт на галлон',ditraRoll:'DITRA: кв.фт в рулоне',silLf:'Силикон: футов на тюбик',
+boardOn:'Считать бэкерборд на стены',ditraOn:'Считать DITRA на пол',clipsOn:'Считать клипсы СВП',matNoteAll:'Это оценка по типичному расходу. Сверь с паспортом своего клея, затирки и мембраны.',lb:'lb',bags:'меш.',app:'Раскладка плитки',projects:'Проекты',client:'Клиенту',exitClient:'← Редактор',image:'Картинка',totals:'Итого',addSurf:'+ Поверхность',allWalls:'Все стены',
 floor:'Пол',wall:'Стена',pan:'Поддон душа',surface:'Поверхность',name:'Название',type:'Тип',shape:'Форма',rect:'Прямоугольник',Lshape:'Г-образная',custom:'Свои точки',
 width:'Ширина',height:'Высота',length:'Длина',depth:'Глубина',notchW:'Вырез — ширина',notchH:'Вырез — глубина',corner:'Угол выреза',tr:'Верх-право',tl:'Верх-лево',br:'Низ-право',bl:'Низ-лево',
 ptsHint:'Точки x,y через «;» в дюймах, по порядку обхода контура. Пример: 0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
@@ -179,7 +186,14 @@ autoAll:'✦ Авто для всех стен',tileToAll:'Плитку перв
 wallsRes:'По стенами',combined:'Общий список подрезок',total:'Всего',noWalls:'Добавь хотя бы одну стену',
 pr_stack:'Стек',pr_brick:'Кирпич 1/2',pr_third:'Смещение 1/3',pr_quarter:'Смещение 1/4',pr_vstack:'Вертикальный стек',pr_voff:'Вертикально 1/2',pr_diag:'Диагональ 45°',pr_diagbrick:'Диагональ кирпич',pr_checker:'Шахматка',pr_herr45:'Ёлочка 45°',pr_herr90:'Ёлочка 90°',pr_basket:'Плетёнка',pr_pinwheel:'Пинвил',pr_chevron:'Шеврон',pr_hex:'Соты (hex)',pr_penny:'Пенни',pr_mosaic:'Мозаика',
 galHint:'Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.',unevenOn:'Низ не в уровне (ванна / акриловый поддон)',unevenHint:'Положи уровень или лазер на борт ванны/поддона, найди самую низкую точку (= 0) и измерь, на сколько выше края. Высота стены — от самой низкой точки. Для связанных стен углы должны совпадать.',uL:'Подъём у левого края',uR:'Подъём у правого края',uMidOn:'Прогиб / горб в середине',uM:'Подъём в середине',outLevel:'Перекос',onLen:'на',ledgerTxt:'Рейку (ledger) ставь строго по уровню на высоте',ledgerFrom:'от самой низкой точки — от неё первый целый ряд.',taperNote:'Нижний ряд режется клином: размеры «слева→справа».'},
-en:{app:'Tile Layout',projects:'Projects',client:'Client view',exitClient:'← Editor',image:'Image',totals:'Summary',addSurf:'+ Surface',allWalls:'All walls',
+en:{showNums:'Show numbers on drawing',fullTile:'full tile',cutSheet:'Cut sheet by number',row:'Row',rowBottom:'(bottom)',fullN:'full',nicheBack:'Niche back',noteTaper:'taper',noteL:'L-cut',noteAng:'angled cut',
+exportT2:'Export',pdfClient:'PDF for client',pdfCut:'PDF cut sheet (installer)',imgThis:'Image of this view',building:'Building PDF…',pdfReady:'PDF ready',sharePdf:'Share / save',dlPdf:'Download',pagesN:'pages',dims:'Size',
+pdfHint:'On iPhone: Share → Save to Files, or send via Messages. Inside Claude downloads may not work — use the installed app.',
+materials:'Materials (estimate)',matItem:'Material',matQty:'Qty',matNote:'Note',thinset:'Thinset 50 lb',trowel:'trowel',groutM:'Grout',groutNote:'based on tile thickness and joint width',
+wpSys:'Waterproofing',wkerdi:'Sheet membrane (Kerdi etc.)',wliquid:'Liquid (RedGard / Hydro Ban)',wnone:"Don't count",membrane:'Membrane',band:'Seam & corner band',bandNote:'wall corners, bottom, niches, curb',bandNote2:'+ mesh at corners',inCorners:'Inside corners (preformed)',outCorners:'Outside corners (preformed)',seals:'Pipe / valve seals',liquidGal:'Liquid membrane, gallons',
+boardSheets:'Backer board 3×5, sheets',ditraRolls:'Floor uncoupling (DITRA)',clipsN:'Leveling clips',clipsNote:'≈ 2 per tile, wedges reusable',silicone:'Silicone, tubes',silNote:'corners and changes of plane',wetArea:'wet area',under:'for membrane / DITRA',
+wet:'Wet area (count waterproofing)',thick:'Tile thickness',matSettings:'Coverage settings',covS:'Thinset sf/bag: 1/4×1/4',covM:'Thinset sf/bag: 1/4×3/8',covL:'Thinset sf/bag: 1/2×1/2',groutBagLb:'Grout: lb per bag',membRoll:'Membrane: sf per roll',liqSf:'Liquid: sf per gallon',ditraRoll:'DITRA: sf per roll',silLf:'Silicone: ft per tube',
+boardOn:'Count backer board on walls',ditraOn:'Count DITRA on floors',clipsOn:'Count leveling clips',matNoteAll:'Estimate based on typical coverage. Check your thinset, grout and membrane data sheets.',lb:'lb',bags:'bags',app:'Tile Layout',projects:'Projects',client:'Client view',exitClient:'← Editor',image:'Image',totals:'Summary',addSurf:'+ Surface',allWalls:'All walls',
 floor:'Floor',wall:'Wall',pan:'Shower pan',surface:'Surface',name:'Name',type:'Type',shape:'Shape',rect:'Rectangle',Lshape:'L-shape',custom:'Custom points',
 width:'Width',height:'Height',length:'Length',depth:'Depth',notchW:'Notch width',notchH:'Notch depth',corner:'Notch corner',tr:'Top-right',tl:'Top-left',br:'Bottom-right',bl:'Bottom-left',
 ptsHint:'x,y points separated by “;” in inches, in order around the outline. Example: 0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
@@ -469,7 +483,18 @@ function compute(s){
  if(s.type==='pan'&&s.curb.on&&s.curb.trim)lf+=2*s.curb.len;
  lf+=+s.extraLF||0;
  const R={...X,err:false,main,nich,all,strips,area,full,cuts,nb,need,order,boxes,perBox,list,minc,lf,sheets,bad:all.filter(p=>p.c==='bad'&&p.k==='r').length,warn:all.filter(p=>p.c==='warn').length};
- R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);return R;}
+ R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);numberPieces(R);return R;}
+function numberPieces(R){const ys=[...new Set(R.main.map(p=>Math.round(p.y0*100)))].sort((a,b)=>a-b);const rowOf=p=>ys.indexOf(Math.round(p.y0*100))+1;
+ const ord=a=>a.filter(p=>!p.full).sort((a,b)=>(Math.round(a.y0*100)-Math.round(b.y0*100))||(a.x0-b.x0));let n=0;
+ ord(R.main).forEach(p=>{p.no=++n;p.row=rowOf(p);});ord(R.nich).forEach(p=>{p.no=++n;p.row='N';});
+ R.rowsOK=!R.a&&['grid','offset'].includes(patOf(R.T))&&R.T.shape==='rect';R.rowFull={};R.main.forEach(p=>{if(p.full){const r=rowOf(p);R.rowFull[r]=(R.rowFull[r]||0)+1;}});}
+function pieceSize(p){if(p.taper)return fmtIn(p.cw)+' × '+p.taper.map(fmtIn).join('→');return(p.k==='p'?'≈ ':'')+fmtIn(p.cw)+' × '+fmtIn(p.ch);}
+function pieceNote(p){const n=[];if(p.taper)n.push(t('noteTaper'));else if(p.notch&&(p.cutX||p.cutY))n.push(t('noteL'));else if(p.notch&&!p.hl)n.push(t('noteAng'));if(p.hl)n.push(...[...new Set(p.hl)].map(x=>t(x)));if(p.c==='bad')n.push('⚠ '+t('legBad'));return n.join(', ');}
+function cutSheet(R){const groups=[];if(R.rowsOK){const by={};R.all.filter(p=>!p.full&&!p.niche).forEach(p=>{(by[p.row]=by[p.row]||[]).push(p);});
+  const rows=Object.keys(by).map(Number).sort((a,b)=>a-b);rows.forEach(r=>groups.push({label:`${t('row')} ${r}${r===1?' '+t('rowBottom'):''}`,full:R.rowFull[r]||0,items:by[r]}));}
+ else groups.push({label:t('cutList'),items:R.all.filter(p=>!p.full&&!p.niche)});
+ const ni=R.all.filter(p=>!p.full&&p.niche);if(ni.length)groups.push({label:t('nicheBack'),items:ni});
+ groups.forEach(g=>g.items.sort((a,b)=>a.no-b.no));return groups;}
 function ledgerOf(s,R){if(!isUneven(s)||R.a||R.T.shape!=='rect')return null;const T=R.T,pat=patOf(T);if(!['grid','offset','voffset'].includes(pat))return null;
  const{th}=rdims(T),py=th+(+T.g||0),u=s.uneven,hi=Math.max(+u.l||0,+u.r||0,u.mOn?+u.m||0:0),lo=Math.min(+u.l||0,+u.r||0,u.mOn?+u.m||0:0);
  if(pat==='voffset')return{hi,lo,y:null};
@@ -530,19 +555,19 @@ function centerOn(s,x,y,joint){const T=effT(s);let ox,oy;
 
 /* ================= state ================= */
 const SKEY='prusart-tile-layout-v1';
-let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,mode:'tiles',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres']),items:[],vb:[0,0,1,1],upp:0.1};
-function defTile(o){return Object.assign({shape:'rect',w:12,h:24,w2:6,g:0.125,pattern:'offset',off:0.5,ang:0,rot:true,ox:0,oy:0,sqftBox:0,cang:45,checker:false,sheet:{on:false,w:12,h:12}},o||{});}
+let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,nums:false,mode:'tiles',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres','mat','pdfs']),items:[],vb:[0,0,1,1],upp:0.1};
+function defTile(o){return Object.assign({thick:0.375,shape:'rect',w:12,h:24,w2:6,g:0.125,pattern:'offset',off:0.5,ang:0,rot:true,ox:0,oy:0,sqftBox:0,cang:45,checker:false,sheet:{on:false,w:12,h:12}},o||{});}
 function newSurface(type,name){
  const n=P?P.surfaces.filter(x=>x.type===type).length:0;
  const s={id:uid(),type,name:name?t(name):(t(type)+(type==='wall'?' '+(n+1):'')),nk:name||type,nn:name?0:(type==='wall'?n+1:0),shape:'rect',w:60,h:96,Lw:24,Lh:24,Lc:'tr',pts:'0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
   openings:[],trim:{l:false,r:false,t:false,b:false},extraLF:0,base:0,link:true,tile:defTile(),
-  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75}};
+  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75},wet:type!=='floor',uneven:{on:false,l:0,r:0,m:0,mOn:false}};
  if(type==='floor'){s.w=96;s.h=72;s.tile=defTile({w:24,h:24,w2:12,pattern:'grid',rot:false});}
  if(type==='pan'){s.w=60;s.h=36;s.tile=defTile({w:2,h:2,w2:1,pattern:'grid',rot:false,sheet:{on:true,w:12,h:12}});s.curb.on=true;s.drain.type='center';}
  if(type==='wall'&&P&&P.surfaces.length){const fw=P.surfaces.find(x=>x.type==='wall');if(fw)s.tile=JSON.parse(JSON.stringify(fw.tile));}
  return s;}
 function newProject(sample){
- const p={id:uid(),nk:sample?'sample':'newName',name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},link:{mode:'height',ox:0,oy:0},surfaces:[]};
+ const p={id:uid(),nk:sample?'sample':'newName',name:sample?t('sample'):t('newName'),client:'',updated:Date.now(),waste:10,minCut:2,edgeGap:0.125,kerf:0.125,sch:{profile:'JOLLY',size:'3/8″ (10 mm)',vis:0.125},link:{mode:'height',ox:0,oy:0},mat:defMat(),surfaces:[]};
  const prev=P;P=p;
  if(sample){
   const b=newSurface('wall','backWall');b.trim.t=true;b.openings.push({id:uid(),type:'niche',shape:'rect',x:18,y:42,w:24,h:12,d:3.5,trim:true},{id:uid(),type:'valve',shape:'circle',x:30,y:48-20,dia:3},{id:uid(),type:'pipe',shape:'circle',x:30,y:80,dia:1.125});
@@ -556,7 +581,7 @@ function newProject(sample){
  p.surfaces.forEach(s=>autoLayout(s));
  P=prev;return p;}
 function migrate(p){
- p.link=p.link||{mode:'none',ox:0,oy:0};
+ p.link=p.link||{mode:'none',ox:0,oy:0};p.mat=Object.assign(defMat(),p.mat||{});
  const findKey=(nm,keys)=>{for(const k of keys)for(const L of ['ru','en'])if(I18N[L][k]===nm)return k;return null;};
  if(!p.nk){const k=findKey(p.name,['sample','newName']);if(k)p.nk=k;}
  p.surfaces.forEach(s=>{if(s.nk!==undefined)return;const k=findKey(s.name,['backWall','leftWall','rightWall','bathFloor','pan','floor','wall']);if(k){s.nk=k;s.nn=0;return;}
@@ -565,7 +590,7 @@ function migrate(p){
   if(!T.shape)T.shape='rect';if(T.pattern==='half'){T.pattern='offset';T.off=.5;}if(T.pattern==='third'){T.pattern='offset';T.off=1/3;}if(T.pattern==='vhalf'){T.pattern='voffset';T.off=.5;}
   if(T.off==null)T.off=.5;if(T.ang==null)T.ang=0;if(!T.sheet)T.sheet={on:false,w:12,h:12};if(T.w2==null)T.w2=(+T.w)/2;if(T.cang==null)T.cang=45;if(T.checker==null)T.checker=false;
   s.openings=(s.openings||[]).map(o=>{if(o.type==='hole')o.type='cutout';if(!o.shape)o.shape=(OPT[o.type]||{}).shape||'rect';if(o.shape==='circle'&&!o.dia)o.dia=4;return o;});
-  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.link==null)s.link=true;
+  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.wet==null)s.wet=s.type!=='floor';if(T.thick==null)T.thick=T.sheet&&T.sheet.on?0.25:0.375;if(s.link==null)s.link=true;
   s.curb=s.curb||{on:false,len:60,w:4.5,h:4.5,trim:true};s.drain=s.drain||{type:'none',x:30,y:18,len:48,wid:2.75};});
  return p;}
 function load(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.projects))return d;}catch(e){}return null;}
@@ -625,8 +650,9 @@ function surfBody(s,R,o){
    const lw=p.lp?p.lp[2]:b.x1-b.x0,lh=p.lp?p.lp[3]:b.y1-b.y0,L=tx.length*0.58;let f=Math.min(fMax,lw/L*0.94,lh*0.62),rot=false;
    if(f<fMin){const f2=Math.min(fMax,lh/L*0.94,lw*0.62);if(f2>=fMin*0.9){f=f2;rot=true;}else if(f<fMin*0.75)continue;}
    const pl=p.lp?[p.lp[0],p.lp[1]]:[(b.x0+b.x1)/2,(b.y0+b.y1)/2],w=R.toW(pl),x=w[0],y=-w[1];
-   const ang=(rot?-90:0)-R.a*180/Math.PI;
-   h+=`<text x="${x.toFixed(3)}" y="${y.toFixed(3)}" font-size="${f.toFixed(3)}" text-anchor="middle" dominant-baseline="central" fill="${p.c==='bad'?'#7d1410':'#1d3550'}" font-weight="600" font-family="${FONT}"${ang?` transform="rotate(${ang.toFixed(3)} ${x.toFixed(3)} ${y.toFixed(3)})"`:''}>${esc(tx)}</text>`;}}
+   const ang=(rot?-90:0)-R.a*180/Math.PI;const col=p.c==='bad'?'#7d1410':'#1d3550';let inner=esc(tx);
+   if(S.nums&&p.no){const two=(rot?lw:lh)>=f*2.5;if(two)inner=`<tspan x="${x.toFixed(3)}" dy="${(-f*0.62).toFixed(3)}" fill="#b4441b" font-weight="800">#${p.no}</tspan><tspan x="${x.toFixed(3)}" dy="${(f*1.2).toFixed(3)}">${esc(tx)}</tspan>`;else inner=`<tspan fill="#b4441b" font-weight="800">#${p.no}</tspan>`;}
+   h+=`<text x="${x.toFixed(3)}" y="${y.toFixed(3)}" font-size="${f.toFixed(3)}" text-anchor="middle" dominant-baseline="central" fill="${col}" font-weight="600" font-family="${FONT}"${ang?` transform="rotate(${ang.toFixed(3)} ${x.toFixed(3)} ${y.toFixed(3)})"`:''}>${inner}</text>`;}}
  // dims
  const dimC='#3d4248',f=px(12*fs0),tk=+px(5),bb=G.bb,m=o.m;
  const yb=Math.min(bb.y0,curbOn?-s.curb.w:bb.y0)-m*0.42;
@@ -638,12 +664,12 @@ function surfBody(s,R,o){
  if(o.title)h+=`<text x="${(bb.x0+bb.x1)/2}" y="${-bb.y1-+px(10*fs0)}" font-size="${Math.min(+px(13*fs0),(bb.x1-bb.x0)/((s.name.length+2)*0.62)).toFixed(3)}" text-anchor="middle" fill="#1e2226" font-weight="700" font-family="${FONT}">${esc(s.name)}${isLinked(s)?' 🔗':''}</text>`;
  return h;}
 
-function viewItems(){
- if(S.tab==='all'){const ws=P.surfaces.filter(s=>s.type==='wall');let x=0;const gap=P.link.mode==='wrap'?0:8;
+function allWallItems(){const ws=P.surfaces.filter(s=>s.type==='wall');let x=0;const gap=P.link.mode==='wrap'?0:8;
   return ws.map(s=>{const R=compute(s),w=R.G.bb.x1-R.G.bb.x0,it={s,R,dx:x-R.G.bb.x0,dy:+s.base||0};x+=w+gap;return it;});}
- const s=cur();return s?[{s,R:compute(s),dx:0,dy:0}]:[];}
-function buildView(Wpx,Hpx,v,fs){
- const items=viewItems();if(!items.length)return null;const all=S.tab==='all';
+function viewItems(){if(S.tab==='all')return allWallItems();const s=cur();return s?[{s,R:compute(s),dx:0,dy:0}]:[];}
+function buildView(Wpx,Hpx,v,fs){return buildViewItems(Wpx,Hpx,v,fs,viewItems(),S.tab==='all');}
+function buildViewItems(Wpx,Hpx,v,fs,items,all){
+ if(!items.length)return null;
  let bb={x0:1e9,y0:1e9,x1:-1e9,y1:-1e9};
  for(const it of items){const b=it.R.G.bb;let y0=b.y0;if(it.s.type==='pan'&&it.s.curb.on)y0=Math.min(y0,-it.s.curb.w);
   bb.x0=Math.min(bb.x0,b.x0+it.dx);bb.x1=Math.max(bb.x1,b.x1+it.dx);bb.y0=Math.min(bb.y0,y0+it.dy);bb.y1=Math.max(bb.y1,b.y1+it.dy);}
@@ -701,7 +727,7 @@ function renderTabs(){const nw=P.surfaces.filter(s=>s.type==='wall').length;
  $('#tabs').innerHTML=(nw>=2?`<button data-act="all" class="all ${S.tab==='all'?'on':''}">▥▥ ${t('allWalls')}</button>`:'')+P.surfaces.map((s,i)=>`<button data-act="tab:${i}" class="${S.tab===i?'on':''}">${ICON[s.type]||''} ${esc(s.name)}</button>`).join('')+
  `<button data-act="tot" class="${S.tab==='tot'?'on':''}">Σ ${t('totals')}</button>`+(S.client?'':`<button data-act="addMenu" class="add">${t('addSurf')}</button>`);}
 function renderTools(){
- $('#tools').innerHTML=(S.client?'':`<button data-act="mode" class="${S.mode==='tiles'?'on':''}">${S.mode==='tiles'?t('moveTiles'):t('moveView')}</button>${S.tab==='all'?'':`<button data-act="rotate">⟲</button>`}<button data-act="${S.tab==='all'?'autoAll':'auto'}">${t('auto')}</button>${S.tab==='all'?'':`<button data-act="gallery">▦</button>`}`)+
+ $('#tools').innerHTML=(S.client?'':`<button data-act="mode" class="${S.mode==='tiles'?'on':''}">${S.mode==='tiles'?t('moveTiles'):t('moveView')}</button>${S.tab==='all'?'':`<button data-act="rotate">⟲</button>`}<button data-act="${S.tab==='all'?'autoAll':'auto'}">${t('auto')}</button><button data-act="nums" class="${S.nums?'on':''}">#</button>`)+
  `<span class="sp"></span><button data-act="labels" class="${S.labels?'on':''}">${t('labels')}</button><button data-act="zout">−</button><button data-act="fit">${t('fit')}</button><button data-act="zin">+</button>`;}
 function renderLegend(){$('#legend').innerHTML=[['full','legFull'],['cut','legCut'],['warn','legWarn'],['bad','legBad']].map(([c,k])=>`<span><i style="background:${COL[c]}"></i>${t(k)}${c==='bad'?' ('+fmt(+P.minCut)+')':''}</span>`).join('')+`<span><i style="background:#c9bfae"></i>${t('legNiche')}</span><span><i style="background:#c3c8d0"></i>Schluter</span>`;}
 function aggItems(){const a={full:0,cuts:0,need:0,order:0,minc:1e9,bad:0,sheets:0};for(const it of S.items){const r=it.R;a.full+=r.full;a.cuts+=r.cuts;a.need+=r.need;a.order+=r.order;a.minc=Math.min(a.minc,r.minc);a.bad+=r.bad;}return a;}
@@ -739,7 +765,7 @@ function tileSection(s){const T=s.tile,pat=patOf(T),sh=T.shape,{tw,th}=rdims(T);
  if(sh==='hex')b+=F(t('hexW'),'tile.w','len','s','w2');
  if(sh==='penny')b+=F(t('pennyD'),'tile.w','len','s','w2');
  if(sh==='chevron')b+=F(t('chevW'),'tile.w')+F(t('chevH'),'tile.h')+F(t('chevA'),'tile.cang','num');
- b+=`<div class="w2">${F(t('grout'),'tile.g')}<div class="chips">${[1/16,1/8,3/16,1/4].map(g=>`<button class="btn sm" data-act="grout:${g}">${fmtIn(g)}</button>`).join('')}</div></div>`;
+ b+=F(t('thick'),'tile.thick');b+=`<div class="w2">${F(t('grout'),'tile.g')}<div class="chips">${[1/16,1/8,3/16,1/4].map(g=>`<button class="btn sm" data-act="grout:${g}">${fmtIn(g)}</button>`).join('')}</div></div>`;
  if(pat==='offset'||pat==='voffset')b+=`<div class="w2">${F(t('offPct'),'_offp','num')}<div class="chips">${[[1/2,'1/2'],[1/3,'1/3'],[1/4,'1/4'],[0.2,'20%']].map(([v,l])=>`<button class="btn sm ${Math.abs(T.off-v)<1e-6?'p':''}" data-act="off:${v}">${l}</button>`).join('')}</div></div>`;
  b+=`<div class="w2">${F(t('angle'),'tile.ang','num')}<div class="chips">${[0,45,90,30,60].map(a=>`<button class="btn sm ${+T.ang===a?'p':''}" data-act="ang:${a}">${a}°</button>`).join('')}</div></div></div>`;
  if(sh==='rect'||sh==='hex')b+=`<div class="btns"><button class="btn" data-act="rotate">${t('rotate')}</button></div>`;
@@ -761,7 +787,7 @@ function openingCard(o,i){const circ=o.shape==='circle',types=Object.keys(OPT);
 
 function renderPanel(){
  const el=$('#panel');document.body.classList.toggle('tot',S.tab==='tot');
- if(S.tab==='tot'){el.innerHTML=SEC('proj',t('proj'),`<div class="grid">${F(t('projName'),'name','text','p','w2')}${F(t('clientName'),'client','text','p','w2')}${F(t('waste'),'waste','num','p')}${F(t('minCutS'),'minCut','len','p')}${F(t('edgeGap'),'edgeGap','len','p')}${F(t('kerf'),'kerf','len','p')}${F(t('schProfile'),'sch.profile','text','p')}${F(t('schSize'),'sch.size','text','p')}${F(t('schVis'),'sch.vis','len','p')}</div><p class="hint">${t('storeNote')}</p>`)+SEC('tot',t('totTitle'),'<div id="tot"></div>');renderTot();return;}
+ if(S.tab==='tot'){el.innerHTML=SEC('proj',t('proj'),`<div class="grid">${F(t('projName'),'name','text','p','w2')}${F(t('clientName'),'client','text','p','w2')}${F(t('waste'),'waste','num','p')}${F(t('minCutS'),'minCut','len','p')}${F(t('edgeGap'),'edgeGap','len','p')}${F(t('kerf'),'kerf','len','p')}${F(t('schProfile'),'sch.profile','text','p')}${F(t('schSize'),'sch.size','text','p')}${F(t('schVis'),'sch.vis','len','p')}</div><p class="hint">${t('storeNote')}</p>`)+SEC('tot',t('totTitle'),'<div id="tot"></div>')+SEC('mat',t('materials'),'<div id="mat"></div>'+matSettingsHTML())+SEC('pdfs','PDF',`<div class="btns"><button class="btn p" data-act="pdf:client">${t('pdfClient')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div><p class="hint">${t('pdfHint')}</p>`);renderTot();return;}
  if(S.tab==='all'){const ws=P.surfaces.filter(s=>s.type==='wall');
   let b=`<p class="hint">${t('tapWall')}</p><div class="grid">${SEL(t('linkMode'),'link.mode',['none','height','wrap'],1,'p','w2',o=>t('l'+o))}</div><p class="hint">${t('linkHint')}</p>`;
   b+=ws.map(s=>{const i=P.surfaces.indexOf(s);return`<div class="op"><h4>${esc(s.name)} · ${fmt(wallW(s))}</h4><div class="grid">${F(t('base'),`surfaces.${i}.base`,'len','p')}<div>${CHK(t('linked'),`surfaces.${i}.link`,1,'p')}</div></div></div>`;}).join('');
@@ -775,9 +801,10 @@ function renderPanel(){
  sb+='</div>';
  if(s.shape==='custom')sb+=`<label class="f" style="margin-top:8px"><span>${t('ptsHint')}</span><textarea rows="3" data-k="pts" data-sc="s" data-t="text">${esc(s.pts)}</textarea></label>`;
  if(s.type==='wall')sb+=`<div class="grid" style="margin-top:8px">${F(t('base'),'base')}<div>${P.link.mode!=='none'?CHK(t('linked'),'link',1):''}</div></div>`;
- if(s.type==='wall'&&s.shape==='rect'){s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};sb+=`<div class="op" style="margin-top:8px">${CHK(t('unevenOn'),'uneven.on',1)}`;
+ if(s.type==='wall'&&s.shape==='rect'){s.uneven=(s.uneven||{on:false,l:0,r:0,m:0,mOn:false});sb+=`<div class="op" style="margin-top:8px">${CHK(t('unevenOn'),'uneven.on',1)}`;
   if(s.uneven.on)sb+=`<p class="hint">${t('unevenHint')}</p><div class="grid">${F(t('uL'),'uneven.l')}${F(t('uR'),'uneven.r')}</div>${CHK(t('uMidOn'),'uneven.mOn',1)}${s.uneven.mOn?`<div class="grid">${F(t('uM'),'uneven.m')}</div>`:''}`;
   sb+='</div>';}
+ sb+=CHK(t('wet'),'wet');
  sb+=`<div class="btns"><button class="btn d" data-act="delSurf">${t('delSurf')}</button></div>`;
  h+=SEC('surf',t('surface'),sb);
  h+=tileSection(s);
@@ -820,14 +847,14 @@ function renderRes(){const el=$('#res');if(!el)return;
  if(R.drill.length)h+=`<p style="margin:12px 0 4px"><b>${t('drill')}</b></p>`+R.drill.map(d=>`<div class="dl">${drillTxt(d)}</div>`).join('');
  if(R.strips.length)h+=`<p style="margin:12px 0 4px"><b>${t('strips')}</b></p>`+R.strips.filter(x=>x.count||x.tiles).map(x=>`<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`).join('');
  if(R.lf>0)h+=`<p style="margin:10px 0 4px"><b>${t('sch')}</b>: ${fmt(R.lf)} = ${(R.lf/12).toFixed(1)} ft → ${sticks} ${t('sticks')}</p>`;
- h+=`<p class="hint">${t('gapNote')} (${fmt(+P.edgeGap)}). ${t('reuseNote')}</p><div class="btns"><button class="btn" data-act="copyCuts">${t('copyCuts')}</button></div>`;
+ h+=`<p class="hint">${t('gapNote')} (${fmt(+P.edgeGap)}). ${t('reuseNote')}</p><div class="btns"><button class="btn p" data-act="cutSheet">${t('cutSheet')}</button><button class="btn" data-act="copyCuts">${t('copyCuts')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div>`;
  el.innerHTML=h;}
 function renderTot(){const el=$('#tot');if(!el)return;const rows=P.surfaces.map(s=>({s,R:compute(s)}));const g={};let lf=0;
  rows.forEach(({R})=>{lf+=R.lf;for(const k in R.nb){g[k]=g[k]||{k,need:0,perBox:0};g[k].need+=R.nb[k];if(R.perBox&&Object.keys(R.nb).length===1)g[k].perBox=R.perBox;}});
  let h=`<p><b>${t('surfaces')}</b></p><table><tr><th>${t('name')}</th><th>${t('tile')}</th><th class="n">sf</th><th class="n">${t('need')}</th></tr>${rows.map(({s,R})=>`<tr><td>${esc(s.name)}${R.bad?' ⚠︎':''}</td><td>${esc(tileDesc(R.T))}<br><small style="color:var(--mut)">${esc(patName(R.T))}</small></td><td class="n">${sq(R.area)}</td><td class="n">${R.need}</td></tr>`).join('')}</table>`;
  h+=`<p style="margin-top:14px"><b>${t('byTile')}</b></p><table><tr><th>${t('tile')}</th><th class="n">${t('need')}</th><th class="n">${t('order')}</th><th class="n">${t('boxes')}</th></tr>${Object.values(g).map(e=>{const o=Math.ceil(e.need*(1+(+P.waste||0)/100));return`<tr><td>${esc(e.k)}</td><td class="n">${e.need}</td><td class="n"><b>${o}</b></td><td class="n">${e.perBox?Math.ceil(o/e.perBox):'—'}</td></tr>`;}).join('')}</table>`;
  h+=`<p style="margin-top:14px"><b>Schluter ${esc(P.sch.profile)} ${esc(P.sch.size)}</b>: ${fmt(lf)} = ${(lf/12).toFixed(1)} ft → ${Math.ceil(lf/98.5)} ${t('sticks')}</p>`;
- el.innerHTML=h;}
+ el.innerHTML=h;renderMat();}
 function syncNames(){if(P.nk)P.name=t(P.nk);P.surfaces.forEach(s=>{if(s.nk)s.name=t(s.nk)+(s.nn?' '+s.nn:'');});}
 function renderAll(){syncNames();if(S.tab==='all'&&P.surfaces.filter(s=>s.type==='wall').length<2)S.tab=0;if(typeof S.tab==='number'&&!P.surfaces[S.tab])S.tab=0;
  renderHeader();renderTabs();renderTools();renderLegend();document.body.classList.toggle('client',S.client);document.body.classList.toggle('tot',S.tab==='tot');
@@ -969,6 +996,11 @@ function act(a,arg,b){const s=cur();
  case'zout':S.view.zoom=Math.max(0.4,S.view.zoom/1.3);draw();break;
  case'fit':S.view={zoom:1,panX:0,panY:0};draw();break;
  case'labels':S.labels=!S.labels;renderTools();draw();break;
+ case'nums':S.nums=!S.nums;if(S.nums)S.labels=true;renderTools();draw();if(!$('#modal').hidden&&arg!=='x')closeModal();break;
+ case'cutSheet':cutSheetModal();break;
+ case'exportMenu':exportMenu();break;
+ case'pdf':makePdf(arg);break;
+ case'sharePdf':sharePdf();break;
  case'mode':S.mode=S.mode==='tiles'?'view':'tiles';renderTools();break;
  case'client':S.client=!S.client;if(S.client&&S.tab==='tot')S.tab=0;renderAll();break;
  case'lang':lang=lang==='ru'?'en':'ru';document.documentElement.lang=lang;saveSoon();renderAll();break;
@@ -980,12 +1012,136 @@ function act(a,arg,b){const s=cur();
  case'delProj':if(!b.dataset.armed){b.dataset.armed=1;b.textContent=t('confirm');return;}DB.projects=DB.projects.filter(p=>p.id!==arg);if(P.id===arg)P=DB.projects[0];S.tab=0;saveSoon();projectsModal();renderAll();break;
  case'copyExp':copyText($('#expTxt').value,b);break;
  case'importProj':try{const d=JSON.parse($('#impTxt').value);const arr=Array.isArray(d)?d:d.projects?d.projects:[d];arr.forEach(p=>{if(!p||!Array.isArray(p.surfaces))throw 0;p.id=uid();migrate(p);DB.projects.push(p);P=p;});S.tab=0;closeModal();renderAll();saveSoon();}catch(e){b.textContent=t('importErr');}break;
- case'image':exportImage();break;
+ case'image':exportMenu();break;
+ case'img':closeModal();exportImage();break;
  case'copyCuts':copyText(cutsText(),b);break;
  }}
 function autoLayoutX(s){const T0=effT(s),sp=spanOf(T0),T=effT(s),start=T.ox;if(P.link.mode==='wrap')return;let best=null;const N=Math.min(240,Math.max(8,Math.round(sp.x/0.125)));
  for(let k=0;k<N;k++){const v=start+sp.x*k/N;setO(s,v,T.oy);const r=scoreS(s,'x');const sc=Math.round(r.mn*16)*1000-r.sym;if(!best||sc>best.s+1e-9)best={s:sc,v};}
  setO(s,best.v,T.oy);normalizeS(s);}
+
+
+/* ================= materials ================= */
+function defMat(){return{covS:95,covM:70,covL:45,bb:1.2,groutBag:25,dens:0.065,wp:'kerdi',roll:54,band:33,liq:55,board:true,boardSf:15,ditra:true,ditraSf:54,clips:true,silLf:24};}
+function matSettingsHTML(){
+ return`<details data-sec="matset" ${S.open.has('matset')?'open':''} style="margin-top:10px"><summary>${t('matSettings')}</summary><div class="bd"><div class="grid">${SEL(t('wpSys'),'mat.wp',['kerdi','liquid','none'],1,'p','w2',o=>t('w'+o))}
+ ${F(t('covS'),'mat.covS','num','p')}${F(t('covM'),'mat.covM','num','p')}${F(t('covL'),'mat.covL','num','p')}${F(t('groutBagLb'),'mat.groutBag','num','p')}${F(t('membRoll'),'mat.roll','num','p')}${F(t('liqSf'),'mat.liq','num','p')}${F(t('ditraRoll'),'mat.ditraSf','num','p')}${F(t('silLf'),'mat.silLf','num','p')}</div>
+ ${CHK(t('boardOn'),'mat.board',0,'p')}${CHK(t('ditraOn'),'mat.ditra',0,'p')}${CHK(t('clipsOn'),'mat.clips',0,'p')}</div></details>`;}
+function jointPerArea(T){const s=T.shape;if(s==='hex'){const sd=(+T.w)/Math.sqrt(3);return 2/(Math.sqrt(3)*sd);}if(s==='penny')return 2.8/(+T.w);
+ if(patOf(T)==='pinwheel'){const a=+T.w,b=+T.w2;return(2*a+2*b)/(a*a+b*b);}const L=+T.w,W=+T.h||+T.w;return(L+W)/(L*W);}
+function trowelOf(T){const mx=T.sheet&&T.sheet.on?Math.max(+T.w,+T.h||+T.w):(T.shape==='hex'?+T.w*1.15:Math.max(+T.w,+T.h||+T.w,+T.w2||0));return mx<=8?'s':mx<=16?'m':'l';}
+function materials(){const m=P.mat,rows=[];const thin={s:0,m:0,l:0};let grout=0,wetSf=0,wallSf=0,floorSf=0,clips=0,lf=0,valves=0,pipes=0,niches=0,band=0,sil=0,curbs=0;
+ const wetWalls=P.surfaces.filter(s=>s.type==='wall'&&s.wet);
+ for(const s of P.surfaces){const R=compute(s),T=R.T,sf=R.area/144,tr=trowelOf(T);
+  thin[tr]+=sf*(tr==='l'?m.bb:1);
+  grout+=sf*144*jointPerArea(T)*(+T.g||0.125)*(+T.thick||0.375)*m.dens*1.1;
+  if(s.wet)wetSf+=sf;if(s.type==='wall')wallSf+=sf;if(s.type==='floor')floorSf+=sf;
+  if(m.clips&&T.shape==='rect'&&!(T.sheet&&T.sheet.on)&&Math.max(+T.w,+T.h)>=12)clips+=R.need*2;
+  lf+=R.lf;
+  s.openings.forEach(o=>{if(o.type==='valve')valves++;if(o.type==='pipe')pipes++;if(o.type==='niche'&&s.wet){niches++;band+=4*(o.w+o.h);}});
+  if(s.type==='pan'&&s.wet){band+=s.w+2*s.h;if(s.curb.on){band+=2*s.curb.len;curbs++;}}}
+ const H=wetWalls.length?Math.max(...wetWalls.map(w=>bboxOf(outerPoly(w)).y1)):0;
+ if(wetWalls.length>1){band+=(wetWalls.length-1)*H;sil+=(wetWalls.length-1)*H;}
+ sil+=wetWalls.reduce((a,w)=>a+wallW(w),0);
+ const bagsOf=(sf,cov)=>Math.ceil(sf/cov*1.05);
+ const tn={s:'1/4×1/4',m:'1/4×3/8',l:'1/2×1/2'},cov={s:m.covS,m:m.covM,l:m.covL};
+ let memSf=(m.wp==='kerdi'?wetSf:0)+(m.ditra?floorSf:0);
+ for(const k of['s','m','l'])if(thin[k]>0.5)rows.push([t('thinset'),`${bagsOf(thin[k],cov[k])} ${t('bags')}`,`${t('trowel')} ${tn[k]} · ${thin[k].toFixed(0)} sf${k==='l'?' · back-butter':''}`]);
+ if(memSf>0.5)rows.push([t('thinset'),`${bagsOf(memSf,m.covS)} ${t('bags')}`,t('under')]);
+ if(grout>0)rows.push([t('groutM'),`${Math.ceil(grout)} ${t('lb')} → ${Math.ceil(grout/(+m.groutBag||25))} × ${m.groutBag} ${t('lb')}`,t('groutNote')]);
+ if(m.wp==='kerdi'&&wetSf>0){rows.push([t('membrane'),`${Math.ceil(wetSf*1.15/m.roll)} × ${m.roll} sf`,`${wetSf.toFixed(0)} sf ${t('wetArea')}`]);
+  rows.push([t('band'),`${Math.ceil(band/12)} ft → ${Math.ceil(band/12*1.1/m.band)} × ${m.band} ft`,t('bandNote')]);
+  const ic=Math.max(0,wetWalls.length-1)*2+niches*4,oc=niches*4+curbs*2;if(ic)rows.push([t('inCorners'),String(ic),'']);if(oc)rows.push([t('outCorners'),String(oc),'']);
+  if(valves||pipes)rows.push([t('seals'),`${valves+pipes}`,`${valves?valves+' valve':''}${valves&&pipes?' + ':''}${pipes?pipes+' pipe':''}`]);}
+ if(m.wp==='liquid'&&wetSf>0)rows.push([t('liquidGal'),`${Math.ceil(wetSf*1.1/m.liq)}`,`${wetSf.toFixed(0)} sf ${t('wetArea')} · ${t('bandNote2')}`]);
+ if(m.board&&wallSf>0)rows.push([t('boardSheets'),`${Math.ceil(wallSf*1.1/(+m.boardSf||15))}`,`${wallSf.toFixed(0)} sf`]);
+ if(m.ditra&&floorSf>0)rows.push([t('ditraRolls'),`${Math.ceil(floorSf*1.1/(+m.ditraSf||54))} × ${m.ditraSf} sf`,`${floorSf.toFixed(0)} sf`]);
+ if(clips)rows.push([t('clipsN'),`≈ ${Math.ceil(clips/100)*100}`,t('clipsNote')]);
+ if(sil>0)rows.push([t('silicone'),`${Math.ceil(sil/12/(+m.silLf||24))}`,`${(sil/12).toFixed(0)} ft ${t('silNote')}`]);
+ if(lf>0)rows.push(['Schluter '+P.sch.profile+' '+P.sch.size,`${Math.ceil(lf/98.5)} × 8′2½″`,`${(lf/12).toFixed(1)} ft`]);
+ return rows;}
+function renderMat(){const el=$('#mat');if(!el)return;const rows=materials();
+ el.innerHTML=`<table><tr><th>${t('matItem')}</th><th class="n">${t('matQty')}</th></tr>${rows.map(r=>`<tr><td>${esc(r[0])}${r[2]?`<br><small style="color:var(--mut)">${esc(r[2])}</small>`:''}</td><td class="n"><b>${esc(r[1])}</b></td></tr>`).join('')}</table><p class="hint">${t('matNoteAll')}</p>`;}
+
+/* ================= cut sheet modal ================= */
+function cutSheetModal(){if(!R)return;const s=cur();const g=cutSheet(R);
+ let h=`<h3>${t('cutSheet')} — ${esc(s.name)}</h3><p class="hint">${esc(tileDesc(R.T))} · ${t('grout')} ${fmt(+R.T.g)} · ${t('gapNote')} (${fmt(+P.edgeGap)})</p>`;
+ h+=g.map(gr=>`<p style="margin:12px 0 4px"><b>${esc(gr.label)}</b>${gr.full?` · ${t('fullN')}: ${gr.full}`:''}</p><table>${gr.items.map(p=>`<tr><td style="width:44px;color:#b4441b;font-weight:800">#${p.no}</td><td><span class="sw" style="background:${COL[p.c]}"></span><b>${esc(pieceSize(p))}</b></td><td style="color:var(--mut)">${esc(pieceNote(p))}</td></tr>`).join('')}</table>`).join('');
+ if(R.drill.length)h+=`<p style="margin:12px 0 4px"><b>${t('drill')}</b></p>`+R.drill.map(d=>`<div class="dl">${(d.p&&d.p.no?'#'+d.p.no+' — ':d.p?t('fullTile')+' — ':'')}${drillTxt(d)}</div>`).join('');
+ h+=`<div class="btns">${S.nums?'':`<button class="btn p" data-act="nums">${t('showNums')}</button>`}<button class="btn" data-act="closeModal">${t('close')}</button></div>`;modal(h);}
+
+/* ================= PDF ================= */
+function exportMenu(){modal(`<h3>${t('exportT2')}</h3><div class="btns" style="flex-direction:column"><button class="btn p w" data-act="pdf:client">${t('pdfClient')}</button><button class="btn w" data-act="pdf:cut">${t('pdfCut')}</button>${S.tab!=='tot'?`<button class="btn w" data-act="img">${t('imgThis')}</button>`:''}<button class="btn w" data-act="closeModal">${t('close')}</button></div><p class="hint">${t('pdfHint')}</p>`);}
+function svgImg(V,W,H){return new Promise(res=>{const str=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${V.vb.join(' ')}">${V.body}</svg>`;const img=new Image();img.onload=()=>res(img);img.onerror=()=>res(null);img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(str);});}
+function Rep(){const W=1275,H=1650,M=72,pages=[];let c,x,y;const font=(sz,b)=>`${b?'700 ':''}${sz}px -apple-system,Segoe UI,Roboto,Arial,sans-serif`;
+ const np=()=>{c=document.createElement('canvas');c.width=W;c.height=H;x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);pages.push(c);y=M;};np();
+ const wrap=(str,maxW,sz,b)=>{x.font=font(sz,b);const out=[];String(str).split('\n').forEach(par=>{let line='';par.split(' ').forEach(w=>{const tl=line?line+' '+w:w;if(x.measureText(tl).width>maxW&&line){out.push(line);line=w;}else line=tl;});out.push(line);});return out;};
+ const r={W,H,M,np,get y(){return y},set y(v){y=v},
+  space(h){if(y+h>H-M-30)np();},
+  text(str,o={}){const sz=o.size||22,b=!!o.bold;const xx=o.x||M;wrap(str,o.maxW||W-M-xx,sz,b).forEach(ln=>{r.space(sz*1.4);x.font=font(sz,b);x.fillStyle=o.color||'#1e2226';x.fillText(ln,xx,y+sz);y+=sz*1.4;});y+=o.after==null?6:o.after;},
+  rule(){r.space(12);x.fillStyle='#ddd6cb';x.fillRect(M,y+4,W-2*M,2);y+=14;},
+  table(cols,rows,o={}){const sz=o.size||19,rh=sz*1.75,tw=W-2*M;
+   const head=()=>{r.space(rh*2);x.fillStyle='#efe9df';x.fillRect(M,y,tw,rh);x.font=font(sz-1,true);x.fillStyle='#555';let cx=M+8;cols.forEach(cl=>{x.textAlign=cl.r?'right':'left';x.fillText(cl.t,cl.r?cx+cl.w*tw-16:cx,y+rh*0.66);cx+=cl.w*tw;});x.textAlign='left';y+=rh;};head();
+   rows.forEach(row=>{const cellOf=i=>{const v=row[i];return v&&typeof v==='object'?v:{t:v==null?'':String(v)};};
+    const hs=cols.map((cl,i)=>{const cv=cellOf(i);return wrap(cv.t,cl.w*tw-16-(cv.sw?sz*1.2:0),sz,cv.b).length;});const hh=Math.max(...hs)*sz*1.3+sz*0.5;if(y+hh>H-M-30){np();head();}
+    let cx=M+8;cols.forEach((cl,i)=>{const cv=cellOf(i);let ox=0;if(cv.sw){x.fillStyle=cv.sw;x.fillRect(cx,y+sz*0.45,sz*0.8,sz*0.8);x.strokeStyle='#8a847a';x.strokeRect(cx,y+sz*0.45,sz*0.8,sz*0.8);ox=sz*1.2;}
+     const lines=wrap(cv.t,cl.w*tw-16-ox,sz,cv.b);x.font=font(sz,cv.b);x.fillStyle=cv.c||'#1e2226';x.textAlign=cl.r?'right':'left';lines.forEach((ln,k)=>x.fillText(ln,cl.r?cx+cl.w*tw-16:cx+ox,y+sz*1.15+k*sz*1.3));x.textAlign='left';cx+=cl.w*tw;});
+    y+=hh;x.fillStyle='#eee9e0';x.fillRect(M,y-1,tw,1);});y+=10;},
+  image(img,w,h){r.space(h+10);x.drawImage(img,(W-w)/2,y,w,h);y+=h+12;},
+  finish(title){pages.forEach((p,i)=>{const cx=p.getContext('2d');cx.font=font(16);cx.fillStyle='#888';cx.fillText(`PrusArt Inc. · ${title}`,M,H-36);cx.textAlign='right';cx.fillText(`${i+1} / ${pages.length}`,W-M,H-36);cx.textAlign='left';});return pages;}};
+ return r;}
+async function drawSurfInto(rep,items,maxH){const W0=rep.W-2*rep.M;
+ const probe=buildViewItems(1000,0,{zoom:1,panX:0,panY:0},1.6,items,items.length>1);if(!probe)return;const ratio=probe.Hpx/1000;
+ let w=W0,h=w*ratio;const avail=Math.min(maxH,rep.H-rep.M*2-80);if(h>avail){h=avail;w=h/ratio;}
+ const V=buildViewItems(w*2,h*2,{zoom:1,panX:0,panY:0},2.6,items,items.length>1);const img=await svgImg(V,Math.round(w*2),Math.round(h*2));if(img)rep.image(img,w,h);}
+let PDF=null;
+async function makePdf(kind){modal(`<h3>${t('building')}</h3><p class="hint">…</p>`);await new Promise(r=>setTimeout(r,40));
+ const keep={l:S.labels,n:S.nums};
+ try{
+ const rep=Rep(),date=new Date().toLocaleDateString(lang==='ru'?'ru-RU':'en-US');
+ rep.text('PrusArt Inc.',{size:20,color:'#d27a24',bold:true,after:2});rep.text(P.name,{size:40,bold:true,after:4});
+ rep.text([P.client,date,kind==='cut'?t('pdfCut'):t('pdfClient')].filter(Boolean).join(' · '),{size:20,color:'#666',after:14});rep.rule();
+ const all=P.surfaces.map(s=>({s,R:compute(s)}));
+ rep.table([{t:t('surface'),w:.28},{t:t('dims'),w:.22},{t:t('tile'),w:.36},{t:'sf',w:.14,r:true}],all.map(({s,R})=>[{t:s.name,b:true},`${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)}`,`${tileDesc(R.T)} · ${patName(R.T)} · ${t('grout')} ${fmt(+R.T.g)}`,sq(R.area)]));
+ if(kind==='cut'){const g={};all.forEach(({R})=>{for(const k in R.nb)g[k]=(g[k]||0)+R.nb[k];});
+  rep.text(t('byTile'),{size:24,bold:true});rep.table([{t:t('tile'),w:.5},{t:t('need'),w:.25,r:true},{t:t('order')+' +'+P.waste+'%',w:.25,r:true}],Object.keys(g).map(k=>[k,String(g[k]),{t:String(Math.ceil(g[k]*(1+(+P.waste||0)/100))),b:true}]));
+  rep.text(t('materials'),{size:24,bold:true});rep.table([{t:t('matItem'),w:.4},{t:t('matQty'),w:.27},{t:t('matNote'),w:.33}],materials().map(r=>[{t:r[0],b:true},r[1],{t:r[2],c:'#666'}]),{size:18});
+  rep.text(t('matNoteAll'),{size:16,color:'#777'});}
+ S.labels=kind==='cut';S.nums=kind==='cut';
+ const walls=P.surfaces.filter(s=>s.type==='wall');
+ if(walls.length>=2){rep.np();rep.text(t('allWalls'),{size:30,bold:true});await drawSurfInto(rep,allWallItems(),rep.H*0.6);}
+ for(const {s,R} of all){rep.np();rep.text(s.name,{size:30,bold:true,after:2});
+  rep.text(`${fmt(R.G.bb.x1-R.G.bb.x0)} × ${fmt(R.G.bb.y1-R.G.bb.y0)} · ${tileDesc(R.T)} · ${patName(R.T)} · ${t('grout')} ${fmt(+R.T.g)}${R.lf>0?` · Schluter ${P.sch.profile} ${P.sch.size}`:''}`,{size:19,color:'#555',after:10});
+  await drawSurfInto(rep,[{s,R,dx:0,dy:0}],kind==='cut'?rep.H*0.55:rep.H*0.72);
+  if(kind==='client'){rep.text(`${t('area')}: ${sq(R.area)}`,{size:20});continue;}
+  rep.text(`${t('full')} ${R.full} · ${t('cuts')} ${R.cuts} · ${t('minCut')} ${R.minc<1e8?fmt(R.minc):'—'} · ${t('need')} ${R.need} · ${t('order')} ${R.order}`,{size:19,bold:true});
+  if(R.ledger&&R.ledger.y!=null)rep.text(`${t('outLevel')} ${fmt(R.ledger.hi-R.ledger.lo)}. ${t('ledgerTxt')} ${fmt(R.ledger.y)} ${t('ledgerFrom')}`,{size:18,color:'#b3261e'});
+  if(R.T.shape==='rect'&&!(R.T.sheet&&R.T.sheet.on)){const rows=[];cutSheet(R).forEach(gr=>{gr.items.forEach((p,i)=>rows.push([{t:'#'+p.no,b:true,c:'#b4441b'},{t:i===0?gr.label.replace(' '+t('rowBottom'),'')+(gr.full?` (${t('fullN')} ${gr.full})`:''):'',c:'#555'},{t:pieceSize(p),b:true,sw:COL[p.c]},{t:pieceNote(p),c:'#666'}]));});
+   rep.text(t('cutSheet'),{size:21,bold:true,after:2});rep.table([{t:'#',w:.09},{t:t('row'),w:.21},{t:t('size'),w:.38},{t:t('matNote'),w:.32}],rows,{size:18});}
+  if(R.drill.length){rep.text(t('drill'),{size:21,bold:true,after:2});R.drill.forEach(d=>rep.text(((d.p&&d.p.no?'#'+d.p.no+' — ':d.p?t('fullTile')+' — ':''))+drillTxt(d).replace(/<[^>]+>/g,''),{size:18}));}
+  const st=R.strips.filter(x=>x.count||x.tiles);if(st.length){rep.text(t('strips'),{size:21,bold:true,after:2});st.forEach(x=>rep.text(stripTxt(x),{size:18}));}}
+ const pages=rep.finish(P.name);
+ PDF={bytes:pdfFromCanvases(pages),name:`${(P.name||'project').replace(/[^\wЀ-ӿ -]+/g,'').trim().replace(/\s+/g,'_')||'project'}_${kind==='cut'?'cuts':'client'}.pdf`,n:pages.length};
+ }catch(e){console.error(e);S.labels=keep.l;S.nums=keep.n;modal(`<h3>Error</h3><p>${esc(e.message)}</p><div class="btns"><button class="btn" data-act="closeModal">${t('close')}</button></div>`);return;}
+ S.labels=keep.l;S.nums=keep.n;
+ const url=URL.createObjectURL(new Blob([PDF.bytes],{type:'application/pdf'}));
+ modal(`<h3>${t('pdfReady')}</h3><p class="hint">${esc(PDF.name)} · ${PDF.n} ${t('pagesN')}</p><div class="btns" style="flex-direction:column"><button class="btn p w" data-act="sharePdf">${t('sharePdf')}</button><a class="btn w" style="text-align:center;text-decoration:none" href="${url}" download="${esc(PDF.name)}" target="_blank">${t('dlPdf')}</a><button class="btn w" data-act="closeModal">${t('close')}</button></div><p class="hint">${t('pdfHint')}</p>`);}
+async function sharePdf(){if(!PDF)return;const file=new File([PDF.bytes],PDF.name,{type:'application/pdf'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:PDF.name});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+ try{const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=PDF.name;document.body.appendChild(a);a.click();a.remove();}catch(e){}}
+function b64bytes(d){const b=atob(d.split(',')[1]);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
+function pdfFromCanvases(pages){const enc=new TextEncoder(),parts=[],off=[];let len=0;const push=v=>{const b=typeof v==='string'?enc.encode(v):v;parts.push(b);len+=b.length;};
+ push(new Uint8Array([37,80,68,70,45,49,46,52,10,37,226,227,207,211,10]));
+ const N=pages.length,kids=[];for(let i=0;i<N;i++)kids.push(`${3+3*i} 0 R`);
+ off[1]=len;push(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);
+ off[2]=len;push(`2 0 obj\n<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${N} >>\nendobj\n`);
+ pages.forEach((c,i)=>{const pg=3+3*i,ct=pg+1,im=pg+2,jp=b64bytes(c.toDataURL('image/jpeg',0.82));const cs=`q 612 0 0 792 0 0 cm /Im0 Do Q`;
+  off[pg]=len;push(`${pg} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>\nendobj\n`);
+  off[ct]=len;push(`${ct} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+  off[im]=len;push(`${im} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jp.length} >>\nstream\n`);push(jp);push(`\nendstream\nendobj\n`);});
+ const max=2+3*N,xo=len;let xr=`xref\n0 ${max+1}\n0000000000 65535 f \n`;for(let i=1;i<=max;i++)xr+=String(off[i]).padStart(10,'0')+' 00000 n \n';
+ push(xr+`trailer\n<< /Size ${max+1} /Root 1 0 R >>\nstartxref\n${xo}\n%%EOF\n`);
+ const out=new Uint8Array(len);let p=0;parts.forEach(b=>{out.set(b,p);p+=b.length;});return out;}
 
 /* ================= init ================= */
 (function init(){
