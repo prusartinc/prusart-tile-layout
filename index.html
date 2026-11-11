@@ -143,9 +143,11 @@ body.tot #stage,body.tot #stat,body.tot #legend{display:none}
 "use strict";
 /* ================= i18n ================= */
 const I18N={
-ru:{dirR:'→ лесенка вправо',dirL:'← лесенка влево',dirA:'⇄ через ряд',moveLock:'🔒 Замок',plumbOn:'Стена не в отвесе (углы завалены)',plumbHint:'Повесь уровень/лазер по углу снизу вверх. На сколько угол уходит вверху: + если внутрь стены (стена вверху уже), − если наружу.',pL:'Левый угол вверху',pR:'Правый угол вверху',noteTaperW:'клин по высоте',
+ru:{tubOn:'Ванна / поддон у этой стены (торцевая стена)',tubHint:'Плитка над ванной + полоса за краем ванны до пола. Задняя стена над ванной — без этой галочки, у неё «Низ стены над полом» = высота ванны.',tubSide:'Где ванна на этой стене',tubSide_r:'Справа (угол справа)',tubSide_l:'Слева (угол слева)',tubD:'Глубина ванны от угла',tubH:'Высота борта от пола',tubR:'Радиус скругления угла ванны',tubStrip:'Полоса до пола',tubRF:'Подъём борта у края ванны',tubRB:'Подъём борта в углу',tubRHint:'Радиус: если внешний угол ванны скруглён — приложи угольник и измерь, где начинается скругление (обычно 1–3″). 0 = острый угол. Подъём борта — если ванна не в уровне по этой стене (0 у самой низкой точки).',ledgerFromFloor:'от пола — от неё первый целый ряд над ванной.',noteArc:'рез по радиусу',
+drawBtn:'Нарисовать форму',helpBtn:'Как вводить',drawTitle:'Нарисуй форму',drawHint:'Веди пальцем по контуру или ставь точки в углах по очереди. Неровно — не страшно: линии выпрямятся, потом введёшь реальные размеры каждой стороны.',drawUndoPt:'Точка',drawClear:'Очистить',drawApply:'Выпрямить и применить',drawEmpty:'Рисуй здесь',drawNeed3:'Нужно хотя бы 3 угла.',closeWalk:'Замкнуть (подогнать 2 последние стороны)',cantClose:'Не получается — проверь углы',
+helpTitle:'Как задать форму',helpHtml:'<p><b>Прямоугольник</b> — ширина и высота (для пола — ширина и длина).</p><p><b>Г-образная</b> — прямоугольник с вырезом в одном углу: ширина и глубина выреза + угол.</p><p><b>По стенам (углы)</b> — обходишь контур по кругу: длина стороны и поворот после неё (↰ налево / ↱ направо, 90°, 45°, 135° или свой). Начало — левый нижний угол, идём вправо.</p><p><b>✏️ Нарисовать</b> — рисуешь пальцем примерно, линии выпрямятся, потом вводишь реальные размеры каждой стороны (или нажимаешь на размер прямо на чертеже).</p><p><b>Свои точки</b> — углы как координаты x,y в дюймах от левого нижнего угла, по порядку, через «;».<br>Скошенный потолок 60″, слева 96, справа 72: <code>0,0; 60,0; 60,72; 0,96</code><br>Бортик ванны справа внизу 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>Торцевая стена у ванны</b> — галочка «Ванна / поддон у этой стены»: глубина, высота, радиус угла, полоса до пола считается сама.</p><p><b>Неровности</b> — «Низ не в уровне» и «Стена не в отвесе» дают клиновые подрезки.</p>',dirR:'→ лесенка вправо',dirL:'← лесенка влево',dirA:'⇄ через ряд',moveLock:'🔒 Замок',plumbOn:'Стена не в отвесе (углы завалены)',plumbHint:'Повесь уровень/лазер по углу снизу вверх. На сколько угол уходит вверху: + если внутрь стены (стена вверху уже), − если наружу.',pL:'Левый угол вверху',pR:'Правый угол вверху',noteTaperW:'клин по высоте',
 allFloor:'Весь пол',posX:'Положение на плане X',posY:'Положение на плане Y',zlink:'Единая сетка с другими зонами пола',zoneHint:'Зоны (ванная, клозет, туалет) ставятся на общий план. С единой сеткой плитка идёт через проём без сбоя; без неё — своя раскладка и порог.',
-walkHint:'Обойди пол вдоль стен по кругу: длина стены и поворот после неё. Против часовой — повороты налево.',wallN:'Стена',turn:'Поворот',left:'налево',right:'направо',other:'другой',turnDeg:'Поворот, ° (+ налево, − направо)',addSeg:'+ Стена',walkGap:'Контур не сходится на',walk:'По стенам (углы)',
+walkHint:'Обойди контур по кругу: длина стороны и поворот после неё. Начало — левый нижний угол, идём вправо; против часовой — повороты налево.',wallN:'Сторона',turn:'Поворот',left:'налево',right:'направо',other:'другой',turnDeg:'Поворот, ° (+ налево, − направо)',addSeg:'+ Стена',walkGap:'Контур не сходится на',walk:'По стенам (углы)',
 floorHint:'Расставь зоны пола на общем плане. Включи «Единая сетка», если плитка идёт через проём без порога.',zones:'Зоны пола',autoFloor:'✦ Авто для всего пола',tileToFloors:'Плитку первого пола → на все полы',done:'Готово',dragOpHint:'Нишу или вырез можно двигать пальцем прямо на чертеже.',showNums:'Показать номера на чертеже',fullTile:'целая плитка',cutSheet:'Лист резки по номерам',row:'Ряд',rowBottom:'(снизу)',fullN:'целых',nicheBack:'Задник ниши',noteTaper:'клин',noteL:'L-рез',noteAng:'угловой рез',
 exportT2:'Экспорт',pdfClient:'PDF для клиента',pdfCut:'PDF для резки (помощнику)',imgThis:'Картинка этого вида',building:'Готовлю PDF…',pdfReady:'PDF готов',sharePdf:'Поделиться / сохранить',dlPdf:'Скачать',pagesN:'стр.',dims:'Размер',
 pdfHint:'На iPhone: «Поделиться» → «Сохранить в Файлы» или отправь в Сообщениях. В версии внутри Claude скачивание может не работать — используй установленное приложение.',
@@ -194,9 +196,11 @@ autoAll:'✦ Авто для всех стен',tileToAll:'Плитку перв
 wallsRes:'По стенами',combined:'Общий список подрезок',total:'Всего',noWalls:'Добавь хотя бы одну стену',
 pr_stack:'Стек',pr_brick:'Кирпич 1/2',pr_third:'Смещение 1/3',pr_quarter:'Смещение 1/4',pr_vstack:'Вертикальный стек',pr_voff:'Вертикально 1/2',pr_diag:'Диагональ 45°',pr_diagbrick:'Диагональ кирпич',pr_checker:'Шахматка',pr_herr45:'Ёлочка 45°',pr_herr90:'Ёлочка 90°',pr_basket:'Плетёнка',pr_pinwheel:'Пинвил',pr_chevron:'Шеврон',pr_hex:'Соты (hex)',pr_penny:'Пенни',pr_mosaic:'Мозаика',
 galHint:'Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.',unevenOn:'Низ не в уровне (ванна / акриловый поддон)',unevenHint:'Положи уровень или лазер на борт ванны/поддона, найди самую низкую точку (= 0) и измерь, на сколько выше края. Высота стены — от самой низкой точки. Для связанных стен углы должны совпадать.',uL:'Подъём у левого края',uR:'Подъём у правого края',uMidOn:'Прогиб / горб в середине',uM:'Подъём в середине',outLevel:'Перекос',onLen:'на',ledgerTxt:'Рейку (ledger) ставь строго по уровню на высоте',ledgerFrom:'от самой низкой точки — от неё первый целый ряд.',taperNote:'Нижний ряд режется клином: размеры «слева→справа».'},
-en:{dirR:'→ step right',dirL:'← step left',dirA:'⇄ every other row',moveLock:'🔒 Lock',plumbOn:'Wall out of plumb (corners lean)',plumbHint:'Hold a level/laser along the corner from bottom up. How far the corner is off at the top: + if it leans into the wall (narrower at top), − if outward.',pL:'Left corner at top',pR:'Right corner at top',noteTaperW:'taper by height',
+en:{tubOn:'Tub / pan against this wall (end wall)',tubHint:'Tile above the tub + a strip past the tub edge down to the floor. The back wall above the tub does not use this — set its “Wall bottom above floor” to the tub height.',tubSide:'Where the tub is on this wall',tubSide_r:'Right (corner on the right)',tubSide_l:'Left (corner on the left)',tubD:'Tub depth from corner',tubH:'Tub rim height from floor',tubR:'Tub corner radius',tubStrip:'Strip to floor',tubRF:'Rim rise at tub edge',tubRB:'Rim rise at corner',tubRHint:'Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).',ledgerFromFloor:'above the floor — first full row above the tub starts there.',noteArc:'radius cut',
+drawBtn:'Draw shape',helpBtn:'How to enter',drawTitle:'Draw the shape',drawHint:'Trace the outline with your finger or tap the corners in order. Rough is fine: lines get straightened, then enter the real length of each side.',drawUndoPt:'Point',drawClear:'Clear',drawApply:'Straighten & apply',drawEmpty:'Draw here',drawNeed3:'Need at least 3 corners.',closeWalk:'Close (fit last 2 sides)',cantClose:'Cannot close — check angles',
+helpTitle:'How to set the shape',helpHtml:'<p><b>Rectangle</b> — width and height (floor: width and length).</p><p><b>L-shape</b> — rectangle with a notch in one corner: notch width, depth and corner.</p><p><b>By walls (angles)</b> — walk the outline: side length and the turn after it (↰ left / ↱ right, 90°, 45°, 135° or custom). Start at the bottom-left corner going right.</p><p><b>✏️ Draw</b> — sketch with your finger, lines get straightened, then enter real side lengths (or tap a size on the drawing).</p><p><b>Custom points</b> — corners as x,y inches from the bottom-left, in order, separated by “;”.<br>Sloped ceiling 60″, 96 left, 72 right: <code>0,0; 60,0; 60,72; 0,96</code><br>Tub deck bottom-right 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>End wall at a tub</b> — check “Tub / pan against this wall”: depth, height, corner radius; the strip to the floor is computed.</p><p><b>Out of level</b> — “Bottom out of level” and “Wall out of plumb” give tapered cuts.</p>',dirR:'→ step right',dirL:'← step left',dirA:'⇄ every other row',moveLock:'🔒 Lock',plumbOn:'Wall out of plumb (corners lean)',plumbHint:'Hold a level/laser along the corner from bottom up. How far the corner is off at the top: + if it leans into the wall (narrower at top), − if outward.',pL:'Left corner at top',pR:'Right corner at top',noteTaperW:'taper by height',
 allFloor:'Whole floor',posX:'Plan position X',posY:'Plan position Y',zlink:'Shared grid with other floor zones',zoneHint:'Zones (bath, closet, toilet room) sit on a shared plan. With a shared grid the tile runs through the doorway; without it — own layout and a threshold.',
-walkHint:'Walk the floor along the walls: wall length and the turn after it. Counter-clockwise = left turns.',wallN:'Wall',turn:'Turn',left:'left',right:'right',other:'other',turnDeg:'Turn, ° (+ left, − right)',addSeg:'+ Wall',walkGap:'Outline does not close by',walk:'By walls (angles)',
+walkHint:'Walk the outline: side length and the turn after it. Start at the bottom-left corner going right; counter-clockwise = left turns.',wallN:'Side',turn:'Turn',left:'left',right:'right',other:'other',turnDeg:'Turn, ° (+ left, − right)',addSeg:'+ Wall',walkGap:'Outline does not close by',walk:'By walls (angles)',
 floorHint:'Place floor zones on a shared plan. Turn on “Shared grid” where tile runs through a doorway without a threshold.',zones:'Floor zones',autoFloor:'✦ Auto for whole floor',tileToFloors:'First floor tile → all floors',done:'Done',dragOpHint:'Niches and cutouts can be dragged right on the drawing.',showNums:'Show numbers on drawing',fullTile:'full tile',cutSheet:'Cut sheet by number',row:'Row',rowBottom:'(bottom)',fullN:'full',nicheBack:'Niche back',noteTaper:'taper',noteL:'L-cut',noteAng:'angled cut',
 exportT2:'Export',pdfClient:'PDF for client',pdfCut:'PDF cut sheet (installer)',imgThis:'Image of this view',building:'Building PDF…',pdfReady:'PDF ready',sharePdf:'Share / save',dlPdf:'Download',pagesN:'pages',dims:'Size',
 pdfHint:'On iPhone: Share → Save to Files, or send via Messages. Inside Claude downloads may not work — use the installed app.',
@@ -286,12 +290,22 @@ function clipConvex(subj,clip){let out=subj;
  return out;}
 function pip(p,x,y){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const a=p[i],b=p[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;}
 function parsePts(str){return String(str||'').split(/[;\n]+/).map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.split(',');return[parseLen(m[0]),parseLen(m[1]||'')];}).filter(q=>isFinite(q[0])&&isFinite(q[1]));}
-const isUneven=s=>s.type==='wall'&&s.shape==='rect'&&s.uneven&&s.uneven.on;
+const isTub=s=>s.type==='wall'&&s.shape==='rect'&&s.tub&&s.tub.on;
+const isUneven=s=>s.type==='wall'&&s.shape==='rect'&&s.uneven&&s.uneven.on&&!isTub(s);
 const isZLinked=s=>s.type!=='wall'&&!!s.zlink;
 const isPlumb=s=>s.type==='wall'&&s.shape==='rect'&&s.plumb&&s.plumb.on;
-const isShaped=s=>isUneven(s)||isPlumb(s);
+const isShaped=s=>isUneven(s)||isPlumb(s)||isTub(s);
+function tubDims(s){const tb=s.tub,W=s.w,d=Math.max(0,Math.min(+tb.d||0,W)),h=+tb.h||0,r=Math.max(0,Math.min(+tb.r||0,d*0.9,h*0.9));return{W,d,xs:W-d,h,r,hF:h+(+tb.rF||0),hB:h+(+tb.rB||0)};}
+function tubChain(s){const{W,xs,r,hF,hB}=tubDims(s);const pts=[[0,0]];if(xs>0.01)pts.push([xs,0]);
+ if(r>0.05){const cx=xs+r,cy=hF-r;for(let k=0;k<=10;k++){const th=Math.PI-k*(Math.PI/2)/10;pts.push([cx+r*Math.cos(th),cy+r*Math.sin(th)]);}}else pts.push([xs,hF]);
+ pts.push([W,hB]);const out=s.tub.side==='l'?pts.map(q=>[W-q[0],q[1]]).reverse():pts;
+ return out.filter((q,i)=>i===0||Math.hypot(q[0]-out[i-1][0],q[1]-out[i-1][1])>1e-6);}
+function tubArc(s){if(!isTub(s))return null;const{W,xs,r,hF}=tubDims(s);if(r<=0.05)return null;const c=[xs+r,hF-r];return{c:s.tub.side==='l'?[W-c[0],c[1]]:c,r,side:s.tub.side};}
+function clipChainX(ch,x0,x1){const out=[];for(let i=0;i<ch.length;i++){const p=ch[i];if(p[0]>=x0-1e-9&&p[0]<=x1+1e-9)out.push(p);
+  if(i<ch.length-1){const q=ch[i+1];const xs2=[x0,x1].filter(xc=>(p[0]-xc)*(q[0]-xc)<0);if(q[0]<p[0])xs2.reverse();for(const xc of xs2){const u=(xc-p[0])/(q[0]-p[0]);out.push([xc,p[1]+u*(q[1]-p[1])]);}}}
+ return out;}
 function wallPoly(s,inL,inR,inT,inB){const W=s.w,H=s.h,lt=isPlumb(s)?+s.plumb.l||0:0,rt=isPlumb(s)?+s.plumb.r||0:0;
- const bot=isUneven(s)?botPts(s,inL,W-inR):[[inL,inB],[W-inR,inB]];return bot.concat([[W-rt-inR,H-inT],[lt+inL,H-inT]]);}
+ const bot=isTub(s)?clipChainX(tubChain(s),inL,W-inR):isUneven(s)?botPts(s,inL,W-inR):[[inL,inB],[W-inR,inB]];return bot.concat([[W-rt-inR,H-inT],[lt+inL,H-inT]]);}
 function botY(s,x){const u=s.uneven,W=s.w,l=+u.l||0,r=+u.r||0;if(u.mOn){const m=+u.m||0;return x<=W/2?l+(m-l)*(x/(W/2)):m+(r-m)*((x-W/2)/(W/2));}return l+(r-l)*(x/W);}
 function botPts(s,x0,x1){const pts=[[x0,botY(s,x0)]];if(s.uneven.mOn&&x0<s.w/2&&x1>s.w/2)pts.push([s.w/2,botY(s,s.w/2)]);pts.push([x1,botY(s,x1)]);return pts;}
 function walkPoly(s){const segs=s.segs||[];let x=0,y=0,h=0;const raw=[[0,0]];
@@ -429,7 +443,7 @@ function pieces(region,holes,T,niche,bot){
    if(tv){taper=tv.map(h=>h-gap*((cB?1:0)+(cT?1:0)));chv=Math.min(...taper);}
    if(tw2){taperW=tw2.map(w=>w-gap*((cL?1:0)+(cR?1:0)));cwv=Math.min(...taperW);}
    if(taper||taperW)notch=false;}
-  out.push({t,k:t.k,q:t.q,x0:t.x0,y0:t.y0,lw:t.lw,lh:t.lh,b,a,ta,lp:b.lp,cutX:cL||cR,cutY:cB||cT,notch,cw:cwv,ch:chv,taper,taperW,full,niche:!!niche,hl,ax:C.every((q,i)=>{const r2=C[(i+1)%C.length];return Math.abs(q[0]-r2[0])<1e-6||Math.abs(q[1]-r2[1])<1e-6;})});}
+  out.push({t,k:t.k,q:t.q,x0:t.x0,y0:t.y0,lw:t.lw,lh:t.lh,b,a,ta,lp:b.lp,cutX:cL||cR,cutY:cB||cT,notch,cw:cwv,ch:chv,taper,taperW,full,niche:!!niche,hl,C,ax:C.every((q,i)=>{const r2=C[(i+1)%C.length];return Math.abs(q[0]-r2[0])<1e-6||Math.abs(q[1]-r2[1])<1e-6;})});}
  return out;}
 
 const RANK={full:0,cut:1,warn:2,bad:3};
@@ -469,7 +483,7 @@ function countSheets(region,T){const sw=+T.sheet.w||12,sh=+T.sheet.h||12,g=+T.g|
 /* ================= surface geometry ================= */
 function geom(s){
  const sw=+P.sch.vis||0,outer=outerPoly(s);let region=outer;
- if(isShaped(s)){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,tp=tr.t?sw:0,b=tr.b&&!isUneven(s)?sw:0;region=wallPoly(s,l,r,tp,b);}
+ if(isShaped(s)){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,tp=tr.t?sw:0,b=tr.b&&!isUneven(s)&&!isTub(s)?sw:0;region=wallPoly(s,l,r,tp,b);}
  else if(s.shape==='rect'){const tr=s.trim;const l=tr.l?sw:0,r=tr.r?sw:0,b=tr.b?sw:0,tp=tr.t?sw:0;region=rectPoly(l,b,s.w-l-r,s.h-b-tp);}
  const holes=[],niches=[];
  for(const o of s.openings){let poly;
@@ -514,7 +528,7 @@ function compute(s){
  const order=Math.ceil(need*(1+(+P.waste||0)/100));
  const unitSq=sheet?(+T.sheet.w)*(+T.sheet.h)/144:(+T.w)*(+T.h||+T.w)/144;
  const perBox=T.sqftBox>0&&unitSq>0&&patOf(T)!=='pinwheel'?Math.max(1,Math.round(T.sqftBox/unitSq)):0,boxes=perBox?Math.ceil(order/perBox):0;
- const gl={};if(T.shape==='rect'&&!sheet)all.filter(p=>!p.full).forEach(p=>{let k=(p.taper||p.taperW)?(pieceSize(p)+' ⟋'):(p.notch?(p.cutX||p.cutY||(p.ax&&!p.hl)?'L ':p.hl?'⊙ ':'◿ '):'')+fmtIn(p.cw)+' × '+fmtIn(p.ch);if(p.hl)k+=' + '+[...new Set(p.hl)].map(x=>t(x)).join(', ');const e=gl[k]||(gl[k]={k,n:0,c:p.c,cw:p.cw,ch:p.ch});e.n++;if(RANK[p.c]>RANK[e.c])e.c=p.c;});
+ const gl={};if(T.shape==='rect'&&!sheet)all.filter(p=>!p.full).forEach(p=>{let k=(p.taper||p.taperW)?(pieceSize(p)+' ⟋'):(p.notch?(p.arc?'◠ ':p.cutX||p.cutY||(p.ax&&!p.hl)?'L ':p.hl?'⊙ ':'◿ '):'')+fmtIn(p.cw)+' × '+fmtIn(p.ch);if(p.hl)k+=' + '+[...new Set(p.hl)].map(x=>t(x)).join(', ');const e=gl[k]||(gl[k]={k,n:0,c:p.c,cw:p.cw,ch:p.ch});e.n++;if(RANK[p.c]>RANK[e.c])e.c=p.c;});
  const list=Object.values(gl).sort((a,b)=>RANK[b.c]-RANK[a.c]||a.cw*a.ch-b.cw*b.ch);
  let minc=1e9;all.forEach(p=>{if(p.full)return;if(p.k==='r'){if(p.cutX)minc=Math.min(minc,p.cw);if(p.cutY)minc=Math.min(minc,p.ch);}});
  let lf=0;if(s.shape==='rect'){const q=s.trim;lf+=(q.l?s.h:0)+(q.r?s.h:0)+(q.t?s.w:0)+(q.b?s.w:0);}
@@ -522,22 +536,23 @@ function compute(s){
  if(s.type==='pan'&&s.curb.on&&s.curb.trim)lf+=2*s.curb.len;
  lf+=+s.extraLF||0;
  const R={...X,err:false,main,nich,all,strips,area,full,cuts,nb,need,order,boxes,perBox,list,minc,lf,sheets,bad:all.filter(p=>p.c==='bad'&&p.k==='r').length,warn:all.filter(p=>p.c==='warn').length};
- R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);numberPieces(R);return R;}
+ R.drill=drillList(s,R);R.ledger=ledgerOf(s,R);markArc(s,R);numberPieces(R);return R;}
+function markArc(s,R){const A=tubArc(s);if(!A)return;R.all.forEach(p=>{if(!p.C)return;const hit=p.C.some(q=>{const w=R.toW(q),dx=w[0]-A.c[0],dy=w[1]-A.c[1];if(Math.abs(Math.hypot(dx,dy)-A.r)>0.03)return false;const an=Math.atan2(dy,dx)*180/Math.PI;return A.side==='l'?(an>3&&an<87):(an>93&&an<177);});if(hit){p.arc=A.r;if(p.full){p.full=false;p.c='cut';}}});}
 function numberPieces(R){const ys=[...new Set(R.main.map(p=>Math.round(p.y0*100)))].sort((a,b)=>a-b);const rowOf=p=>ys.indexOf(Math.round(p.y0*100))+1;
  const ord=a=>a.filter(p=>!p.full).sort((a,b)=>(Math.round(a.y0*100)-Math.round(b.y0*100))||(a.x0-b.x0));let n=0;
  ord(R.main).forEach(p=>{p.no=++n;p.row=rowOf(p);});ord(R.nich).forEach(p=>{p.no=++n;p.row='N';});
  R.rowsOK=!R.a&&['grid','offset'].includes(patOf(R.T))&&R.T.shape==='rect';R.rowFull={};R.main.forEach(p=>{if(p.full){const r=rowOf(p);R.rowFull[r]=(R.rowFull[r]||0)+1;}});}
 function pieceSize(p){const w=p.taperW?p.taperW.map(fmtIn).join('→'):fmtIn(p.cw),h=p.taper?p.taper.map(fmtIn).join('→'):fmtIn(p.ch);return(p.k==='p'?'≈ ':'')+w+' × '+h;}
-function pieceNote(p){const n=[];if(p.taperW)n.push(t('noteTaperW'));if(p.taper)n.push(t('noteTaper'));else if(p.taperW);else if(p.notch&&(p.cutX||p.cutY||(p.ax&&!p.hl)))n.push(t('noteL'));else if(p.notch&&!p.hl)n.push(t('noteAng'));if(p.hl)n.push(...[...new Set(p.hl)].map(x=>t(x)));if(p.c==='bad')n.push('⚠ '+t('legBad'));return n.join(', ');}
+function pieceNote(p){const n=[];if(p.arc)n.push(t('noteArc')+' R'+fmtIn(p.arc)+'″');if(p.taperW)n.push(t('noteTaperW'));if(p.taper)n.push(t('noteTaper'));else if(p.taperW);else if(p.arc);else if(p.notch&&(p.cutX||p.cutY||(p.ax&&!p.hl)))n.push(t('noteL'));else if(p.notch&&!p.hl)n.push(t('noteAng'));if(p.hl)n.push(...[...new Set(p.hl)].map(x=>t(x)));if(p.c==='bad')n.push('⚠ '+t('legBad'));return n.join(', ');}
 function cutSheet(R){const groups=[];if(R.rowsOK){const by={};R.all.filter(p=>!p.full&&!p.niche).forEach(p=>{(by[p.row]=by[p.row]||[]).push(p);});
   const rows=Object.keys(by).map(Number).sort((a,b)=>a-b);rows.forEach(r=>groups.push({label:`${t('row')} ${r}${r===1?' '+t('rowBottom'):''}`,full:R.rowFull[r]||0,items:by[r]}));}
  else groups.push({label:t('cutList'),items:R.all.filter(p=>!p.full&&!p.niche)});
  const ni=R.all.filter(p=>!p.full&&p.niche);if(ni.length)groups.push({label:t('nicheBack'),items:ni});
  groups.forEach(g=>g.items.sort((a,b)=>a.no-b.no));return groups;}
-function ledgerOf(s,R){if(!isUneven(s)||R.a||R.T.shape!=='rect')return null;const T=R.T,pat=patOf(T);if(!['grid','offset','voffset'].includes(pat))return null;
- const{th}=rdims(T),py=th+(+T.g||0),u=s.uneven,hi=Math.max(+u.l||0,+u.r||0,u.mOn?+u.m||0:0),lo=Math.min(+u.l||0,+u.r||0,u.mOn?+u.m||0:0);
- if(pat==='voffset')return{hi,lo,y:null};
- const j=Math.ceil((hi+(+P.edgeGap||0)-T.oy)/py-1e-9);return{hi,lo,y:T.oy+j*py};}
+function ledgerOf(s,R){if(!(isUneven(s)||isTub(s))||R.a||R.T.shape!=='rect')return null;const T=R.T,pat=patOf(T);if(!['grid','offset','voffset'].includes(pat))return null;
+ const{th}=rdims(T),py=th+(+T.g||0),u=s.uneven;let hi,lo;if(isTub(s)){const D=tubDims(s);hi=Math.max(D.hF,D.hB);lo=Math.min(D.hF,D.hB);}else{hi=Math.max(+u.l||0,+u.r||0,u.mOn?+u.m||0:0);lo=Math.min(+u.l||0,+u.r||0,u.mOn?+u.m||0:0);}
+ if(pat==='voffset')return{hi,lo,y:null,tub:isTub(s)};
+ const j=Math.ceil((hi+(+P.edgeGap||0)-T.oy)/py-1e-9);return{hi,lo,y:T.oy+j*py,tub:isTub(s)};}
 
 function drillList(s,R){const out=[];if(R.T.shape!=='rect'||(R.T.sheet&&R.T.sheet.on))return out;
  for(const o of s.openings){if(!(o.shape==='circle'||o.type==='outlet'||o.type==='duct'))continue;
@@ -600,7 +615,7 @@ function newSurface(type,name){
  const n=P?P.surfaces.filter(x=>x.type===type).length:0;
  const s={id:uid(),type,name:name?t(name):(t(type)+(type==='wall'?' '+(n+1):'')),nk:name||type,nn:name?0:(type==='wall'?n+1:0),shape:'rect',w:60,h:96,Lw:24,Lh:24,Lc:'tr',pts:'0,0; 60,0; 60,40; 30,40; 30,72; 0,72',
   openings:[],trim:{l:false,r:false,t:false,b:false},extraLF:0,base:0,link:true,tile:defTile(),
-  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75},wet:type!=='floor',uneven:{on:false,l:0,r:0,m:0,mOn:false},plumb:{on:false,l:0,r:0},pos:{x:0,y:0},zlink:false,segs:null};
+  curb:{on:false,len:60,w:4.5,h:4.5,trim:true},drain:{type:'none',x:30,y:18,len:48,wid:2.75},wet:type!=='floor',uneven:{on:false,l:0,r:0,m:0,mOn:false},plumb:{on:false,l:0,r:0},tub:{on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0},pos:{x:0,y:0},zlink:false,segs:null};
  if(type==='floor'){s.w=96;s.h=72;s.tile=defTile({w:24,h:24,w2:12,pattern:'grid',rot:false});}
  if(type==='pan'){s.w=60;s.h=36;s.tile=defTile({w:2,h:2,w2:1,pattern:'grid',rot:false,sheet:{on:true,w:12,h:12}});s.curb.on=true;s.drain.type='center';}
  if(type!=='wall'&&P){const fl=P.surfaces.filter(x=>x.type!=='wall');if(fl.length){s.pos={x:Math.max(...fl.map(x=>(+x.pos.x||0)+bboxOf(outerPoly(x)).x1))+12,y:0};}}
@@ -632,7 +647,7 @@ function migrate(p){
   if(!T.shape)T.shape='rect';if(T.pattern==='half'){T.pattern='offset';T.off=.5;}if(T.pattern==='third'){T.pattern='offset';T.off=1/3;}if(T.pattern==='vhalf'){T.pattern='voffset';T.off=.5;}
   if(T.off==null)T.off=.5;if(T.ang==null)T.ang=0;if(!T.sheet)T.sheet={on:false,w:12,h:12};if(T.w2==null)T.w2=(+T.w)/2;if(T.cang==null)T.cang=45;if(T.checker==null)T.checker=false;
   s.openings=(s.openings||[]).map(o=>{if(o.type==='hole')o.type='cutout';if(!o.shape)o.shape=(OPT[o.type]||{}).shape||'rect';if(o.shape==='circle'&&!o.dia)o.dia=4;return o;});
-  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.wet==null)s.wet=s.type!=='floor';if(!s.pos)s.pos={x:0,y:0};if(s.zlink==null)s.zlink=false;if(!s.segs)s.segs=polyToSegs(outerPoly(s));if(!s.plumb)s.plumb={on:false,l:0,r:0};if(T.thick==null)T.thick=T.sheet&&T.sheet.on?0.25:0.375;if(s.link==null)s.link=true;
+  s.trim=s.trim||{};if(s.base==null)s.base=0;s.uneven=s.uneven||{on:false,l:0,r:0,m:0,mOn:false};if(s.wet==null)s.wet=s.type!=='floor';if(!s.pos)s.pos={x:0,y:0};if(s.zlink==null)s.zlink=false;if(!s.segs)s.segs=polyToSegs(outerPoly(s));if(!s.plumb)s.plumb={on:false,l:0,r:0};if(!s.tub)s.tub={on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0};if(T.thick==null)T.thick=T.sheet&&T.sheet.on?0.25:0.375;if(s.link==null)s.link=true;
   s.curb=s.curb||{on:false,len:60,w:4.5,h:4.5,trim:true};s.drain=s.drain||{type:'none',x:30,y:18,len:48,wid:2.75};});
  arrangeFloors(p);return p;}
 function load(){try{const d=JSON.parse(localStorage.getItem(SKEY));if(d&&Array.isArray(d.projects))return d;}catch(e){}return null;}
@@ -695,7 +710,7 @@ function surfBody(s,R,o){
  const sheet=T.sheet&&T.sheet.on;
  if(S.labels&&!sheet&&T.shape!=='penny'&&R.all.length<900){const fMin=+px(8.5*fs0),fMax=+px(12.5*fs0);
   for(const p of R.all){if(p.full||p.k!=='r')continue;const b=p.b;
-   let tx0=p.cutX&&p.cutY?fmtIn(p.cw)+'×'+fmtIn(p.ch):p.cutX?fmtIn(p.cw):p.cutY?fmtIn(p.ch):fmtIn(p.cw)+'×'+fmtIn(p.ch);let tx=tx0;if(p.taper||p.taperW){const wp=p.taperW?p.taperW.map(fmtIn).join('→'):fmtIn(p.cw),hp=p.taper?p.taper.map(fmtIn).join('→'):fmtIn(p.ch);tx=(p.cutX?wp:'')+(p.cutX&&p.cutY?'×':'')+(p.cutY?hp:'');}else if(p.notch)tx=(p.cutX||p.cutY||(p.ax&&!p.hl)?'L ':p.hl?'⊙ ':'◿ ')+tx;
+   let tx0=p.cutX&&p.cutY?fmtIn(p.cw)+'×'+fmtIn(p.ch):p.cutX?fmtIn(p.cw):p.cutY?fmtIn(p.ch):fmtIn(p.cw)+'×'+fmtIn(p.ch);let tx=tx0;if(p.taper||p.taperW){const wp=p.taperW?p.taperW.map(fmtIn).join('→'):fmtIn(p.cw),hp=p.taper?p.taper.map(fmtIn).join('→'):fmtIn(p.ch);tx=(p.cutX?wp:'')+(p.cutX&&p.cutY?'×':'')+(p.cutY?hp:'');}else if(p.notch)tx=(p.arc?'◠ ':p.cutX||p.cutY||(p.ax&&!p.hl)?'L ':p.hl?'⊙ ':'◿ ')+tx;
    const lw=p.lp?p.lp[2]:b.x1-b.x0,lh=p.lp?p.lp[3]:b.y1-b.y0,L=tx.length*0.58;let f=Math.min(fMax,lw/L*0.94,lh*0.62),rot=false;
    if(f<fMin){const f2=Math.min(fMax,lh/L*0.94,lw*0.62);if(f2>=fMin*0.9){f=f2;rot=true;}else if(f<fMin*0.75)continue;}
    const pl=p.lp?[p.lp[0],p.lp[1]]:[(b.x0+b.x1)/2,(b.y0+b.y1)/2],w=R.toW(pl),x=w[0],y=-w[1];
@@ -866,7 +881,7 @@ function walkEditor(s){const wk=walkPoly(s);let h=`<p class="hint" style="margin
  <label class="f"><span>${t('turn')}</span><select data-k="segs.${i}.a" data-sc="s" data-t="selnum" data-rb="1">${TURNS.map(a=>`<option value="${a}" ${+g.a===a?'selected':''}>${a>0?'↰ '+t('left'):'↱ '+t('right')} ${Math.abs(a)}°</option>`).join('')}<option value="custom" ${std?'':'selected'}>${t('other')}</option></select></label>
  <button class="btn sm d" data-act="delSeg:${i}" style="margin-bottom:4px">✕</button></div>${std?'':F(t('turnDeg'),`segs.${i}.a`,'num')}</div>`;}).join('');
  h+=`<div class="btns"><button class="btn" data-act="addSeg">${t('addSeg')}</button></div>`;
- if(wk.gap>0.1)h+=`<div class="note">${t('walkGap')} ${fmt(wk.gap)}</div>`;return h;}
+ if(wk.gap>0.1)h+=`<div class="note">${t('walkGap')} ${fmt(wk.gap)} <button class="btn sm" data-act="closeWalk">${t('closeWalk')}</button></div>`;return h;}
 function renderPanel(){
  const el=$('#panel');document.body.classList.toggle('tot',S.tab==='tot');
  if(S.tab==='tot'){el.innerHTML=SEC('proj',t('proj'),`<div class="grid">${F(t('projName'),'name','text','p','w2')}${F(t('clientName'),'client','text','p','w2')}${F(t('waste'),'waste','num','p')}${F(t('minCutS'),'minCut','len','p')}${F(t('edgeGap'),'edgeGap','len','p')}${F(t('kerf'),'kerf','len','p')}${F(t('schProfile'),'sch.profile','text','p')}${F(t('schSize'),'sch.size','text','p')}${F(t('schVis'),'sch.vis','len','p')}</div><p class="hint">${t('storeNote')}</p>`)+SEC('tot',t('totTitle'),'<div id="tot"></div>')+SEC('mat',t('materials'),'<div id="mat"></div>'+matSettingsHTML())+SEC('pdfs','PDF',`<div class="btns"><button class="btn p" data-act="pdf:client">${t('pdfClient')}</button><button class="btn" data-act="pdf:cut">${t('pdfCut')}</button></div><p class="hint">${t('pdfHint')}</p>`);renderTot();return;}
@@ -881,7 +896,7 @@ function renderPanel(){
   el.innerHTML=SEC('link',t('link'),b)+SEC('allres',t('results'),'<div id="res"></div>');renderRes();return;}
  const s=cur();if(!s){el.innerHTML='';return;}
  let h='';
- let sb=`<div class="grid">${F(t('name'),'name','text','s','w2')}${SEL(t('type'),'type',['wall','floor','pan'],1)}${SEL(t('shape'),'shape',s.type==='wall'?['rect','L','custom']:['rect','L','walk','custom'],1)}`;
+ let sb=`<div class="grid">${F(t('name'),'name','text','s','w2')}${SEL(t('type'),'type',['wall','floor','pan'],1)}${SEL(t('shape'),'shape',['rect','L','walk','custom'],1)}<div class="w2 btns" style="margin:0"><button class="btn" data-act="drawShape">✏️ ${t('drawBtn')}</button><button class="btn" data-act="help">? ${t('helpBtn')}</button></div>`;
  if(s.shape!=='custom'&&s.shape!=='walk')sb+=F(t('width'),'w')+F(s.type==='wall'?t('height'):t('length'),'h');
  if(s.shape==='L')sb+=F(t('notchW'),'Lw')+F(t('notchH'),'Lh')+SEL(t('corner'),'Lc',['tr','tl','br','bl'],0,'s','w2');
  sb+='</div>';
@@ -889,9 +904,13 @@ function renderPanel(){
  if(s.type!=='wall')sb+=`<div class="op"><div class="grid">${F(t('posX'),'pos.x','slen')}${F(t('posY'),'pos.y','slen')}</div>${CHK(t('zlink'),'zlink',1)}<p class="hint">${t('zoneHint')}</p></div>`;
  if(s.shape==='custom')sb+=`<label class="f" style="margin-top:8px"><span>${t('ptsHint')}</span><textarea rows="3" data-k="pts" data-sc="s" data-t="text">${esc(s.pts)}</textarea></label>`;
  if(s.type==='wall')sb+=`<div class="grid" style="margin-top:8px">${F(t('base'),'base')}<div>${P.link.mode!=='none'?CHK(t('linked'),'link',1):''}</div></div>`;
- if(s.type==='wall'&&s.shape==='rect'){s.uneven=(s.uneven||{on:false,l:0,r:0,m:0,mOn:false});sb+=`<div class="op" style="margin-top:8px">${CHK(t('unevenOn'),'uneven.on',1)}`;
-  if(s.uneven.on)sb+=`<p class="hint">${t('unevenHint')}</p><div class="grid">${F(t('uL'),'uneven.l')}${F(t('uR'),'uneven.r')}</div>${CHK(t('uMidOn'),'uneven.mOn',1)}${s.uneven.mOn?`<div class="grid">${F(t('uM'),'uneven.m')}</div>`:''}`;
+ if(s.type==='wall'&&s.shape==='rect'){s.tub=s.tub||{on:false,side:'r',d:30,h:15,r:1.5,rF:0,rB:0};
+  sb+=`<div class="op" style="margin-top:8px">${CHK(t('tubOn'),'tub.on',1)}`;
+  if(s.tub.on){const D=tubDims(s);sb+=`<p class="hint">${t('tubHint')}</p><div class="grid">${SEL(t('tubSide'),'tub.side',['r','l'],1,'s','w2',o=>t('tubSide_'+o))}${F(t('tubD'),'tub.d')}${F(t('tubH'),'tub.h')}${F(t('tubR'),'tub.r')}<div class="hint" style="align-self:end">${t('tubStrip')}: <b>${fmt(Math.max(0,s.w-D.d))}</b></div>${F(t('tubRF'),'tub.rF')}${F(t('tubRB'),'tub.rB')}</div><p class="hint">${t('tubRHint')}</p>`;}
   sb+='</div>';
+  s.uneven=(s.uneven||{on:false,l:0,r:0,m:0,mOn:false});if(!s.tub.on){sb+=`<div class="op" style="margin-top:8px">${CHK(t('unevenOn'),'uneven.on',1)}`;
+  if(s.uneven.on)sb+=`<p class="hint">${t('unevenHint')}</p><div class="grid">${F(t('uL'),'uneven.l')}${F(t('uR'),'uneven.r')}</div>${CHK(t('uMidOn'),'uneven.mOn',1)}${s.uneven.mOn?`<div class="grid">${F(t('uM'),'uneven.m')}</div>`:''}`;
+  sb+='</div>';}
   s.plumb=(s.plumb||{on:false,l:0,r:0});sb+=`<div class="op">${CHK(t('plumbOn'),'plumb.on',1)}`;
   if(s.plumb.on)sb+=`<p class="hint">${t('plumbHint')}</p><div class="grid">${F(t('pL'),'plumb.l','slen')}${F(t('pR'),'plumb.r','slen')}</div>`;sb+='</div>';}
  sb+=CHK(t('wet'),'wet');
@@ -932,7 +951,7 @@ function renderRes(){const el=$('#res');if(!el)return;
  if(!R){el.innerHTML=`<div class="warnbox">${t('tooMany')}</div>`;return;}
  const T=R.T,sticks=Math.ceil(R.lf/98.5);let h=kpis(R,T);
  if(R.bad)h+=`<div class="warnbox">${R.bad} ${t('sliverWarn')}</div>`;
- if(R.ledger){const L=R.ledger,s0=cur();h+=`<div class="note"><b>${t('outLevel')}</b>: ${fmt(L.hi-L.lo)} ${t('onLen')} ${fmt(s0.w)}.${L.y!=null?` ${t('ledgerTxt')} <b>${fmt(L.y)}</b> ${t('ledgerFrom')}`:''} ${t('taperNote')}</div>`;}
+ if(R.ledger){const L=R.ledger,s0=cur();h+=`<div class="note">${L.hi-L.lo>0.01?`<b>${t('outLevel')}</b>: ${fmt(L.hi-L.lo)} ${t('onLen')} ${fmt(s0.w)}.`:''}${L.y!=null?` ${t('ledgerTxt')} <b>${fmt(L.y)}</b> ${t(L.tub?'ledgerFromFloor':'ledgerFrom')}`:''} ${t('taperNote')}</div>`;}
  if(R.list.length)h+=`<table><tr><th>${t('size')}</th><th class="n">${t('qty')}</th></tr>${R.list.map(r=>`<tr><td><span class="sw" style="background:${COL[r.c]}"></span>${esc(r.k)}</td><td class="n">${r.n}</td></tr>`).join('')}</table>`;
  if(R.drill.length)h+=`<p style="margin:12px 0 4px"><b>${t('drill')}</b></p>`+R.drill.map(d=>`<div class="dl">${drillTxt(d)}</div>`).join('');
  if(R.strips.length)h+=`<p style="margin:12px 0 4px"><b>${t('strips')}</b></p>`+R.strips.filter(x=>x.count||x.tiles).map(x=>`<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`).join('');
@@ -962,6 +981,7 @@ function onInp(e){const el=e.target,k=el.dataset.k;if(!k)return;const sc=el.data
  else v=el.value;
  const s=cur();
  if(s&&k==='shape')S.prevShape=s.shape;
+ if(s&&k==='tub.side'&&s.tub.on){const was=s.tub.side;if(was!==v){const a1=was==='r'?'l':'r',a2=v==='r'?'l':'r';if(s.trim[a1]){s.trim[a1]=false;s.trim[a2]=true;}}}
  if(k==='_ox'||k==='_oy'){const T=effT(s),G=geom(s);setO(s,k==='_ox'?G.rb.x0+v:T.ox,k==='_oy'?G.rb.y0+v:T.oy);}
  else if(k==='_offp'){s.tile.off=Math.max(0,Math.min(100,v))/100;}
  else setPath(base,k,v);
@@ -969,6 +989,7 @@ function onInp(e){const el=e.target,k=el.dataset.k;if(!k)return;const sc=el.data
  if(s&&k==='type'&&v==='pan'&&!s.curb.on&&s.drain.type==='none'){s.curb.on=true;s.drain.type='center';s.drain.x=s.w/2;s.drain.y=s.h/2;s.curb.len=s.w;}
  if(s&&k==='drain.type'){if(v==='linear'){s.drain.len=Math.max(12,s.w-12);s.drain.x=(s.w-s.drain.len)/2;s.drain.y=s.h-s.drain.wid;}if(v==='center'){s.drain.x=s.w/2;s.drain.y=s.h/2;}}
  const m=k.match(/^openings\.(\d+)\.type$/);if(m){const o=s.openings[+m[1]],d=OPT[v];if(d.shape!==o.shape){if(d.shape==='circle'){o.x=o.x+(o.w||0)/2;o.y=o.y+(o.h||0)/2;o.dia=d.dia;}else{o.w=d.w;o.h=d.h;o.x=o.x-o.w/2;o.y=o.y-o.h/2;}o.shape=d.shape;}else if(d.shape==='circle')o.dia=d.dia;else{o.w=d.w;o.h=d.h;}o.trim=!!d.trim;if(v==='niche'&&!o.d)o.d=3.5;}
+ if(s&&k==='tub.on'&&v){s.base=0;s.uneven.on=false;s.trim[s.tub.side==='r'?'l':'r']=true;if(!(s.w>+s.tub.d))s.w=(+s.tub.d||30)+5;autoLayout(s);}
  if(s&&k==='tile.shape'){const T=s.tile;if(v!=='rect'&&T.mem==null)T.mem={w:12,h:24};if(v==='rect'&&T.mem&&!T.sheet.on){T.w=T.mem.w;T.h=T.mem.h;}if(v==='hex'&&(+T.w>24||+T.w<1))T.w=8;if(v==='penny'){T.w=0.75;T.sheet={on:true,w:12,h:12};T.pattern='offset';T.off=.5;}if(v==='chevron'){T.w=8.5;T.h=4.25;}if(v==='rect'&&T.sheet.on&&+T.w<1){T.w=2;T.h=2;}autoLayout(s);}
  if(s&&(k==='tile.pattern')){if(v==='pinwheel'&&!(+s.tile.w2>0&&+s.tile.w2<+s.tile.w))s.tile.w2=+s.tile.w/2;autoLayout(s);}
  if(k==='link.mode'&&v!=='none'){const fw=linkedWalls()[0];if(fw){const T=fw.tile;P.link.oy=T.oy+(+fw.base||0);P.link.ox=T.ox;autoLayout(fw);}}
@@ -1064,6 +1085,12 @@ function act(a,arg,b){const s=cur();
  case'autoFloor':{const done=new Set();P.surfaces.filter(x=>x.type!=='wall').forEach(w=>{if(isZLinked(w)){if(done.has('z'))return;done.add('z');}autoLayout(w);});changed();break;}
  case'tileToFloors':{const fs=P.surfaces.filter(x=>x.type==='floor');if(fs.length<2)break;const src=fs[0].tile;fs.slice(1).forEach(w=>{const keep={ox:w.tile.ox,oy:w.tile.oy};w.tile=Object.assign(JSON.parse(JSON.stringify(src)),keep);});act('autoFloor');renderPanel();break;}
  case'undo':doUndo();break;
+ case'drawShape':drawModal();break;
+ case'drawUndo':if(DRAW){DRAW.pts.pop();renderDraw();}break;
+ case'drawClear':if(DRAW){DRAW.pts=[];renderDraw();}break;
+ case'drawApply':{if(!DRAW||DRAW.pts.length<3){const h=$('#mbody .hint');if(h)h.textContent=t('drawNeed3');break;}const target=s.type==='wall'?(+s.h||96):Math.max(+s.w||96,+s.h||72);const sg=straighten(DRAW.pts,target);if(!sg){break;}s.shape='walk';s.segs=sg;S.open.add('surf');DRAW=null;closeModal();renderPanel();changed();autoLayout(s);changed();break;}
+ case'closeWalk':if(closeWalk(s)){renderPanel();changed();}else{b.textContent=t('cantClose');}break;
+ case'help':helpModal();break;
  case'redo':doRedo();break;
  case'stepCycle':{const st=[1/16,1/8,1/4,1/2,1];S.step=st[(st.indexOf(S.step)+1)%st.length];renderPad();if(cur())renderPanel();break;}
  case'addSeg':s.segs.push({l:24,a:90});renderPanel();changed();break;
@@ -1222,7 +1249,7 @@ async function makePdf(kind){modal(`<h3>${t('building')}</h3><p class="hint">…
   await drawSurfInto(rep,[{s,R,dx:0,dy:0}],kind==='cut'?rep.H*0.55:rep.H*0.72);
   if(kind==='client'){rep.text(`${t('area')}: ${sq(R.area)}`,{size:20});continue;}
   rep.text(`${t('full')} ${R.full} · ${t('cuts')} ${R.cuts} · ${t('minCut')} ${R.minc<1e8?fmt(R.minc):'—'} · ${t('need')} ${R.need} · ${t('order')} ${R.order}`,{size:19,bold:true});
-  if(R.ledger&&R.ledger.y!=null)rep.text(`${t('outLevel')} ${fmt(R.ledger.hi-R.ledger.lo)}. ${t('ledgerTxt')} ${fmt(R.ledger.y)} ${t('ledgerFrom')}`,{size:18,color:'#b3261e'});
+  if(R.ledger&&R.ledger.y!=null)rep.text(`${t('outLevel')} ${fmt(R.ledger.hi-R.ledger.lo)}. ${t('ledgerTxt')} ${fmt(R.ledger.y)} ${t(R.ledger.tub?'ledgerFromFloor':'ledgerFrom')}`,{size:18,color:'#b3261e'});
   if(R.T.shape==='rect'&&!(R.T.sheet&&R.T.sheet.on)){const rows=[];cutSheet(R).forEach(gr=>{gr.items.forEach((p,i)=>rows.push([{t:'#'+p.no,b:true,c:'#b4441b'},{t:i===0?gr.label.replace(' '+t('rowBottom'),'')+(gr.full?` (${t('fullN')} ${gr.full})`:''):'',c:'#555'},{t:pieceSize(p),b:true,sw:COL[p.c]},{t:pieceNote(p),c:'#666'}]));});
    rep.text(t('cutSheet'),{size:21,bold:true,after:2});rep.table([{t:'#',w:.09},{t:t('row'),w:.21},{t:t('size'),w:.38},{t:t('matNote'),w:.32}],rows,{size:18});}
   if(R.drill.length){rep.text(t('drill'),{size:21,bold:true,after:2});R.drill.forEach(d=>rep.text(((d.p&&d.p.no?'#'+d.p.no+' — ':d.p?t('fullTile')+' — ':''))+drillTxt(d).replace(/<[^>]+>/g,''),{size:18}));}
@@ -1273,6 +1300,46 @@ $('#pad').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-nud
  const end=()=>{stopRep();changed();b.removeEventListener('pointerup',end);b.removeEventListener('pointerleave',end);b.removeEventListener('pointercancel',end);};
  b.addEventListener('pointerup',end);b.addEventListener('pointerleave',end);b.addEventListener('pointercancel',end);});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();if(e.shiftKey)doRedo();else doUndo();}});
+
+
+/* ================= draw shape / help ================= */
+let DRAW=null;
+function drawModal(){const s=cur();if(!s)return;DRAW={pts:[],stroke:null};
+ modal(`<h3>✏️ ${t('drawTitle')}</h3><p class="hint">${t('drawHint')}</p><svg id="dsvg" style="width:100%;height:52vh;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;touch-action:none;display:block"></svg>
+ <div class="btns"><button class="btn" data-act="drawUndo">↶ ${t('drawUndoPt')}</button><button class="btn" data-act="drawClear">${t('drawClear')}</button><button class="btn p" data-act="drawApply">${t('drawApply')}</button><button class="btn" data-act="closeModal">${t('close')}</button></div>`);
+ const el=$('#dsvg');requestAnimationFrame(()=>{const r=el.getBoundingClientRect();DRAW.W=r.width;DRAW.H=r.height;el.setAttribute('viewBox',`0 0 ${r.width} ${r.height}`);renderDraw();});
+ const pt=e=>{const r=el.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
+ el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);DRAW.stroke=[pt(e)];renderDraw();});
+ el.addEventListener('pointermove',e=>{if(!DRAW.stroke)return;const q=pt(e),l=DRAW.stroke[DRAW.stroke.length-1];if(Math.hypot(q[0]-l[0],q[1]-l[1])>3){DRAW.stroke.push(q);renderDraw();}});
+ const up=()=>{if(!DRAW.stroke)return;const st=DRAW.stroke;DRAW.stroke=null;let len=0;for(let i=1;i<st.length;i++)len+=Math.hypot(st[i][0]-st[i-1][0],st[i][1]-st[i-1][1]);
+  if(len<10){DRAW.pts.push(st[0]);}else{const diag=Math.hypot(DRAW.W,DRAW.H);const simp=rdp(st,diag*0.025);const add=DRAW.pts.length&&Math.hypot(simp[0][0]-DRAW.pts[DRAW.pts.length-1][0],simp[0][1]-DRAW.pts[DRAW.pts.length-1][1])<diag*0.05?simp.slice(1):simp;DRAW.pts.push(...add);}
+  renderDraw();};
+ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}
+function rdp(pts,eps){if(pts.length<3)return pts.slice();const a=pts[0],b=pts[pts.length-1];let mx=-1,ix=0;const L=Math.hypot(b[0]-a[0],b[1]-a[1])||1e-9;
+ for(let i=1;i<pts.length-1;i++){const d=Math.abs((b[0]-a[0])*(a[1]-pts[i][1])-(a[0]-pts[i][0])*(b[1]-a[1]))/L;if(d>mx){mx=d;ix=i;}}
+ if(mx>eps){const l=rdp(pts.slice(0,ix+1),eps),r=rdp(pts.slice(ix),eps);return l.slice(0,-1).concat(r);}return[a,b];}
+function renderDraw(){const el=$('#dsvg');if(!el||!DRAW)return;let h='';const W=DRAW.W||300,H=DRAW.H||300;
+ for(let x=0;x<W;x+=20)h+=`<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#ece7de"/>`;for(let y=0;y<H;y+=20)h+=`<line y1="${y}" y2="${y}" x1="0" x2="${W}" stroke="#ece7de"/>`;
+ const P2=DRAW.pts;if(P2.length)h+=`<polyline points="${P2.map(q=>q.join(',')).join(' ')}" fill="none" stroke="#1e2226" stroke-width="2.5"/>`;
+ if(P2.length>2)h+=`<line x1="${P2[P2.length-1][0]}" y1="${P2[P2.length-1][1]}" x2="${P2[0][0]}" y2="${P2[0][1]}" stroke="#d27a24" stroke-width="2" stroke-dasharray="6 4"/>`;
+ P2.forEach((q,i)=>h+=`<circle cx="${q[0]}" cy="${q[1]}" r="${i===0?7:5}" fill="${i===0?'#d27a24':'#1e2226'}"/>`);
+ if(DRAW.stroke&&DRAW.stroke.length>1)h+=`<polyline points="${DRAW.stroke.map(q=>q.join(',')).join(' ')}" fill="none" stroke="#2f6fab" stroke-width="2"/>`;
+ if(!P2.length&&!DRAW.stroke)h+=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="#9a958c" font-size="15" font-family="${FONT}">${esc(t('drawEmpty'))}</text>`;
+ el.innerHTML=h;}
+function straighten(raw,target){let P0=raw.map(q=>[q[0],-q[1]]);const bb=bboxOf(P0),diag=Math.hypot(bb.x1-bb.x0,bb.y1-bb.y0)||1;
+ const M=[];P0.forEach(q=>{if(!M.length||Math.hypot(q[0]-M[M.length-1][0],q[1]-M[M.length-1][1])>diag*0.04)M.push(q);});
+ while(M.length>3&&Math.hypot(M[0][0]-M[M.length-1][0],M[0][1]-M[M.length-1][1])<diag*0.1)M.pop();
+ if(M.length<3)return null;const n=M.length,hs=[],L0=[];
+ for(let i=0;i<n;i++){const a=M[i],b=M[(i+1)%n];let d=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;const s90=Math.round(d/90)*90,s45=Math.round(d/45)*45;d=Math.abs(d-s90)<=20?s90:Math.abs(d-s45)<=12?s45:Math.round(d);hs.push(d*Math.PI/180);L0.push(Math.hypot(b[0]-a[0],b[1]-a[1]));}
+ let a11=0,a12=0,a22=0,b1=0,b2=0;hs.forEach((h,i)=>{const c=Math.cos(h),sn=Math.sin(h);a11+=c*c;a12+=c*sn;a22+=sn*sn;b1+=L0[i]*c;b2+=L0[i]*sn;});
+ const det=a11*a22-a12*a12;let L=L0.slice();if(Math.abs(det)>1e-9){const l1=(b1*a22-b2*a12)/det,l2=(a11*b2-a12*b1)/det;const Lc=hs.map((h,i)=>L0[i]-(Math.cos(h)*l1+Math.sin(h)*l2));if(Lc.every(v=>v>diag*0.01))L=Lc;}
+ let x=0,y=0;const pts=[[0,0]];hs.forEach((h,i)=>{x+=L[i]*Math.cos(h);y+=L[i]*Math.sin(h);pts.push([x,y]);});pts.pop();
+ const b3=bboxOf(pts),k=target/Math.max(b3.x1-b3.x0,b3.y1-b3.y0);const segs=polyToSegs(pts.map(q=>[q[0]*k,q[1]*k]));segs.forEach(g=>{g.l=Math.max(1,Math.round(g.l*2)/2);g.a=Math.round(g.a);});return segs;}
+function closeWalk(s){const g=s.segs,n=g.length;if(n<3)return false;let h=0;const H=[];g.forEach(q=>{H.push(h);h+=(+q.a||0)*Math.PI/180;});
+ let vx=0,vy=0;for(let i=0;i<n-2;i++){vx+=(+g[i].l)*Math.cos(H[i]);vy+=(+g[i].l)*Math.sin(H[i]);}
+ const c1=Math.cos(H[n-2]),s1=Math.sin(H[n-2]),c2=Math.cos(H[n-1]),s2=Math.sin(H[n-1]),det=c1*s2-c2*s1;if(Math.abs(det)<1e-6)return false;
+ const l1=(-vx*s2+vy*c2)/det,l2=(c1*-vy+s1*vx)/det;if(l1<=0||l2<=0)return false;g[n-2].l=Math.round(l1*16)/16;g[n-1].l=Math.round(l2*16)/16;return true;}
+function helpModal(){modal(`<h3>? ${t('helpTitle')}</h3>${t('helpHtml')}<div class="btns"><button class="btn p" data-act="closeModal">${t('close')}</button></div>`);}
 
 /* ================= init ================= */
 (function init(){
