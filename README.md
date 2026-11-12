@@ -1,9 +1,35 @@
 # PrusArt Tile Layout
 
-Tile layout planner for walls, floors and shower pans: patterns, cuts, quantities, niches, Schluter, cutouts.
+Tile layout planner for walls, floors and shower pans: patterns, cuts, quantities, niches, Schluter, cutouts,
+prep (underlayment / backer board) layout, DITRA-HEAT floor heating, transitions, PDF for client and crew.
 
 Live app: https://prusartinc.github.io/prusart-tile-layout/
 
-Install: open the link → iPhone Safari: Share → Add to Home Screen; Android Chrome: Install app; desktop Chrome/Edge: install icon in the address bar.
+Install: open the link → iPhone Safari: Share → Add to Home Screen; Android Chrome: Install app;
+desktop Chrome/Edge: install icon in the address bar. Projects are stored locally on each device (export/import via ☰).
 
-Projects are stored locally on each device (export/import via ☰).
+## Code layout
+
+No build step — plain HTML/CSS/JS served by GitHub Pages. Scripts are classic (not modules) and share globals;
+they load in this order:
+
+| File | What's inside |
+|---|---|
+| `index.html` | Page markup, header, stage, panel |
+| `css/app.css` | Styles, light/dark theme variables |
+| `js/01-i18n.js` | Russian / English strings, `t()` |
+| `js/02-core.js` | Utils, polygon geometry, openings |
+| `js/03-engine.js` | Tile patterns, cut pieces, surface geometry, wall/floor joint linking, auto layout |
+| `js/04-state.js` | Project data, defaults, migration, save/undo |
+| `js/05-draw.js` | SVG drawing of surfaces, prep sheets, labels, dimensions, label de-cluttering |
+| `js/06-interact.js` | Drag, pinch, arrows, touch |
+| `js/07-ui.js` | Tabs, toolbar, side panel sections, inputs, gallery, modals |
+| `js/08-actions.js` | Button actions (`data-act`) |
+| `js/09-materials.js` | Materials estimate, cut sheet |
+| `js/10-pdf.js` | PDF and image export |
+| `js/11-edit.js` | Editing dimensions on the drawing, draw-a-shape, help |
+| `js/12-buildup.js` | Schluter profiles, underlayment library, build-up, transitions |
+| `js/13-heating.js` | Floor heating plan |
+| `js/14-init.js` | Startup |
+| `sw.js` | Offline cache (bump `CACHE` on each deploy) |
+| `tools/bundle.py` | Makes one self-contained HTML file (for sharing as a single file) |
