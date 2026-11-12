@@ -279,6 +279,11 @@ function openingCard(o, i) {
       F(t("width"), `openings.${i}.w`) +
       F(t("height"), `openings.${i}.h`);
   if (o.type === "niche") b += F(t("depth"), `openings.${i}.d`);
+  if (o.type === "toilet" && cur().type !== "wall")
+    b +=
+      SEL(t("tFace"), `openings.${i}.face`, ["auto", "u", "d", "l", "r"], 1, "s", "w2", (k) => t("tf_" + k)) +
+      optLen(t("tFront"), `openings.${i}.front`, 18) +
+      optLen(t("tWidth"), `openings.${i}.tw`, 20);
   b += "</div>";
   if (TRIMMABLE[o.type]) b += CHK(t("trimmed"), `openings.${i}.trim`);
   b += `<div class="btns">${o.type === "niche" ? `<button class="btn sm" data-act="snap:${i}">${t("snap")}</button>` : ""}<button class="btn sm d" data-act="delOpen:${i}">${t("del")}</button></div></div>`;

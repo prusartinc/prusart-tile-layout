@@ -384,6 +384,21 @@ function surfBody(s, R, o) {
     return `<text class="lbO" data-alt="${alt}" x="${x}" y="${y}" font-size="${f.toFixed(3)}" text-anchor="middle" fill="${col || PAL.lab}" font-weight="600" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(2.5)}">${esc(txt)}</text>`;
   };
   for (const op of s.openings) {
+    if (op.type === "toilet" && s.type !== "wall") {
+      const z = toiletZone(s, op),
+        ang = { r: 0, u: -90, l: 180, d: 90 }[z.face],
+        bw = Math.min(z.half, 7.5),
+        b0 = -Math.min(5, z.back),
+        tk = Math.min(8, z.back);
+      h += `<g transform="translate(${op.x} ${-op.y}) rotate(${ang})" pointer-events="none">`;
+      if (tk > 1)
+        h += `<rect x="${-z.back}" y="${-z.half}" width="${tk}" height="${2 * z.half}" rx="1.5" fill="${PAL.bg}" fill-opacity=".55" stroke="#5a4129" stroke-width="${px(1)}"/>`;
+      h += `<ellipse cx="${(z.front + b0) / 2}" cy="0" rx="${(z.front - b0) / 2}" ry="${bw}" fill="${PAL.bg}" fill-opacity=".55" stroke="#5a4129" stroke-width="${px(1)}"/>`;
+      const a0 = z.front + 1,
+        a1 = z.front + 9,
+        ah = 3;
+      h += `<path d="M${a0} 0H${a1}M${a1 - ah} ${-ah * 0.75}L${a1} 0L${a1 - ah} ${ah * 0.75}" fill="none" stroke="#c0392b" stroke-width="${px(2)}" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+    }
     if (op.shape === "circle") {
       const r = Math.max(0.05, op.dia / 2);
       h += `<circle cx="${op.x}" cy="${-op.y}" r="${r}" fill="#fff" stroke="#5a4129" stroke-width="${px(1.3)}"/><path d="M${op.x - r * 0.6} ${-op.y}H${op.x + r * 0.6}M${op.x} ${-op.y - r * 0.6}V${-op.y + r * 0.6}" stroke="#5a4129" stroke-width="${px(0.8)}"/>`;

@@ -322,3 +322,28 @@ const OPT = {
   warm: { shape: "rect", w: 36, h: 24, on: ["floor"], nohole: true },
 };
 const TRIMMABLE = { niche: 1, window: 1, cutout: 1 };
+
+/* Toilet footprint: which way the front faces and how far the bowl reaches.
+   face: "auto" (away from the nearest wall) | "u" | "d" | "l" | "r". */
+const TOILET_DIR = { u: [0, 1], d: [0, -1], l: [-1, 0], r: [1, 0] };
+function toiletFace(s, o) {
+  if (TOILET_DIR[o.face]) return o.face;
+  const O = outerPoly(s),
+    w = snapWallE(O, [o.x, o.y]).p,
+    dx = o.x - w[0],
+    dy = o.y - w[1];
+  if (Math.hypot(dx, dy) < 0.01) return "u";
+  return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "u" : "d";
+}
+function toiletZone(s, o) {
+  const face = toiletFace(s, o),
+    [fx, fy] = TOILET_DIR[face],
+    O = outerPoly(s),
+    front = +o.front || 18,
+    half = (+o.tw || 20) / 2;
+  let back = 0;
+  while (back < 30 && pip(O, o.x - fx * (back + 0.5), o.y - fy * (back + 0.5))) back += 0.5;
+  // local coords: u along the front direction, v across
+  const loc = (x, y) => [(x - o.x) * fx + (y - o.y) * fy, -(x - o.x) * fy + (y - o.y) * fx];
+  return { face, fx, fy, front, half, back, loc };
+}

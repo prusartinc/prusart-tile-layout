@@ -44,11 +44,32 @@ function heatPlan(s, R) {
     Hh = bb.y1 - bb.y0,
     res = Math.max(W, Hh) > 160 ? 2 : 1,
     clear = +H.clear || 0;
-  const obs = s.openings.filter((o) => o.type !== "warm").map((o) => ({ o, m: o.type === "toilet" ? 6 : 2 })),
+  const tz = s.openings.filter((o) => o.type === "toilet").map((o) => toiletZone(s, o));
+  const obs = s.openings.filter((o) => o.type !== "warm" && o.type !== "toilet").map((o) => ({ o, m: 2 })),
     warm = s.openings.filter((o) => o.type === "warm");
+  // A cable can't jump across a toilet (the zone reaches the wall): keep the longer side only.
+  const inToilet = (x, y) =>
+    tz.some((z) => {
+      const [u, v] = z.loc(x, y);
+      return u > -z.back - 2 && u < z.front + 1 && Math.abs(v) < z.half + 2;
+    });
+  const splitAtToilet = (iv, P) => {
+    if (iv.length < 2 || !tz.length) return;
+    const groups = [[iv[0]]];
+    for (let k = 1; k < iv.length; k++) {
+      const m = (iv[k - 1][1] + iv[k][0]) / 2;
+      if (inToilet(...P(m))) groups.push([iv[k]]);
+      else groups[groups.length - 1].push(iv[k]);
+    }
+    if (groups.length < 2) return;
+    const len = (g) => g.reduce((q, r) => q + r[1] - r[0], 0),
+      best = groups.reduce((a, b) => (len(b) > len(a) ? b : a));
+    iv.splice(0, iv.length, ...best);
+  };
   const ok = (x, y) => {
     if (!pip(O, x, y)) return false;
     for (let i = 0; i < O.length; i++) if (segDist(x, y, O[i], O[(i + 1) % O.length]) < clear) return false;
+    if (inToilet(x, y)) return false;
     for (const { o, m } of obs) {
       if (o.shape === "circle") {
         if (Math.hypot(x - o.x, y - o.y) < o.dia / 2 + m) return false;
@@ -98,6 +119,7 @@ function heatPlan(s, R) {
         }
       }
       if (st != null && B1 - st >= 4) iv.push([st, B1 - res / 2]);
+      splitAtToilet(iv, (w) => (horiz ? [w, v] : [v, w]));
       if (iv.length) lines.push({ v, iv, len: iv.reduce((q, r) => q + r[1] - r[0], 0) });
     }
     return { horiz, lines, wz: wz.length, mid: (B0 + B1) / 2, tot: lines.reduce((q, l) => q + l.len, 0) };
@@ -227,9 +249,24 @@ function heatPlan(s, R) {
             .reverse()
             .map((q) => [q[1], q[0]]);
       const a0 = iv[0][0];
-      if (pv && Math.abs(a0 - pv.b) > 0.3 && Math.abs(a0 - pv.b) <= 3 * sp) {
-        if (Math.abs(a0 - o.mid) > Math.abs(pv.b - o.mid)) P2.push(pt(o, a0, pv.v));
-        else P2.push(pt(o, pv.b, ln.v));
+      if (pv && Math.abs(a0 - pv.b) > 0.3) {
+        // connect rows with a right-angle turn that stays on the heated area
+        const c1 = pt(o, a0, pv.v),
+          c2 = pt(o, pv.b, ln.v),
+          clearRun = (a, b) => {
+            const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]));
+            for (let k = 1; k < n; k++)
+              if (!ok(a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n)) return false;
+            return true;
+          },
+          from = pt(o, pv.b, pv.v),
+          to = pt(o, a0, ln.v),
+          okA = clearRun(from, c1) && clearRun(c1, to),
+          okB = clearRun(from, c2) && clearRun(c2, to);
+        if (okA && !okB) P2.push(c1);
+        else if (okB && !okA) P2.push(c2);
+        else if (Math.abs(a0 - pv.b) <= 3 * sp || okA)
+          P2.push(Math.abs(a0 - o.mid) > Math.abs(pv.b - o.mid) ? c1 : c2);
       }
       iv.forEach((q) => P2.push(pt(o, q[0], ln.v), pt(o, q[1], ln.v)));
       pv = { b: iv[iv.length - 1][1], v: ln.v };
