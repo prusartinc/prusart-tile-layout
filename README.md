@@ -36,3 +36,9 @@ they load in this order:
 | `js/14-init.js` | Startup (loads last) |
 | `sw.js` | Offline cache (bump `CACHE` on each deploy) |
 | `tools/bundle.py` | Makes one self-contained HTML file (for sharing as a single file) |
+
+## Tests
+
+`python3 tests/fuzz.py` (needs Playwright + Chromium) runs ~900 combinations — every surface type and shape × every
+pattern, niches in every configuration, heating, tiny/degenerate sizes, huge mosaic areas — and reports any exception
+or non-finite number. Run it before each release.

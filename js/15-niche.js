@@ -227,8 +227,7 @@ function nicheSectionSVG(s, o) {
   const board = "#d9d2c3",
     tileW = "#ece5d7",
     tileB = "#cfe0f5",
-    tileR = "#f3dcb4",
-    bond = "#bdb7ad";
+    tileR = "#f3dcb4";
   // wall board above and below the niche, niche box
   g += R(-B, -ext, 0, 0, board) + R(-B, h, 0, h + ext, board);
   g += R(-d - B, -0.0, -d, h, board); // niche back board

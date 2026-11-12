@@ -191,7 +191,23 @@ function arrangeFloors(p) {
 }
 function migrate(p) {
   p.link = p.link || { mode: "none", ox: 0, oy: 0 };
+  p.sch = p.sch || { profile: "JOLLY", size: "3/8″", vis: 0.125 };
   if (!p.sch.type) p.sch.type = "JOLLY";
+  p.surfaces = Array.isArray(p.surfaces) ? p.surfaces.filter((s) => s && typeof s === "object") : [];
+  if (p.waste == null) p.waste = 10;
+  if (p.minCut == null) p.minCut = 2;
+  if (p.edgeGap == null) p.edgeGap = 0.125;
+  if (p.kerf == null) p.kerf = 0.125;
+  if (!p.id) p.id = uid();
+  p.surfaces.forEach((s) => {
+    if (!s.type) s.type = "wall";
+    if (!s.id) s.id = uid();
+    if (!s.shape) s.shape = "rect";
+    if (!(+s.w > 0)) s.w = s.type === "floor" ? 96 : 60;
+    if (!(+s.h > 0)) s.h = s.type === "floor" ? 72 : 96;
+    if (!s.curb) s.curb = { on: false, len: 60, w: 4.5, h: 4.5, trim: true };
+    if (!s.drain) s.drain = { type: "none", x: 30, y: 18, len: 48, wid: 2.75 };
+  });
   p.customUnder = p.customUnder || [];
   p.flink = p.flink || { ox: 0, oy: 0 };
   p.mat = Object.assign(defMat(), p.mat || {});
@@ -239,12 +255,22 @@ function migrate(p) {
     if (T.w2 == null) T.w2 = +T.w / 2;
     if (T.cang == null) T.cang = 45;
     if (T.checker == null) T.checker = false;
-    s.openings = (s.openings || []).map((o) => {
-      if (o.type === "hole") o.type = "cutout";
-      if (!o.shape) o.shape = (OPT[o.type] || {}).shape || "rect";
-      if (o.shape === "circle" && !o.dia) o.dia = 4;
-      return o;
-    });
+    s.openings = (s.openings || [])
+      .filter((o) => o && typeof o === "object")
+      .map((o) => {
+        if (o.type === "hole") o.type = "cutout";
+        if (!OPT[o.type]) o.type = "cutout";
+        const d = OPT[o.type] || {};
+        if (!o.id) o.id = uid();
+        o.x = isFinite(+o.x) ? +o.x : 0;
+        o.y = isFinite(+o.y) ? +o.y : 0;
+        if (!(+o.w > 0)) o.w = d.w || 6;
+        if (!(+o.h > 0)) o.h = d.h || 6;
+        if (o.type === "niche" && !(+o.d > 0)) o.d = d.d || 3.5;
+        if (!o.shape) o.shape = (OPT[o.type] || {}).shape || "rect";
+        if (o.shape === "circle" && !o.dia) o.dia = 4;
+        return o;
+      });
     s.trim = s.trim || {};
     if (s.base == null) s.base = 0;
     s.uneven = s.uneven || { on: false, l: 0, r: 0, m: 0, mOn: false };
@@ -343,7 +369,12 @@ function saveSoon() {
     DB.theme = THEME;
     try {
       localStorage.setItem(SKEY, JSON.stringify(DB));
-    } catch (e) {}
+      S.saveErr = false;
+    } catch (e) {
+      // storage full or blocked: tell the user once, so nothing is lost silently
+      if (!S.saveErr && typeof toast === "function") toast(t("saveErr"), false);
+      S.saveErr = true;
+    }
   }, 400);
 }
 const cur = () => (typeof S.tab === "number" ? P.surfaces[S.tab] : null);

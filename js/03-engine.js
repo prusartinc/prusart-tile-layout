@@ -689,7 +689,31 @@ function compute(s) {
     drill: [],
     sheets: 0,
   };
-  if (!main) return empty;
+  if (!main) {
+    // too many small tiles (big mosaic area): lay it out by sheets instead
+    if (T.sheet && T.sheet.on && !s._sheetLvl) {
+      const s2 = Object.assign({}, s, {
+        _sheetLvl: true,
+        tile: Object.assign({}, s.tile, {
+          w: +T.sheet.w || 12,
+          h: +T.sheet.h || 12,
+          shape: "rect",
+          pattern: "grid",
+          rot: false,
+          sheet: { on: false, w: 12, h: 12 },
+        }),
+      });
+      const R2 = compute(s2);
+      if (!R2.err) {
+        R2.sheetLevel = true;
+        R2.sheets = R2.need;
+        R2.nb = { [tileDesc(T)]: R2.need };
+        return R2;
+      }
+    }
+    empty.heat = heatPlan(s, empty);
+    return empty;
+  }
   let nich = [],
     nichOwn = [];
   const nicheCalcs = G.niches.map((n) => nicheCalc(s, n, T, X));

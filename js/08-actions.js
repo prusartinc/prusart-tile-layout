@@ -283,24 +283,6 @@ function act(a, arg, b) {
       changed();
       toast(t("toastDeleted"));
       break;
-    case "delSurf":
-      if (!b.dataset.armed) {
-        b.dataset.armed = 1;
-        b.textContent = t("confirm");
-        setTimeout(() => {
-          if (b.isConnected) {
-            delete b.dataset.armed;
-            b.textContent = t("delSurf");
-          }
-        }, 3000);
-        return;
-      }
-      P.surfaces.splice(S.tab, 1);
-      if (!P.surfaces.length) P.surfaces.push(newSurface("wall"));
-      S.tab = Math.min(S.tab, P.surfaces.length - 1);
-      renderAll();
-      saveSoon();
-      break;
     case "rotate":
       if (!s) return;
       if (S.layer === "prep") {
@@ -631,7 +613,9 @@ function act(a, arg, b) {
     case "copyExp":
       copyText($("#expTxt").value, b);
       break;
-    case "importProj":
+    case "importProj": {
+      const prevP = P,
+        n0 = DB.projects.length;
       try {
         const d = JSON.parse($("#impTxt").value);
         const arr = Array.isArray(d) ? d : d.projects ? d.projects : [d];
@@ -641,15 +625,19 @@ function act(a, arg, b) {
           migrate(p);
           DB.projects.push(p);
           P = p;
+          p.surfaces.forEach((s) => compute(s)); // reject files that can't be calculated
         });
         S.tab = 0;
         closeModal();
         renderAll();
         saveSoon();
       } catch (e) {
+        DB.projects.length = n0;
+        P = prevP;
         b.textContent = t("importErr");
       }
       break;
+    }
     case "image":
       exportMenu();
       break;

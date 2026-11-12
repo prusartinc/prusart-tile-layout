@@ -128,7 +128,7 @@ function wizStart(mode, type) {
   if (s0) Object.assign(f, { id: s0.id, name: s0.name, nk: s0.nk, nn: s0.nn, pos: s0.pos });
   f.tile = stdTile(f.type);
   const firstWall = P.surfaces.find((x) => x.type === f.type && x !== s0);
-  S.wiz = { mode, si: S.tab, s: f, src: firstWall ? "s:" + firstWall.id : "def" };
+  S.wiz = { mode, si: S.tab, s: f, src: firstWall ? "s:" + firstWall.id : "def", name0: f.name };
   wizOpen();
 }
 function wizOpen() {
@@ -225,8 +225,11 @@ function wizAct(cmd) {
   commitUndo();
   if (W.mode === "reset") P.surfaces[W.si] = s;
   else {
-    if (s.name !== f.name) s.nk = null;
-    if (s.nk == null) s.nn = 0;
+    if (s.name !== W.name0) {
+      // typed a custom name: stop auto-naming (language switch would overwrite it)
+      s.nk = null;
+      s.nn = 0;
+    }
     P.surfaces.push(s);
     S.tab = P.surfaces.length - 1;
     S.view = { zoom: 1, panX: 0, panY: 0 };

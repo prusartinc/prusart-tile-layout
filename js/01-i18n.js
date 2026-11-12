@@ -227,6 +227,8 @@ const I18N = {
     autoFloor: "✦ Авто для всего пола",
     tileToFloors: "Плитку первого пола → на все полы",
     done: "Готово",
+    saveErr:
+      "Не получилось сохранить на устройстве (память браузера заполнена). Сделай экспорт проектов через ☰ и удали старые.",
     moreT: "Инструменты",
     moreB: "Ещё",
     mRotate: "Повернуть плитку",
@@ -370,7 +372,6 @@ const I18N = {
     qDelMsg: "«{n}» будет удалена из проекта. Отменить можно кнопкой ↶.",
     dragOpHint: "Нишу или вырез можно двигать пальцем прямо на чертеже.",
     showNums: "Показать номера на чертеже",
-    fullTile: "целая плитка",
     cutSheet: "Лист резки по номерам",
     row: "Ряд",
     rowBottom: "(снизу)",
@@ -917,6 +918,8 @@ const I18N = {
     autoFloor: "✦ Auto for whole floor",
     tileToFloors: "First floor tile → all floors",
     done: "Done",
+    saveErr:
+      "Could not save on this device (browser storage is full). Export your projects from ☰ and delete old ones.",
     moreT: "Tools",
     moreB: "More",
     mRotate: "Rotate tile",
@@ -1060,7 +1063,6 @@ const I18N = {
     qDelMsg: "“{n}” will be removed from the project. Undo with ↶.",
     dragOpHint: "Niches and cutouts can be dragged right on the drawing.",
     showNums: "Show numbers on drawing",
-    fullTile: "full tile",
     cutSheet: "Cut sheet by number",
     row: "Row",
     rowBottom: "(bottom)",

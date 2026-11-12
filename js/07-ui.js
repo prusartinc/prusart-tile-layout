@@ -140,7 +140,7 @@ function renderStat() {
     renderPrepRes();
     return;
   }
-  const sheet = R.T.sheet && R.T.sheet.on;
+  const sheet = (R.T.sheet && R.T.sheet.on) || R.sheetLevel;
   el.innerHTML = sheet
     ? `<span>${t("sheets")} <b>${R.sheets}</b></span><span>${t("order")} <b>${R.order}</b></span><span>${t("area")} <b>${sq(R.area)}</b></span>`
     : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
@@ -594,7 +594,7 @@ function renderPanel() {
     sb += "</div>";
   }
   sb += CHK(t("wet"), "wet");
-  sb += `<div class="btns"><button class="btn d" data-act="delSurf">${t("delSurf")}</button></div>`;
+  sb += `<div class="btns"><button class="btn d" data-act="delSurfQ">${t("delSurf")}</button></div>`;
   h += SEC("surf", t("surface"), sb);
   if (S.layer === "prep") {
     h = prepSection(s) + h;
