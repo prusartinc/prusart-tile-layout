@@ -324,7 +324,7 @@ function surfBody(s, R, o) {
     px = (n) => (n * o.upp).toFixed(4);
   let h = "";
   const hD = G.holes.map((x) => pd(x.poly)).join("");
-  h += `<defs><clipPath id="cR${id}"><path clip-rule="evenodd" d="${pd(G.region)}${hD}"/></clipPath><clipPath id="cN${id}">${G.niches.map((n) => `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}"/>`).join("")}</clipPath>`;
+  h += `<defs><clipPath id="cR${id}"><path clip-rule="evenodd" d="${pd(G.region)}${hD}"/></clipPath><clipPath id="cN${id}">${(R.nicheCalc || []).map((nc) => nc.N.comps.map(([x, y, w, hh]) => `<rect x="${x}" y="${-(y + hh)}" width="${w}" height="${hh}"/>`).join("")).join("")}</clipPath>`;
   h += `<pattern id="ht${id}" width="${px(9)}" height="${px(9)}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${px(9)}" height="${px(9)}" fill="#efebe4"/><line x1="0" y1="0" x2="0" y2="${px(9)}" stroke="#c4bdb1" stroke-width="${px(2)}"/></pattern></defs>`;
   const curbOn = s.type === "pan" && s.curb.on;
   if (curbOn) {
@@ -343,12 +343,32 @@ function surfBody(s, R, o) {
     h += `<g opacity="${LAYER === "wire" ? 0.22 : 1}"><g clip-path="url(#cR${id})"><g${rt}>${R.main.map((p) => tileSVG(p, T, px)).join("")}</g></g>`;
     if (R.nich.length)
       h += `<g clip-path="url(#cN${id})"><g${rt}>${R.nich.map((p) => tileSVG(p, T, px)).join("")}</g></g>`;
+    if (R.nichOwn && R.nichOwn.length)
+      h += `<g clip-path="url(#cN${id})">${R.nichOwn.map((q) => q.pieces.map((p) => tileSVG(p, q.T, px)).join("")).join("")}</g>`;
     h += "</g>";
   }
-  G.niches.forEach(
-    (n) =>
-      (h += `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}" fill="rgba(70,50,25,.13)"/>`),
-  );
+  (R.nicheCalc || []).forEach((nc) => {
+    const N = nc.N;
+    N.comps.forEach(
+      ([x, y, w, hh]) =>
+        (h += `<rect x="${x}" y="${-(y + hh)}" width="${w}" height="${hh}" fill="rgba(70,50,25,.13)"/>`),
+    );
+    if (N.div)
+      h += `<rect x="${N.div.x}" y="${-(N.div.y + N.div.h)}" width="${N.div.w}" height="${N.div.h}" fill="#ece5d7" stroke="#6b665e" stroke-width="${px(1)}"/>`;
+    if (N.shelf) {
+      const c = N.c,
+        col = c.shelf === "metal" ? "#9aa3ad" : c.shelf === "stone" ? "#b9b1a4" : "#f3dcb4",
+        th = Math.max(N.shelf.t, +px(3));
+      h += `<rect x="${N.shelf.x}" y="${-(N.shelf.y + th)}" width="${N.shelf.w}" height="${th}" fill="${col}" stroke="#5b5348" stroke-width="${px(0.8)}"/>`;
+      if (N.shelf.apron)
+        h += `<rect x="${N.shelf.x}" y="${-(N.shelf.y + N.shelf.t)}" width="${N.shelf.w}" height="${N.shelf.apron}" fill="#f3dcb4" fill-opacity=".85" stroke="#5b5348" stroke-width="${px(0.8)}"/>`;
+    }
+    if (N.c.edge === "profile")
+      N.comps.forEach(
+        ([x, y, w, hh]) =>
+          (h += `<rect x="${x}" y="${-(y + hh)}" width="${w}" height="${hh}" fill="none" stroke="#9aa3ad" stroke-width="${px(3)}"/>`),
+      );
+  });
   const sw = edgeProf(s).vis,
     TR = 'fill="#c3c8d0" stroke="#7f8690" stroke-width="' + px(0.8) + '"';
   if (s.shape === "rect" && sw > 0) {

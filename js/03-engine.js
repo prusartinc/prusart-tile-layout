@@ -513,6 +513,7 @@ function mkStrip(label, len, wid, faces, T) {
       last: 0,
       Lg,
       approx: true,
+      key: tileDesc(T),
     };
   }
   const per = Math.ceil((len + g) / (Lg + g)),
@@ -531,6 +532,7 @@ function mkStrip(label, len, wid, faces, T) {
     tiles: Math.ceil(count / perTile),
     area: len * wid * faces,
     Lg,
+    key: fmtIn(Sh) + "×" + fmtIn(Lg),
   };
 }
 function countSheets(region, T) {
@@ -688,12 +690,14 @@ function compute(s) {
     sheets: 0,
   };
   if (!main) return empty;
-  let nich = [];
-  for (const n of G.niches) {
-    const r = pieces(rectPoly(n.x, n.y, n.w, n.h).map(X.toL), [], T, true);
-    if (r) nich = nich.concat(r);
-  }
-  const all = main.concat(nich);
+  let nich = [],
+    nichOwn = [];
+  const nicheCalcs = G.niches.map((n) => nicheCalc(s, n, T, X));
+  nicheCalcs.forEach((nc) => {
+    if (nc.N.own) nichOwn.push({ T: nc.N.Tb, pieces: nc.backP });
+    else nich = nich.concat(nc.backP);
+  });
+  const all = main.concat(nich, ...nichOwn.map((q) => q.pieces));
   const shOn = T.sheet && T.sheet.on;
   all.forEach((p) => {
     p.c = cls(p);
@@ -701,11 +705,8 @@ function compute(s) {
       p.c = "warn";
   });
   const strips = [];
-  G.niches.forEach((n) => {
-    if (n.d > 0) {
-      strips.push(mkStrip(t("nicheSide"), n.h, n.d, 2, T));
-      strips.push(mkStrip(t("nicheTB"), n.w, n.d, 2, T));
-    }
+  nicheCalcs.forEach((nc) => {
+    if (+nc.o.d > 0) strips.push(...nc.strips);
   });
   if (s.type === "pan" && s.curb.on) {
     const c = s.curb;
@@ -725,7 +726,10 @@ function compute(s) {
   if (sheet) {
     const sa = (+T.sheet.w || 12) * (+T.sheet.h || 12);
     sheets = countSheets(X.regionL, T);
-    G.niches.forEach((n) => (sheets += countSheets(rectPoly(n.x, n.y, n.w, n.h).map(X.toL), T)));
+    nicheCalcs.forEach((nc) => {
+      if (!nc.N.own)
+        nc.N.comps.forEach(([x, y, w, h]) => (sheets += countSheets(rectPoly(x, y, w, h).map(X.toL), T)));
+    });
     sheets += Math.ceil((strips.reduce((a, x) => a + x.area, 0) / sa) * 1.2);
     nb = { [tileDesc(T)]: sheets };
   } else {
@@ -733,7 +737,7 @@ function compute(s) {
     const key =
       T.shape === "rect" ? fmtIn(Math.min(+T.w, +T.h)) + "×" + fmtIn(Math.max(+T.w, +T.h)) : tileDesc(T);
     strips.forEach((x) => {
-      if (x.tiles) nb[key] = (nb[key] || 0) + x.tiles;
+      if (x.tiles) nb[x.key || key] = (nb[x.key || key] || 0) + x.tiles;
     });
   }
   const need = Object.values(nb).reduce((a, b) => a + b, 0);
@@ -784,7 +788,7 @@ function compute(s) {
     lf += (q.l ? s.h : 0) + (q.r ? s.h : 0) + (q.t ? s.w : 0) + (q.b ? s.w : 0);
   }
   s.openings.forEach((o) => {
-    if (o.trim && TRIMMABLE[o.type]) lf += 2 * (o.w + o.h);
+    if (o.trim && TRIMMABLE[o.type] && o.type !== "niche") lf += 2 * (o.w + o.h);
   });
   if (s.type === "pan" && s.curb.on && s.curb.trim) lf += 2 * s.curb.len;
   lf += +s.extraLF || 0;
@@ -793,6 +797,9 @@ function compute(s) {
     err: false,
     main,
     nich,
+    nichOwn,
+    nicheCalc: nicheCalcs,
+    nicheItems: [].concat(...nicheCalcs.map((nc) => nc.items)),
     all,
     strips,
     area,
@@ -818,6 +825,10 @@ function compute(s) {
   const ep = edgeProf(s);
   R.profs = {};
   if (R.lf > 0) R.profs[ep.key] = R.lf;
+  nicheCalcs.forEach((nc) => {
+    if (nc.profLF) R.profs[nc.profKey] = (R.profs[nc.profKey] || 0) + nc.profLF;
+    if (nc.shelfProf) R.profs[nc.shelfProf.key] = (R.profs[nc.shelfProf.key] || 0) + nc.shelfProf.lf;
+  });
   (s.trans || []).forEach((tr) => {
     const c = transCalc(s, tr);
     R.profs[c.key] = (R.profs[c.key] || 0) + (+tr.len || 0);

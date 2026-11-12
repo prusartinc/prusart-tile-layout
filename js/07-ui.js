@@ -301,8 +301,12 @@ function openingCard(o, i) {
       optLen(t("tFront"), `openings.${i}.front`, 18) +
       optLen(t("tWidth"), `openings.${i}.tw`, 20);
   b += "</div>";
-  if (TRIMMABLE[o.type]) b += CHK(t("trimmed"), `openings.${i}.trim`);
-  b += `<div class="btns">${o.type === "niche" ? `<button class="btn sm" data-act="snap:${i}">${t("snap")}</button>` : ""}<button class="btn sm d" data-act="delOpen:${i}">${t("del")}</button></div></div>`;
+  if (TRIMMABLE[o.type] && o.type !== "niche") b += CHK(t("trimmed"), `openings.${i}.trim`);
+  if (o.type === "niche") {
+    const c = nicheCfg(o, cur());
+    b += `<p class="hint">${[t("nk_" + c.kind), t("nf_" + c.form), c.form === "shelf" ? t("ns_" + c.shelf) : "", t("ne_" + c.edge), c.back.mode === "own" ? t("nBackT") + ": " + fmtIn(+c.back.w) + "×" + fmtIn(+c.back.h) : ""].filter(Boolean).join(" · ")}</p>`;
+  }
+  b += `<div class="btns">${o.type === "niche" ? `<button class="btn sm p" data-act="nicheCfg:${i}">⚙ ${t("nSettings")}</button><button class="btn sm" data-act="snap:${i}">${t("snap")}</button>` : ""}<button class="btn sm d" data-act="delOpen:${i}">${t("del")}</button></div></div>`;
   return b;
 }
 
@@ -974,12 +978,26 @@ function onInp(e) {
       P.flink.oy = T.oy + (+tg.pos.y || 0);
     } else autoLayout(tg);
   }
-  if (el.closest && el.closest("#mbody")) S.panelStale = true;
-  if (el.dataset.rb && !(el.closest && el.closest("#mbody"))) {
+  if (k.includes(".nk.") || /openings\.\d+\.nk\./.test(k)) {
+    const m = k.match(/^(?:surfaces\.(\d+)\.)?openings\.(\d+)\./),
+      s2 = m ? (m[1] != null ? P.surfaces[+m[1]] : cur()) : null,
+      o2 = s2 && s2.openings[+m[2]];
+    if (o2) {
+      nicheCfg(o2, s2);
+      nichePrefab(o2);
+    }
+  }
+  const inModal = el.closest && el.closest("#mbody");
+  if (inModal) S.panelStale = true;
+  if (el.dataset.rb && !inModal) {
     renderPanel();
     renderTools();
   }
   changed();
+  if (inModal) {
+    if (el.dataset.rb && S.reModal) S.reModal();
+    else if (S.modalLive) S.modalLive();
+  }
 }
 panel.addEventListener("input", onInp);
 panel.addEventListener("change", onInp);
@@ -1174,6 +1192,7 @@ function modal(h) {
 }
 function closeModal() {
   $("#modal").hidden = true;
+  S.reModal = S.modalLive = null;
   if (S.panelStale) {
     S.panelStale = false;
     renderPanel();

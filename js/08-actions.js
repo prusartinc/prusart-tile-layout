@@ -173,6 +173,9 @@ function act(a, arg, b) {
       renderPanel();
       changed();
       break;
+    case "nicheCfg":
+      nicheModal(S.tab, +arg);
+      break;
     case "delOpenP": {
       const [a1, a2] = arg.split(":").map(Number);
       P.surfaces[a1].openings.splice(a2, 1);

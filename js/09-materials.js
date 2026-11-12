@@ -90,6 +90,13 @@ function materials() {
       }
     }
   }
+  const nItems = {};
+  P.surfaces.forEach((s2) =>
+    (compute(s2).nicheItems || []).forEach((it) => {
+      const k = t(it.k) + "|" + it.note;
+      nItems[k] = (nItems[k] || 0) + it.n;
+    }),
+  );
   const H = wetWalls.length ? Math.max(...wetWalls.map((w) => bboxOf(outerPoly(w)).y1)) : 0;
   if (wetWalls.length > 1) {
     band += (wetWalls.length - 1) * H;
@@ -214,6 +221,10 @@ function materials() {
   Object.keys(pf).forEach((k) =>
     rows.push(["Schluter " + k, `${Math.ceil(pf[k] / 98.5)} × 8′2½″`, `${(pf[k] / 12).toFixed(1)} ft`]),
   );
+  Object.keys(nItems).forEach((k) => {
+    const [name, note] = k.split("|");
+    rows.push([name, `${nItems[k]} ${t("pcs")}`, note]);
+  });
   return rows;
 }
 function renderMat() {

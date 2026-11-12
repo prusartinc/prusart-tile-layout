@@ -28,6 +28,7 @@ function editOpening(si, j) {
   const s = P.surfaces[si],
     o = s && s.openings[j];
   if (!o) return;
+  if (o.type === "niche") return nicheModal(si, j);
   const pre = `surfaces.${si}.openings.${j}`,
     circ = o.shape === "circle";
   let h = `<h3>${esc(t(o.type))} — ${esc(s.name)}</h3><div class="grid">`;

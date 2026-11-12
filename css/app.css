@@ -808,3 +808,13 @@ body.tot #legend {
 body.client #sbar {
   display: none;
 }
+#mbody .nh {
+  margin: 16px 0 6px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brandInk, var(--ink));
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
