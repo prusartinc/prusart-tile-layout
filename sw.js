@@ -1,6 +1,6 @@
 // Service worker: network-first, falls back to cache when offline.
 // Bump CACHE on every deploy so old files are dropped.
-const CACHE = "tile-layout-v22";
+const CACHE = "tile-layout-v23";
 const SHELL = ["./", "./index.html", "./css/app.css", "./js/01-i18n.js", "./js/02-core.js", "./js/03-engine.js", "./js/04-state.js", "./js/05-draw.js", "./js/06-interact.js", "./js/07-ui.js", "./js/08-actions.js", "./js/09-materials.js", "./js/10-pdf.js", "./js/11-edit.js", "./js/12-buildup.js", "./js/13-heating.js", "./js/14-init.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {

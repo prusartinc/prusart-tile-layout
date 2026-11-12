@@ -130,6 +130,46 @@ const HEATSYS = {
   cable: {},
   mat: {},
 };
+/* DITRA-HEAT-E-HK cables: [length ft, coverage sf at 3-stud spacing]. Coverage at alternating 3-2 ≈ 83%.
+   From Schluter product tables / retailer listings (275.5 ft coverage estimated from length). */
+const DH_CABLES = {
+  120: [
+    [35.3, 10.7],
+    [52.9, 16.0],
+    [70.5, 21.3],
+    [88.2, 26.7],
+    [105.8, 32.0],
+    [124.1, 37.5],
+    [141.1, 42.7],
+    [169.8, 51.4],
+    [212.9, 64.4],
+    [240.2, 72.7],
+    [275.5, 83.4],
+    [303.0, 91.7],
+    [336.9, 101.9],
+    [372.2, 112.6],
+    [444.0, 134.5],
+  ],
+  240: [
+    [124.1, 37.5],
+    [176.3, 53.3],
+    [211.6, 64.0],
+    [248.2, 75.1],
+    [339.4, 101.9],
+    [425.8, 128.8],
+    [480.5, 145.3],
+    [551.0, 166.7],
+    [605.9, 183.3],
+    [673.8, 203.8],
+    [744.4, 225.2],
+    [888.0, 268.6],
+  ],
+};
+function cableCatalog(sys, volt) {
+  if (sys !== "ditraheat" && sys !== "ditraheatduo") return [];
+  const v = +volt === 240 ? 240 : 120;
+  return DH_CABLES[v].map(([ft, sf]) => ({ id: v + "-" + ft, ft, sf, sf32: Math.round(sf * 8.32) / 10, v }));
+}
 function tileBondAuto(T) {
   return { s: 0.125, m: 0.1875, l: 0.25 }[trowelOf(T)];
 }

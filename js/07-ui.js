@@ -455,8 +455,18 @@ function heatSection(s) {
         o === "auto" ? t("autoN") : o,
       ) +
       F(t("maxSf") + (H.maxSf ? "" : ` (${(+H.volt || 120) === 240 ? 250 : 134.5})`), "heat.maxSf", "num") +
-      `</div>`;
-    b += `<div class="btns"><button class="btn ${S.pickConn === s.id ? "p" : ""}" data-act="pickConn">📍 ${S.pickConn === s.id ? t("tapPlan") : t("pickConn")}</button>${CHK(t("showHeat"), "heat.show", 0)}</div><p class="hint">${t("connDrag")}</p><p class="hint">${t("warmHint")}</p>`;
+      optLen(t("ductClr"), "heat.ductClr", 4);
+    const cat = cableCatalog(H.sys, H.volt);
+    if (cat.length) {
+      if (H.model && !cat.some((c) => c.id === H.model)) H.model = "";
+      b += SEL(t("cableModel"), "heat.model", [""].concat(cat.map((c) => c.id)), 1, "s", "w2", (id) => {
+        if (!id) return t("cableAuto");
+        const c = cat.find((q) => q.id === id);
+        return `${c.v}V · ${c.ft} ft · ${c.sf} sf (3) / ${c.sf32} sf (3-2)`;
+      });
+    } else if (H.sys === "cable") b += F(t("cableFt"), "heat.cableFt", "num");
+    b += `</div>`;
+    b += `<div class="btns"><button class="btn ${S.pickConn === s.id ? "p" : ""}" data-act="pickConn">📍 ${S.pickConn === s.id ? t("tapPlan") : t("pickConn")}</button>${CHK(t("showHeat"), "heat.show", 0)}</div><p class="hint">${t("connDrag")}</p><p class="hint">${t("sensorDrag")}</p><p class="hint">${t("warmHint")}</p>`;
     b += `<p class="hint">${t("heatHint")}</p>`;
   }
   return SEC("heat", `🔥 ${t("heat")}${H.on ? " · " + t("on") : ""}`, b);

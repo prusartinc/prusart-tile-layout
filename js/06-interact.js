@@ -44,6 +44,9 @@ function connAt(cx, cy) {
       continue;
     const c = hp.conn;
     if (Math.hypot(w[0] - it.dx - c[0], w[1] - it.dy - c[1]) <= tol) return it;
+    const sn = hp.sensor;
+    if (sn && Math.hypot(w[0] - it.dx - sn[0], w[1] - it.dy - sn[1]) <= tol)
+      return Object.assign({ sensor: true }, it);
   }
   return null;
 }
@@ -131,7 +134,8 @@ svg.addEventListener("pointermove", (e) => {
   if (drag.conn) {
     const it = drag.conn,
       w = toWorld(e.clientX, e.clientY);
-    it.s.heat.conn = snapWall(it.R.G.outer, [w[0] - it.dx, w[1] - it.dy]);
+    if (it.sensor) it.s.heat.sensor = [w[0] - it.dx, w[1] - it.dy];
+    else it.s.heat.conn = snapWall(it.R.G.outer, [w[0] - it.dx, w[1] - it.dy]);
     drawSoon();
     return;
   }
