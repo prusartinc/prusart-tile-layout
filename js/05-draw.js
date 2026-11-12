@@ -510,8 +510,9 @@ function surfBody(s, R, o) {
     LAYER !== "prep" &&
     LAYER !== "wire"
   ) {
-    const fMin = +px(8.5 * fs0),
-      fMax = +px(12.5 * fs0);
+    const big = S.site ? 1.55 : 1,
+      fMin = +px(8.5 * fs0 * big),
+      fMax = +px(12.5 * fs0 * big);
     for (const p of R.all) {
       if (p.full || p.k !== "r") continue;
       const b = p.b;
@@ -543,10 +544,10 @@ function surfBody(s, R, o) {
         } else if (f < fMin * 0.75) continue;
       }
       const pl = p.lp ? [p.lp[0], p.lp[1]] : [(b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2],
-        w = R.toW(pl),
+        w = p.own ? pl : R.toW(pl),
         x = w[0],
         y = -w[1];
-      const ang = (rot ? -90 : 0) - (R.a * 180) / Math.PI;
+      const ang = (rot ? -90 : 0) - (p.own ? 0 : (R.a * 180) / Math.PI);
       const col = p.c === "bad" ? "#7d1410" : "#1d3550";
       let inner = esc(tx);
       if (S.nums && p.no) {

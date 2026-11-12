@@ -192,6 +192,10 @@ function pEnd(e) {
         editOpening(P.surfaces.indexOf(d.s), d.op);
         return;
       }
+      if (!isMulti() && d.it && S.layer === "tile" && S.tab !== "tot") {
+        pieceInfo(d.it, d.x, d.y);
+        return;
+      }
       if (isMulti() && d.it && !S.client) {
         S.tab = P.surfaces.indexOf(d.it.s);
         S.view = { zoom: 1, panX: 0, panY: 0 };

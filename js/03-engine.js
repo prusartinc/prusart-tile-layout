@@ -872,6 +872,12 @@ function numberPieces(R) {
     p.no = ++n;
     p.row = "N";
   });
+  (R.nichOwn || []).forEach((q) =>
+    ord(q.pieces).forEach((p) => {
+      p.no = ++n;
+      p.row = "N";
+    }),
+  );
   R.rowsOK = !R.a && ["grid", "offset"].includes(patOf(R.T)) && R.T.shape === "rect";
   R.rowFull = {};
   R.main.forEach((p) => {

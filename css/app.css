@@ -870,3 +870,151 @@ body.client #sbar {
   padding: 7px 10px;
   font-weight: 700;
 }
+
+/* tools menu */
+.mmgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.mm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 12px;
+  cursor: pointer;
+}
+.mm span {
+  font-size: 20px;
+  line-height: 1;
+}
+.mm.on {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+/* surfaces list */
+.sgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+.scard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+.scard.on {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.scard .th {
+  height: 68px;
+  display: flex;
+  align-items: center;
+}
+.scard small {
+  color: var(--mut);
+  font-size: 11.5px;
+}
+#tabs button.lst {
+  font-weight: 700;
+  min-width: 40px;
+}
+/* expandable stats */
+#stat {
+  cursor: pointer;
+  flex-wrap: wrap;
+}
+#stat .more {
+  margin-left: auto;
+  color: var(--mut);
+}
+.statx {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px 12px;
+  padding: 8px 0 2px;
+}
+.statx div {
+  display: flex;
+  flex-direction: column;
+}
+.statx small {
+  color: var(--mut);
+  font-size: 11px;
+}
+/* section chips */
+.secnav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 0 10px;
+  scrollbar-width: none;
+}
+.secnav::-webkit-scrollbar {
+  display: none;
+}
+.secnav button {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.secnav button.on {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+/* phones: drawing stays pinned on top while the settings scroll under it */
+@media (max-width: 899px) {
+  body.pin #vw {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    background: var(--bg);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  }
+  body.pin #stage {
+    height: 44vh;
+    min-height: 260px;
+  }
+  body.pin #legend {
+    display: none;
+  }
+  body.pin .secnav {
+    position: sticky;
+    top: var(--vwh, 0px);
+  }
+}
+
+body.site #pad,
+body.site #layers {
+  display: none !important;
+}
+body.pin .secnav {
+  z-index: 5;
+  background: var(--bg);
+  margin: -10px -10px 0;
+  padding: 8px 10px 10px;
+}

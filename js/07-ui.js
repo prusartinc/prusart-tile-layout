@@ -15,6 +15,7 @@ function renderTabs() {
   const nw = P.surfaces.filter((s) => s.type === "wall").length,
     nf = P.surfaces.filter((s) => s.type !== "wall").length;
   $("#tabs").innerHTML =
+    `<button data-act="surfList" class="lst" title="${t("mSurfs")}">☰</button>` +
     (nw >= 2
       ? `<button data-act="all" class="all ${S.tab === "all" ? "on" : ""}">▥▥ ${t("allWalls")}</button>`
       : "") +
@@ -35,8 +36,8 @@ function renderTools() {
   $("#tools").innerHTML =
     (S.client
       ? ""
-      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button>${isMulti() ? "" : `<button data-act="rotate">⟲</button>`}<button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button><button data-act="nums" class="${S.nums ? "on" : ""}">#</button>`) +
-    `<span class="sp"></span>${S.client ? "" : `<button data-act="undo">↶</button><button data-act="redo">↷</button>`}<button data-act="labels" class="${S.labels ? "on" : ""}">${t("labels")}</button><button data-act="fit">${t("fit")}</button><button data-act="full" class="${S.full ? "on" : ""}">${S.full ? "✕" : "⛶"}</button>`;
+      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button><button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button>${S.site ? `<button data-act="site" class="on">👷 ${t("siteOff")}</button>` : `<button data-act="more">⋯ ${t("moreB")}</button>`}`) +
+    `<span class="sp"></span>${S.client ? "" : `<button data-act="undo" title="${t("undoW")}">↶</button><button data-act="redo">↷</button>`}<button data-act="fit" title="${t("mFit")}">⤢</button><button data-act="full" class="${S.full ? "on" : ""}">${S.full ? "✕" : "⛶"}</button>`;
   renderLayers();
   renderPad();
 }
@@ -65,7 +66,7 @@ function renderSbar() {
   const el = $("#sbar");
   if (!el) return;
   const s = cur(),
-    show = canEdit() && !!s && !isMulti();
+    show = canEdit() && !!s && !isMulti() && !S.site;
   el.style.display = show ? "flex" : "none";
   if (!show) return;
   const B = (act, ic, lb, cls = "") =>
@@ -143,6 +144,7 @@ function renderStat() {
   el.innerHTML = sheet
     ? `<span>${t("sheets")} <b>${R.sheets}</b></span><span>${t("order")} <b>${R.order}</b></span><span>${t("area")} <b>${sq(R.area)}</b></span>`
     : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
+  el.innerHTML += `<span class="more">${S.statX ? "▴" : "▾"}</span>` + (S.statX ? statDetails(R, cur()) : "");
   if (S.client) renderClient();
 }
 function patName(T) {
@@ -176,7 +178,7 @@ function renderClient() {
 }
 
 const F = (label, k, ty = "len", sc = "s", cls = "") => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
   let v;
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
@@ -185,12 +187,12 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
   return `<label class="f ${cls}"><span>${label}</span><input data-k="${k}" data-sc="${sc}" data-t="${ty}" value="${val}" autocomplete="off" ${ty === "num" ? 'inputmode="decimal"' : ""}></label>`;
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
   const v = getPath(base, k);
   return `<label class="f ${cls}"><span>${label}</span><select data-k="${k}" data-sc="${sc}" data-t="sel" ${rb ? 'data-rb="1"' : ""}>${opts.map((o) => `<option value="${o}" ${o === v ? "selected" : ""}>${esc(lab ? lab(o) : t(o === "L" ? "Lshape" : o))}</option>`).join("")}</select></label>`;
 };
 const CHK = (label, k, rb, sc = "s") => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
   return `<label class="c"><input type="checkbox" data-k="${k}" data-sc="${sc}" data-t="chk" ${getPath(base, k) ? "checked" : ""} ${rb ? 'data-rb="1"' : ""}>${label}</label>`;
 };
 const SEC = (id, title, body) =>
@@ -821,7 +823,7 @@ function onInp(e) {
   if (!k) return;
   const sc = el.dataset.sc || "s",
     ty = el.dataset.t,
-    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
+    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
   let v;
   if (ty === "len" && el.dataset.opt && String(el.value).trim() === "") {
     v = null;

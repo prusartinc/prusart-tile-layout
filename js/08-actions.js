@@ -8,9 +8,40 @@ document.addEventListener("click", (e) => {
 });
 function act(a, arg, b) {
   const s = cur();
+  if (
+    b &&
+    b.closest &&
+    b.closest("#mbody") &&
+    ["tab", "tot", "rotate", "nums", "labels", "fit", "full"].includes(a)
+  )
+    closeModal();
   if (/^lib/.test(a)) return libAct(a, arg);
   if (/^wiz(Apply|Default|Cancel|Lib)$/.test(a)) return wizAct(a);
   switch (a) {
+    case "more":
+      moreMenu();
+      break;
+    case "surfList":
+      surfList();
+      break;
+    case "secGo":
+      secGo(arg);
+      break;
+    case "site":
+      siteToggle();
+      break;
+    case "pin":
+      S.pin = S.pin === false;
+      closeModal();
+      applyPin();
+      draw();
+      break;
+    case "npGo":
+      newProjGo();
+      break;
+    case "newProjBlank":
+      act("newProjOld");
+      break;
     case "wizPick":
       if (S.wiz) S.wiz.src = "l:" + arg;
       wizOpen();
@@ -546,7 +577,10 @@ function act(a, arg, b) {
     case "closeModal":
       closeModal();
       break;
-    case "newProj": {
+    case "newProj":
+      newProjModal();
+      break;
+    case "newProjOld": {
       const p = newProject(false);
       DB.projects.push(p);
       P = p;
