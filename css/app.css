@@ -764,3 +764,47 @@ body.tot #legend {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* quick surface buttons at the right of the drawing */
+#sbar {
+  position: absolute;
+  right: 6px;
+  top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 3;
+}
+#sbar button {
+  width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  background: var(--tool);
+  border-radius: 10px;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  font-size: 17px;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+#sbar button small {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+#sbar button.d {
+  color: #b3261e;
+}
+#sbar button:active {
+  background: var(--ink);
+  color: var(--bg);
+}
+body.client #sbar {
+  display: none;
+}

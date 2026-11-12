@@ -763,13 +763,20 @@ function overlayInsets(r) {
       const q = c.getBoundingClientRect();
       t = Math.max(t, q.bottom - r.top);
     }
+  let rr = 0;
+  const sb = $("#sbar");
+  if (vis(sb)) {
+    sb.style.top = (t ? t + 6 : 8) + "px";
+    const q = sb.getBoundingClientRect();
+    rr = r.right - q.left;
+  }
   for (const id of ["#layers", "#pad"]) {
     const e = $(id);
     if (!vis(e)) continue;
     const q = e.getBoundingClientRect();
     b = Math.max(b, r.bottom - q.top);
   }
-  return { t: t ? t + 22 : 0, b: b ? b + 24 : 0, l: 0, r: 0 };
+  return { t: t ? t + 22 : 0, b: b ? b + 24 : 0, l: 0, r: rr ? rr + 8 : 0 };
 }
 function draw() {
   const r = svg.getBoundingClientRect();

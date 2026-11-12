@@ -61,7 +61,23 @@ function renderLayers() {
     )
     .join("");
 }
+function renderSbar() {
+  const el = $("#sbar");
+  if (!el) return;
+  const s = cur(),
+    show = canEdit() && !!s && !isMulti();
+  el.style.display = show ? "flex" : "none";
+  if (!show) return;
+  const B = (act, ic, lb, cls = "") =>
+    `<button class="${cls}" data-act="${act}" title="${lb}">${ic}<small>${lb}</small></button>`;
+  el.innerHTML =
+    (s.shape === "rect" ? B("quickSize", "📐", t("qSize")) : "") +
+    B("quickTile", "▦", t("qTile")) +
+    B("clearSurf", "⌫", t("qClear")) +
+    B("delSurfQ", "🗑", t("qDel"), "d");
+}
 function renderPad() {
+  renderSbar();
   const el = $("#pad");
   if (!el) return;
   const show =

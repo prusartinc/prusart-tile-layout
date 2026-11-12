@@ -201,6 +201,63 @@ function act(a, arg, b) {
       saveSoon();
       break;
     }
+    case "quickSize": {
+      if (!s) return;
+      const si = S.tab;
+      modal(
+        `<h3>📐 ${esc(s.name)}</h3><div class="grid">${F(t("width"), `surfaces.${si}.w`, "len", "p")}${F(s.type === "wall" ? t("height") : t("length"), `surfaces.${si}.h`, "len", "p")}</div><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button></div>`,
+      );
+      break;
+    }
+    case "quickTile": {
+      if (!s) return;
+      const si = S.tab,
+        T = s.tile,
+        pre = `surfaces.${si}.tile`;
+      const two = !["hex", "penny"].includes(T.shape);
+      modal(
+        `<h3>▦ ${t("tile")} — ${esc(s.name)}</h3><div class="grid">${
+          two
+            ? F(t("tileW"), pre + ".w", "len", "p") + F(t("tileL"), pre + ".h", "len", "p")
+            : F(t(T.shape === "hex" ? "hexW" : "pennyD"), pre + ".w", "len", "p", "w2")
+        }${F(t("grout"), pre + ".g", "len", "p")}${F(t("thick"), pre + ".thick", "len", "p")}</div><p class="hint">${t("qTileHint")}</p><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button></div>`,
+      );
+      break;
+    }
+    case "clearSurf":
+      if (!s) return;
+      modal(
+        `<h3>⌫ ${t("qClearT")}</h3><p>${t("qClearMsg").replace("{n}", esc(s.name))}</p><div class="btns"><button class="btn d" data-act="clearSurfGo">${t("qClearGo")}</button><button class="btn" data-act="closeModal">${t("cancel")}</button></div>`,
+      );
+      break;
+    case "clearSurfGo": {
+      if (!s) return;
+      commitUndo();
+      const f = newSurface(s.type),
+        other = P.surfaces.find((x) => x !== s && x.type === "wall");
+      if (s.type === "wall") f.tile = other ? JSON.parse(JSON.stringify(other.tile)) : defTile();
+      Object.assign(f, { id: s.id, name: s.name, nk: s.nk, nn: s.nn, pos: s.pos });
+      P.surfaces[S.tab] = f;
+      closeModal();
+      renderAll();
+      changed();
+      break;
+    }
+    case "delSurfQ":
+      if (!s) return;
+      modal(
+        `<h3>🗑 ${t("qDelT")}</h3><p>${t("qDelMsg").replace("{n}", esc(s.name))}</p><div class="btns"><button class="btn d" data-act="delSurfGo">${t("del")}</button><button class="btn" data-act="closeModal">${t("cancel")}</button></div>`,
+      );
+      break;
+    case "delSurfGo":
+      commitUndo();
+      closeModal();
+      P.surfaces.splice(S.tab, 1);
+      if (!P.surfaces.length) P.surfaces.push(newSurface("wall"));
+      S.tab = Math.min(S.tab, P.surfaces.length - 1);
+      renderAll();
+      saveSoon();
+      break;
     case "delSurf":
       if (!b.dataset.armed) {
         b.dataset.armed = 1;
