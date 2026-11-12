@@ -40,6 +40,10 @@ header button.acc{background:var(--brand);color:#000;border-color:var(--brand);f
 #tools button{pointer-events:auto;border:1px solid var(--line);background:var(--tool);border-radius:8px;padding:7px 8px;min-width:34px;font-size:13px;cursor:pointer;color:var(--ink);box-shadow:var(--shadow)}
 #tools button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 #tools .sp{flex:1}
+#layers{position:absolute;left:8px;bottom:8px;display:flex;gap:2px;padding:3px;background:var(--tool);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);z-index:2}
+#layers button{border:0;background:none;color:var(--ink);padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer}
+#layers button.on{background:var(--ink);color:var(--bg)}
+body.tot #layers{display:none}
 #pad{position:absolute;right:6px;bottom:6px;display:grid;grid-template-columns:repeat(3,36px);grid-template-rows:repeat(3,32px);gap:3px;opacity:.94}
 #pad button{border:1px solid var(--line);background:var(--tool);border-radius:8px;font-size:16px;padding:0;color:var(--ink);box-shadow:var(--shadow);touch-action:none;-webkit-user-select:none;user-select:none}
 #pad button.stp{font-size:11px;font-weight:700;color:var(--brandInk)}
@@ -138,6 +142,7 @@ body.tot #stage,body.tot #stat,body.tot #legend{display:none}
   <div id="stage">
    <svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
    <div id="tools"></div>
+   <div id="layers"></div>
    <div id="pad"><span></span><button data-nudge="u">↑</button><span></span><button data-nudge="l">←</button><button class="stp" data-act="stepCycle">1/8″</button><button data-nudge="r">→</button><span></span><button data-nudge="d">↓</button><span></span></div>
   </div>
   <div id="stat"></div>
@@ -161,7 +166,7 @@ buildUp:'Высота пирога',aboveSub:'над черновым полом
 ug_heat:'Подогрев (мембраны)',ug_mem:'Мембраны',ug_board:'Бэкерборд',ug_ply:'Фанера',noUnder:'без подложки',underTop:'Подложка под плиткой',underLow:'Нижний слой (если есть)',stackHint:'Клей «≈» — оценка по гребёнке; можно вписать своё.',addUnder:'+ Своя подложка',stackT:'Основание (пирог)',
 profType:'Профиль',profDefault:'как в проекте',profSize:'Размер (высота)',profHint:'Размер подбирается по толщине плитки — профиль не выше плитки (до ~1/32″ ниже).',
 sideN:'Сторона',edgeOf:'На какой стороне',fromStart:'От начала стороны',doorW:'Ширина проёма',adjFloor:'Соседний пол',adjT:'Толщина соседнего (с подложкой)',adjSub:'Черновой пол соседа выше(+)/ниже(−)',transProf:'Профиль перехода',transHint:'Проём, где плитка встречается с другим полом. Покажет перепад высот и подходящий профиль.',addTrans:'+ Переход',transT:'Переходы (порог)',
-heatOn:'Будет подогрев пола',heatSys:'Система',spacing:'Шаг кабеля',sp_3:'через 3 шипа (стандарт)',sp_32:'3-2-3-2 (теплее)',spacingIn:'Шаг кабеля, дюймы',volt:'Напряжение',clearWalls:'Отступ от стен',tapPlan:'Нажми на чертёж…',pickConn:'Точка подключения',nCables:'Кабелей',autoN:'авто',maxSf:'Макс. sf на 1 кабель',cableN:'Кабель',connDrag:'T можно тянуть пальцем вдоль стены (режим Tiles).',leadFar:'От T до начала кабеля больше 7 ft — штатного холодного конца может не хватить.',overMax:'Кабель больше максимального размера — поставь больше кабелей.',showHeat:'Показывать схему',heatHint:'Отметь зоны без подогрева (тумба, ванна, шкаф) в «Ниши и вырезы» → «Зона без подогрева». Кабель идёт змейкой от точки подключения (T), S — датчик.',on:'вкл',unit:'шт',noheat:'Зона без подогрева',cornerA:'угол',tubOn:'Ванна / поддон у этой стены (торцевая стена)',tubHint:'Плитка над ванной + полоса за краем ванны до пола. Задняя стена над ванной — без этой галочки, у неё «Низ стены над полом» = высота ванны.',tubSide:'Где ванна на этой стене',tubSide_r:'Справа (угол справа)',tubSide_l:'Слева (угол слева)',tubD:'Глубина ванны от угла',tubH:'Высота борта от пола',tubR:'Радиус скругления угла ванны',tubStrip:'Полоса до пола',tubRF:'Подъём борта у края ванны',tubRB:'Подъём борта в углу',tubRHint:'Радиус: если внешний угол ванны скруглён — приложи угольник и измерь, где начинается скругление (обычно 1–3″). 0 = острый угол. Подъём борта — если ванна не в уровне по этой стене (0 у самой низкой точки).',ledgerFromFloor:'от пола — от неё первый целый ряд над ванной.',noteArc:'рез по радиусу',
+heatOn:'Будет подогрев пола',heatSys:'Система',spacing:'Шаг кабеля',sp_3:'через 3 шипа (стандарт)',sp_32:'3-2-3-2 (теплее)',spacingIn:'Шаг кабеля, дюймы',volt:'Напряжение',clearWalls:'Отступ от стен',tapPlan:'Нажми на чертёж…',pickConn:'Точка подключения',lay_prep:'Основа',lay_tile:'Плитка',lay_wire:'Кабель',noPrep:'без подложки',nCables:'Кабелей',autoN:'авто',maxSf:'Макс. sf на 1 кабель',cableN:'Кабель',connDrag:'Переключи слой «Кабель» внизу чертежа — там T тянется пальцем вдоль стены.',leadFar:'От T до начала кабеля больше 7 ft — штатного холодного конца может не хватить.',overMax:'Кабель больше максимального размера — поставь больше кабелей.',showHeat:'Схема кабеля в PDF / картинке',heatHint:'Отметь зоны без подогрева (тумба, ванна, шкаф) в «Ниши и вырезы» → «Зона без подогрева». Кабель идёт змейкой от точки подключения (T), S — датчик.',on:'вкл',unit:'шт',noheat:'Зона без подогрева',cornerA:'угол',tubOn:'Ванна / поддон у этой стены (торцевая стена)',tubHint:'Плитка над ванной + полоса за краем ванны до пола. Задняя стена над ванной — без этой галочки, у неё «Низ стены над полом» = высота ванны.',tubSide:'Где ванна на этой стене',tubSide_r:'Справа (угол справа)',tubSide_l:'Слева (угол слева)',tubD:'Глубина ванны от угла',tubH:'Высота борта от пола',tubR:'Радиус скругления угла ванны',tubStrip:'Полоса до пола',tubRF:'Подъём борта у края ванны',tubRB:'Подъём борта в углу',tubRHint:'Радиус: если внешний угол ванны скруглён — приложи угольник и измерь, где начинается скругление (обычно 1–3″). 0 = острый угол. Подъём борта — если ванна не в уровне по этой стене (0 у самой низкой точки).',ledgerFromFloor:'от пола — от неё первый целый ряд над ванной.',noteArc:'рез по радиусу',
 drawBtn:'Нарисовать форму',helpBtn:'Как вводить',drawTitle:'Нарисуй форму',drawHint:'Веди пальцем по контуру или ставь точки в углах по очереди. Линии сразу выпрямляются и встают на 90°, 45°, 135°, 60°, 30° (серым — как нарисовал). Потом вводишь реальные размеры и при необходимости уточняешь угол.',drawUndoPt:'Точка',drawClear:'Очистить',drawApply:'Выпрямить и применить',drawEmpty:'Рисуй здесь',drawNeed3:'Нужно хотя бы 3 угла.',closeWalk:'Замкнуть (подогнать 2 последние стороны)',cantClose:'Не получается — проверь углы',
 helpTitle:'Как задать форму',helpHtml:'<p><b>Прямоугольник</b> — ширина и высота (для пола — ширина и длина).</p><p><b>Г-образная</b> — прямоугольник с вырезом в одном углу: ширина и глубина выреза + угол.</p><p><b>По стенам (углы)</b> — обходишь контур по кругу: длина стороны и поворот после неё (↰ налево / ↱ направо, 90°, 45°, 135° или свой). Начало — левый нижний угол, идём вправо.</p><p><b>✏️ Нарисовать</b> — рисуешь пальцем примерно, линии выпрямятся, потом вводишь реальные размеры каждой стороны (или нажимаешь на размер прямо на чертеже).</p><p><b>Свои точки</b> — углы как координаты x,y в дюймах от левого нижнего угла, по порядку, через «;».<br>Скошенный потолок 60″, слева 96, справа 72: <code>0,0; 60,0; 60,72; 0,96</code><br>Бортик ванны справа внизу 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>Торцевая стена у ванны</b> — галочка «Ванна / поддон у этой стены»: глубина, высота, радиус угла, полоса до пола считается сама.</p><p><b>Неровности</b> — «Низ не в уровне» и «Стена не в отвесе» дают клиновые подрезки.</p>',dirR:'→ лесенка вправо',dirL:'← лесенка влево',dirA:'⇄ через ряд',moveLock:'🔒 Замок',plumbOn:'Стена не в отвесе (углы завалены)',plumbHint:'Повесь уровень/лазер по углу снизу вверх. На сколько угол уходит вверху: + если внутрь стены (стена вверху уже), − если наружу.',pL:'Левый угол вверху',pR:'Правый угол вверху',noteTaperW:'клин по высоте',
 allFloor:'Весь пол',posX:'Положение на плане X',posY:'Положение на плане Y',zlink:'Единая сетка с другими зонами пола',zoneHint:'Зоны (ванная, клозет, туалет) ставятся на общий план. С единой сеткой плитка идёт через проём без сбоя; без неё — своя раскладка и порог.',
@@ -223,7 +228,7 @@ buildUp:'Build-up height',aboveSub:'above subfloor',chkSpec:'thickness from a re
 ug_heat:'Heating membranes',ug_mem:'Membranes',ug_board:'Backer board',ug_ply:'Plywood',noUnder:'no underlayment',underTop:'Underlayment under tile',underLow:'Lower layer (if any)',stackHint:'“≈” thinset is estimated from the trowel; you can enter your own.',addUnder:'+ Custom underlayment',stackT:'Base (build-up)',
 profType:'Profile',profDefault:'project default',profSize:'Size (height)',profHint:'Size is chosen from tile thickness — the profile should not be higher than the tile (up to ~1/32″ lower).',
 sideN:'Side',edgeOf:'Which side',fromStart:'From start of side',doorW:'Opening width',adjFloor:'Adjacent floor',adjT:'Adjacent thickness (incl. underlay)',adjSub:'Adjacent subfloor higher(+)/lower(−)',transProf:'Transition profile',transHint:'Doorway where tile meets another floor. Shows the height difference and a matching profile.',addTrans:'+ Transition',transT:'Transitions (threshold)',
-heatOn:'Heated floor',heatSys:'System',spacing:'Cable spacing',sp_3:'every 3 studs (standard)',sp_32:'3-2-3-2 (warmer)',spacingIn:'Cable spacing, in',volt:'Voltage',clearWalls:'Clearance from walls',tapPlan:'Tap the drawing…',pickConn:'Connection point',nCables:'Cables',autoN:'auto',maxSf:'Max sf per cable',cableN:'Cable',connDrag:'Drag T along the wall with your finger (Tiles mode).',leadFar:'T is more than 7 ft from the cable start — the stock cold lead may not reach.',overMax:'Cable is larger than the max size — use more cables.',showHeat:'Show layout',heatHint:'Mark no-heat zones (vanity, tub, cabinet) in “Niches, cutouts” → “No-heat zone”. Cable snakes from the connection point (T); S = sensor.',on:'on',unit:'unit',noheat:'No-heat zone',cornerA:'corner',tubOn:'Tub / pan against this wall (end wall)',tubHint:'Tile above the tub + a strip past the tub edge down to the floor. The back wall above the tub does not use this — set its “Wall bottom above floor” to the tub height.',tubSide:'Where the tub is on this wall',tubSide_r:'Right (corner on the right)',tubSide_l:'Left (corner on the left)',tubD:'Tub depth from corner',tubH:'Tub rim height from floor',tubR:'Tub corner radius',tubStrip:'Strip to floor',tubRF:'Rim rise at tub edge',tubRB:'Rim rise at corner',tubRHint:'Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).',ledgerFromFloor:'above the floor — first full row above the tub starts there.',noteArc:'radius cut',
+heatOn:'Heated floor',heatSys:'System',spacing:'Cable spacing',sp_3:'every 3 studs (standard)',sp_32:'3-2-3-2 (warmer)',spacingIn:'Cable spacing, in',volt:'Voltage',clearWalls:'Clearance from walls',tapPlan:'Tap the drawing…',pickConn:'Connection point',lay_prep:'Prep',lay_tile:'Tile',lay_wire:'Wire',noPrep:'no underlayment',nCables:'Cables',autoN:'auto',maxSf:'Max sf per cable',cableN:'Cable',connDrag:'Switch to the Wire layer (bottom of the drawing) to drag T along the wall.',leadFar:'T is more than 7 ft from the cable start — the stock cold lead may not reach.',overMax:'Cable is larger than the max size — use more cables.',showHeat:'Cable layout in PDF / image',heatHint:'Mark no-heat zones (vanity, tub, cabinet) in “Niches, cutouts” → “No-heat zone”. Cable snakes from the connection point (T); S = sensor.',on:'on',unit:'unit',noheat:'No-heat zone',cornerA:'corner',tubOn:'Tub / pan against this wall (end wall)',tubHint:'Tile above the tub + a strip past the tub edge down to the floor. The back wall above the tub does not use this — set its “Wall bottom above floor” to the tub height.',tubSide:'Where the tub is on this wall',tubSide_r:'Right (corner on the right)',tubSide_l:'Left (corner on the left)',tubD:'Tub depth from corner',tubH:'Tub rim height from floor',tubR:'Tub corner radius',tubStrip:'Strip to floor',tubRF:'Rim rise at tub edge',tubRB:'Rim rise at corner',tubRHint:'Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).',ledgerFromFloor:'above the floor — first full row above the tub starts there.',noteArc:'radius cut',
 drawBtn:'Draw shape',helpBtn:'How to enter',drawTitle:'Draw the shape',drawHint:'Trace the outline or tap the corners in order. Lines straighten live and snap to 90°, 45°, 135°, 60°, 30° (grey = what you drew). Then enter real lengths and fine-tune any angle.',drawUndoPt:'Point',drawClear:'Clear',drawApply:'Straighten & apply',drawEmpty:'Draw here',drawNeed3:'Need at least 3 corners.',closeWalk:'Close (fit last 2 sides)',cantClose:'Cannot close — check angles',
 helpTitle:'How to set the shape',helpHtml:'<p><b>Rectangle</b> — width and height (floor: width and length).</p><p><b>L-shape</b> — rectangle with a notch in one corner: notch width, depth and corner.</p><p><b>By walls (angles)</b> — walk the outline: side length and the turn after it (↰ left / ↱ right, 90°, 45°, 135° or custom). Start at the bottom-left corner going right.</p><p><b>✏️ Draw</b> — sketch with your finger, lines get straightened, then enter real side lengths (or tap a size on the drawing).</p><p><b>Custom points</b> — corners as x,y inches from the bottom-left, in order, separated by “;”.<br>Sloped ceiling 60″, 96 left, 72 right: <code>0,0; 60,0; 60,72; 0,96</code><br>Tub deck bottom-right 30×20: <code>0,0; 30,0; 30,20; 60,20; 60,96; 0,96</code></p><p><b>End wall at a tub</b> — check “Tub / pan against this wall”: depth, height, corner radius; the strip to the floor is computed.</p><p><b>Out of level</b> — “Bottom out of level” and “Wall out of plumb” give tapered cuts.</p>',dirR:'→ step right',dirL:'← step left',dirA:'⇄ every other row',moveLock:'🔒 Lock',plumbOn:'Wall out of plumb (corners lean)',plumbHint:'Hold a level/laser along the corner from bottom up. How far the corner is off at the top: + if it leans into the wall (narrower at top), − if outward.',pL:'Left corner at top',pR:'Right corner at top',noteTaperW:'taper by height',
 allFloor:'Whole floor',posX:'Plan position X',posY:'Plan position Y',zlink:'Shared grid with other floor zones',zoneHint:'Zones (bath, closet, toilet room) sit on a shared plan. With a shared grid the tile runs through the doorway; without it — own layout and a threshold.',
@@ -638,7 +643,7 @@ function centerOn(s,x,y,joint){const T=effT(s);let ox,oy;
 
 /* ================= state ================= */
 const SKEY='prusart-tile-layout-v1';
-let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,nums:false,mode:'tiles',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres','mat','pdfs','zones','heat','trans']),items:[],vb:[0,0,1,1],upp:0.1};
+let DB,P,S={tab:0,view:{zoom:1,panX:0,panY:0},labels:true,nums:false,mode:'tiles',layer:'tile',client:false,step:0.125,open:new Set(['surf','tile','layout','res','proj','tot','link','allres','mat','pdfs','zones','heat','trans']),items:[],vb:[0,0,1,1],upp:0.1};
 function defTile(o){return Object.assign({thick:0.375,shape:'rect',w:12,h:24,w2:6,g:0.125,pattern:'offset',off:0.5,ang:0,rot:true,ox:0,oy:0,sqftBox:0,cang:45,checker:false,sheet:{on:false,w:12,h:12}},o||{});}
 function newSurface(type,name){
  const n=P?P.surfaces.filter(x=>x.type===type).length:0;
@@ -708,6 +713,13 @@ function tileSVG(p,T,px){const alt=(T.checker&&p.q)||(patOf(T)==='pinwheel'&&p.q
  if(p.k==='c'){const r=Math.min(p.lw,p.lh)/2;return`<circle cx="${(p.x0+p.lw/2).toFixed(3)}" cy="${(-(p.y0+p.lh/2)).toFixed(3)}" r="${r.toFixed(3)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;}
  return`<rect x="${p.x0.toFixed(3)}" y="${(-(p.y0+p.lh)).toFixed(3)}" width="${p.lw.toFixed(3)}" height="${p.lh.toFixed(3)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;}
 function dimKey(s,k){if(s.shape==='custom'||s.shape==='walk')return'';return`data-dim="${P.surfaces.indexOf(s)}:${k}" style="cursor:pointer" fill-opacity="1"`;}
+let LAYER=null;
+const heatVis=s=>LAYER==='wire'||(!LAYER&&s.heat&&s.heat.show);
+const PREPCOL={heat:'#f3c08a',mem:'#f6d48c',board:'#d6d6d6',ply:'#e2cfa6',none:'#ece8e0'};
+function prepSVG(s,R,id,px,fs0,noLbl){const G=R.G,st=s.stack||{},u=underOf(st.under||'none'),u2=underOf(st.under2||'none'),col=PREPCOL[u.k]||PREPCOL.none,hD=G.holes.map(x=>pd(x.poly)).join('');
+ let h=`<pattern id="pp${id}" width="1.6" height="1.6" patternUnits="userSpaceOnUse"><rect width="1.6" height="1.6" fill="${col}"/>${u.k==='heat'||u.k==='mem'?`<circle cx=".8" cy=".8" r=".42" fill="rgba(0,0,0,.13)"/>`:''}</pattern><path d="${pd(G.region)}${hD}" fill-rule="evenodd" fill="url(#pp${id})"/>`;if(noLbl)return h;
+ const names=[u2,u].filter(x=>x.k!=='none').map(x=>x.n),txt=(names.length?names.join(' + '):t('noPrep'))+` · ${(R.area/144).toFixed(1)} sf`,bb=G.bb,f=Math.min(+px(13*fs0),(bb.x1-bb.x0)/(txt.length*0.58));
+ h+=`<text x="${(bb.x0+bb.x1)/2}" y="${-(bb.y0+bb.y1)/2}" font-size="${f.toFixed(3)}" text-anchor="middle" dominant-baseline="central" fill="#3a352c" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="rgba(255,255,255,.85)" stroke-width="${px(3)}">${esc(txt)}</text>`;return h;}
 function surfBody(s,R,o){
  const G=R.G,T=R.T,id=o.id,fs0=o.fs,px=n=>(n*o.upp).toFixed(4);let h='';
  const hD=G.holes.map(x=>pd(x.poly)).join('');
@@ -715,11 +727,11 @@ function surfBody(s,R,o){
  h+=`<pattern id="ht${id}" width="${px(9)}" height="${px(9)}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="${px(9)}" height="${px(9)}" fill="#efebe4"/><line x1="0" y1="0" x2="0" y2="${px(9)}" stroke="#c4bdb1" stroke-width="${px(2)}"/></pattern></defs>`;
  const curbOn=s.type==='pan'&&s.curb.on;
  if(curbOn){const c=s.curb;h+=`<rect x="0" y="0" width="${c.len}" height="${c.w}" fill="#dcd5c8" stroke="#6b665e" stroke-width="${px(1)}"/><text x="${c.len/2}" y="${c.w/2}" font-size="${Math.min(+px(11*fs0),c.w*0.7)}" text-anchor="middle" dominant-baseline="central" fill="#4d4840" font-family="${FONT}">Curb ${fmt(c.w)} × ${fmt(c.h)}</text>`;}
- h+=`<path d="${pd(G.region)}${hD}" fill-rule="evenodd" fill="${PAL.grout}"/>`;
+ if(LAYER!=='prep'&&LAYER!=='wire')h+=`<path d="${pd(G.region)}${hD}" fill-rule="evenodd" fill="${PAL.grout}"/>`;
  G.niches.forEach(n=>h+=`<rect x="${n.x}" y="${-(n.y+n.h)}" width="${n.w}" height="${n.h}" fill="#8d877d"/>`);
  const rt=R.a?` transform="rotate(${(-R.a*180/Math.PI).toFixed(4)} ${R.O[0]} ${-R.O[1]})"`:'';
- h+=`<g clip-path="url(#cR${id})"><g${rt}>${R.main.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;
- if(R.nich.length)h+=`<g clip-path="url(#cN${id})"><g${rt}>${R.nich.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;
+ if(LAYER==='prep')h+=prepSVG(s,R,id,px,fs0);else{if(LAYER==='wire')h+=prepSVG(s,R,id,px,fs0,1);h+=`<g opacity="${LAYER==='wire'?.22:1}"><g clip-path="url(#cR${id})"><g${rt}>${R.main.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;
+ if(R.nich.length)h+=`<g clip-path="url(#cN${id})"><g${rt}>${R.nich.map(p=>tileSVG(p,T,px)).join('')}</g></g>`;h+='</g>';}
  G.niches.forEach(n=>h+=`<rect x="${n.x}" y="${-(n.y+n.h)}" width="${n.w}" height="${n.h}" fill="rgba(70,50,25,.13)"/>`);
  const sw=edgeProf(s).vis,TR='fill="#c3c8d0" stroke="#7f8690" stroke-width="'+px(0.8)+'"';
  if(s.shape==='rect'&&sw>0){const q=s.trim;
@@ -747,7 +759,7 @@ function surfBody(s,R,o){
  h+=`<path d="${pd(G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
  // cut labels
  const sheet=T.sheet&&T.sheet.on;
- if(S.labels&&!sheet&&T.shape!=='penny'&&R.all.length<900){const fMin=+px(8.5*fs0),fMax=+px(12.5*fs0);
+ if(S.labels&&!sheet&&T.shape!=='penny'&&R.all.length<900&&LAYER!=='prep'&&LAYER!=='wire'){const fMin=+px(8.5*fs0),fMax=+px(12.5*fs0);
   for(const p of R.all){if(p.full||p.k!=='r')continue;const b=p.b;
    let tx0=p.cutX&&p.cutY?fmtIn(p.cw)+'×'+fmtIn(p.ch):p.cutX?fmtIn(p.cw):p.cutY?fmtIn(p.ch):fmtIn(p.cw)+'×'+fmtIn(p.ch);let tx=tx0;if(p.taper||p.taperW){const wp=p.taperW?p.taperW.map(fmtIn).join('→'):fmtIn(p.cw),hp=p.taper?p.taper.map(fmtIn).join('→'):fmtIn(p.ch);tx=(p.cutX?wp:'')+(p.cutX&&p.cutY?'×':'')+(p.cutY?hp:'');}else if(p.notch)tx=(p.arc?'◠ ':p.cutX||p.cutY||(p.ax&&!p.hl)?'L ':p.hl?'⊙ ':'◿ ')+tx;
    const lw=p.lp?p.lp[2]:b.x1-b.x0,lh=p.lp?p.lp[3]:b.y1-b.y0,L=tx.length*0.58;let f=Math.min(fMax,lw/L*0.94,lh*0.62),rot=false;
@@ -796,7 +808,7 @@ const svg=$('#svg');let R=null;
 function draw(){
  const r=svg.getBoundingClientRect();if(r.width<10)return;
  if(S.tab==='tot'){svg.innerHTML='';return;}
- let V=null;try{V=buildView(r.width,r.height,S.view,1);}catch(e){console.error(e);}
+ let V=null;LAYER=S.layer;try{V=buildView(r.width,r.height,S.view,1);}catch(e){console.error(e);}LAYER=null;
  if(!V){svg.setAttribute('viewBox','0 0 100 40');svg.innerHTML=`<text x="50" y="20" text-anchor="middle" font-size="4" fill="#888" font-family="${FONT}">${esc(t(isMulti()?'noWalls':'tooMany'))}</text>`;R=null;S.items=[];renderStat();return;}
  svg.setAttribute('viewBox',V.vb.join(' '));svg.innerHTML=V.body;S.vb=V.vb;S.upp=V.upp;S.items=V.items;
  R=isMulti()?null:V.items[0].R;renderStat();}
@@ -813,7 +825,7 @@ function hitAt(cx,cy){if(!S.items||!S.items.length)return null;const w=toWorld(c
   if(s.type==='pan'&&s.curb.on&&lx>=0&&lx<=s.curb.len&&ly>=-s.curb.w&&ly<=0)return{it};}
  return null;}
 const canEdit=()=>!S.client&&S.tab!=='tot';
-function connAt(cx,cy){if(!S.items||!canEdit())return null;const w=toWorld(cx,cy),tol=22*S.upp;for(const it of S.items){const hp=it.R&&it.R.heat;if(!hp||!it.s.heat.show)continue;const c=hp.conn;if(Math.hypot(w[0]-it.dx-c[0],w[1]-it.dy-c[1])<=tol)return it;}return null;}
+function connAt(cx,cy){if(!S.items||!canEdit())return null;const w=toWorld(cx,cy),tol=22*S.upp;for(const it of S.items){const hp=it.R&&it.R.heat;if(!hp||!(S.layer==='wire'||(S.layer!=='tile'&&S.layer!=='prep'&&it.s.heat.show)))continue;const c=hp.conn;if(Math.hypot(w[0]-it.dx-c[0],w[1]-it.dy-c[1])<=tol)return it;}return null;}
 svg.addEventListener('touchstart',e=>{if(S.tab==='tot')return;if(e.touches.length>1||S.mode==='view'){e.preventDefault();return;}
  const tc=e.touches[0];if(S.pickConn||connAt(tc.clientX,tc.clientY)||(S.mode==='tiles'&&canEdit()&&hitAt(tc.clientX,tc.clientY)))e.preventDefault();},{passive:false});
 function startDrag(x,y,target,pt){const ci=S.pickConn?null:connAt(x,y);if(ci){drag={x,y,conn:ci,s:null,op:null,px:S.view.panX,py:S.view.panY,upp:S.upp,moved:false};return true;}const h=hitAt(x,y);const dimEl=target&&target.closest?target.closest('[data-dim]'):null;
@@ -832,8 +844,8 @@ svg.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set
  const dx=(e.clientX-drag.x)*drag.upp,dy=(e.clientY-drag.y)*drag.upp,sn=v=>Math.round(v*16)/16;
  if(drag.conn){const it=drag.conn,w=toWorld(e.clientX,e.clientY);it.s.heat.conn=snapWall(it.R.G.outer,[w[0]-it.dx,w[1]-it.dy]);drawSoon();return;}
  if(S.mode==='tiles'&&canEdit()&&drag.s&&drag.op!=null){const o=drag.s.openings[drag.op];o.x=Math.round((drag.opx+dx)*8)/8;o.y=Math.round((drag.opy-dy)*8)/8;}
- else if(S.mode==='tiles'&&canEdit()&&drag.s){setO(drag.s,sn(drag.ox+dx),sn(drag.oy-dy));}
- else if(S.mode==='view'||e.pointerType!=='touch'){S.view.panX=drag.px-dx;S.view.panY=drag.py+dy;}
+ else if(S.mode==='tiles'&&S.layer==='tile'&&canEdit()&&drag.s){setO(drag.s,sn(drag.ox+dx),sn(drag.oy-dy));}
+ else if(S.mode==='view'||e.pointerType!=='touch'||S.layer!=='tile'){S.view.panX=drag.px-dx;S.view.panY=drag.py+dy;}
  drawSoon();});
 function pEnd(e){if(!ptrs.has(e.pointerId))return;const cancel=e.type==='pointercancel';ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
  if(ptrs.size===1){const a=[...ptrs.values()][0];startDrag(a.x,a.y,null,'mouse');if(drag)drag.moved=true;return;}
@@ -844,7 +856,7 @@ function pEnd(e){if(!ptrs.has(e.pointerId))return;const cancel=e.type==='pointer
    if(d.dim&&canEdit()){editDim(d.dim);return;}
    if(d.op!=null&&canEdit()){editOpening(P.surfaces.indexOf(d.s),d.op);return;}
    if(isMulti()&&d.it&&!S.client){S.tab=P.surfaces.indexOf(d.it.s);S.view={zoom:1,panX:0,panY:0};renderAll();}return;}
-  if(d.s&&S.mode==='tiles'&&canEdit()){if(d.op==null)normalizeS(d.s);changed();if(d.op!=null&&!isMulti())renderPanel();}}}
+  if(d.s&&S.mode==='tiles'&&canEdit()&&(d.op!=null||S.layer==='tile')){if(d.op==null)normalizeS(d.s);changed();if(d.op!=null&&!isMulti())renderPanel();}}}
 svg.addEventListener('pointerup',pEnd);svg.addEventListener('pointercancel',pEnd);
 svg.addEventListener('wheel',e=>{e.preventDefault();S.view.zoom=Math.min(14,Math.max(0.4,S.view.zoom*(e.deltaY<0?1.12:1/1.12)));drawSoon();},{passive:false});
 new ResizeObserver(()=>drawSoon()).observe($('#stage'));
@@ -859,8 +871,11 @@ function renderTabs(){const nw=P.surfaces.filter(s=>s.type==='wall').length,nf=P
 function renderTools(){const ml={tiles:t('moveTiles'),view:t('moveView'),lock:t('moveLock')}[S.mode];
  $('#tools').innerHTML=(S.client?'':`<button data-act="mode" class="${S.mode==='tiles'?'on':''}">${ml}</button>${isMulti()?'':`<button data-act="rotate">⟲</button>`}<button data-act="${S.tab==='all'?'autoAll':S.tab==='floor'?'autoFloor':'auto'}">${t('auto')}</button><button data-act="nums" class="${S.nums?'on':''}">#</button>`)+
  `<span class="sp"></span>${S.client?'':`<button data-act="undo">↶</button><button data-act="redo">↷</button>`}<button data-act="labels" class="${S.labels?'on':''}">${t('labels')}</button><button data-act="fit">${t('fit')}</button>`;
- renderPad();}
-function renderPad(){const el=$('#pad');if(!el)return;const show=canEdit()&&S.mode==='tiles'&&(cur()||isMulti());el.style.display=show?'grid':'none';
+ renderLayers();renderPad();}
+function layerSurfs(){return typeof S.tab==='number'?[P.surfaces[S.tab]].filter(Boolean):S.tab==='floor'?P.surfaces.filter(x=>x.type!=='wall'):S.tab==='all'?P.surfaces.filter(x=>x.type==='wall'):[];}
+function renderLayers(){const el=$('#layers');if(!el)return;const hw=layerSurfs().some(x=>x.heat&&x.heat.on);if(S.layer==='wire'&&!hw)S.layer='tile';
+ el.innerHTML=['prep','tile'].concat(hw?['wire']:[]).map(k=>`<button data-act="layer:${k}" class="${S.layer===k?'on':''}">${t('lay_'+k)}</button>`).join('');}
+function renderPad(){const el=$('#pad');if(!el)return;const show=canEdit()&&S.mode==='tiles'&&S.layer==='tile'&&(cur()||isMulti());el.style.display=show?'grid':'none';
  if(show){const b=el.querySelector('.stp');if(b)b.textContent=fmtIn(S.step)+'″';}}
 function renderLegend(){$('#legend').innerHTML=[['full','legFull'],['cut','legCut'],['warn','legWarn'],['bad','legBad']].map(([c,k])=>`<span><i style="background:${COL[c]}"></i>${t(k)}${c==='bad'?' ('+fmt(+P.minCut)+')':''}</span>`).join('')+`<span><i style="background:#c9bfae"></i>${t('legNiche')}</span><span><i style="background:#c3c8d0"></i>Schluter</span>`;}
 function aggItems(){const a={full:0,cuts:0,need:0,order:0,minc:1e9,bad:0,sheets:0};for(const it of S.items){const r=it.R;a.full+=r.full;a.cuts+=r.cuts;a.need+=r.need;a.order+=r.order;a.minc=Math.min(a.minc,r.minc);a.bad+=r.bad;}return a;}
@@ -1222,6 +1237,7 @@ function act(a,arg,b){const s=cur();
  case'exportMenu':exportMenu();break;
  case'pdf':makePdf(arg);break;
  case'sharePdf':sharePdf();break;
+ case'layer':S.layer=arg;renderTools();draw();break;
  case'mode':S.mode=S.mode==='tiles'?'view':S.mode==='view'?'lock':'tiles';renderTools();break;
  case'client':S.client=!S.client;if(S.client&&S.tab==='tot')S.tab=0;renderAll();break;
  case'lang':lang=lang==='ru'?'en':'ru';document.documentElement.lang=lang;saveSoon();renderAll();break;
@@ -1507,7 +1523,8 @@ function transModal(si,i){const s=P.surfaces[si],tr=s.trans[i];const{c,svg}=sect
 
 /* ================= heating ================= */
 function segDist(px,py,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let u=L2?((px-a[0])*dx+(py-a[1])*dy)/L2:0;u=Math.max(0,Math.min(1,u));return Math.hypot(px-a[0]-u*dx,py-a[1]-u*dy);}
-function snapWall(O,p){let best=p,bd=1e9;for(let i=0;i<O.length;i++){const a=O[i],b=O[(i+1)%O.length],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let u=L2?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L2:0;u=Math.max(0,Math.min(1,u));const q=[a[0]+u*dx,a[1]+u*dy],d=Math.hypot(p[0]-q[0],p[1]-q[1]);if(d<bd){bd=d;best=q;}}return[Math.round(best[0]*8)/8,Math.round(best[1]*8)/8];}
+function snapWall(O,p){return snapWallE(O,p).p;}
+function snapWallE(O,p){let best=p,bd=1e9,be=0;for(let i=0;i<O.length;i++){const a=O[i],b=O[(i+1)%O.length],dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let u=L2?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L2:0;u=Math.max(0,Math.min(1,u));const q=[a[0]+u*dx,a[1]+u*dy],d=Math.hypot(p[0]-q[0],p[1]-q[1]);if(d<bd){bd=d;best=q;be=i;}}return{p:[Math.round(best[0]*8)/8,Math.round(best[1]*8)/8],e:be};}
 const HEATCOL=['#d6331f','#e07b00','#7b3fb3','#1f8a70'];
 function heatPlan(s,R){const H=s.heat;if(!H||!H.on)return null;const G=R.G,O=G.outer,bb=G.bb,W=bb.x1-bb.x0,Hh=bb.y1-bb.y0,res=Math.max(W,Hh)>160?2:1,clear=+H.clear||0;
  const obs=s.openings.map(o=>({o,m:o.type==='toilet'?6:2}));
@@ -1518,12 +1535,12 @@ function heatPlan(s,R){const H=s.heat;if(!H||!H.on)return null;const G=R.G,O=G.o
  const sf=cells*res*res/144;const sys=HEATSYS[H.sys]||{};const pat=H.pattern||'3';
  const sp=sys.sp?sys.sp[pat]:(+H.sp||3),wsf=sys.wsf?sys.wsf[pat]:(+H.wsf||12);
  const volt=+H.volt||120,maxSf=+H.maxSf||(volt===240?250:134.5);
- const conn=snapWall(O,H.conn||[bb.x0,bb.y0]);
- const build=horiz=>{const A0=horiz?bb.y0:bb.x0,A1=horiz?bb.y1:bb.x1,B0=horiz?bb.x0:bb.y0,B1=horiz?bb.x1:bb.y1;
-  const lines=[];for(let v=A0+clear+sp/2;v<=A1-clear-sp/2+0.01;v+=sp){const iv=[];let st=null;for(let w=B0+res/2;w<B1;w+=res){const g=horiz?ok(w,v):ok(v,w);if(g&&st==null)st=w;if(!g&&st!=null){if(w-st>=4)iv.push([st,w]);st=null;}}if(st!=null&&B1-st>=4)iv.push([st,B1-res/2]);if(iv.length)lines.push({v,iv,len:iv.reduce((q,r)=>q+r[1]-r[0],0)});}
-  return{horiz,lines,tot:lines.reduce((q,l)=>q+l.len,0)};};
+ const SN=snapWallE(O,H.conn||[bb.x0,bb.y0]),conn=SN.p;
+ const build=(horiz,ex)=>{const A0=horiz?bb.y0:bb.x0,A1=horiz?bb.y1:bb.x1,B0=horiz?bb.x0:bb.y0,B1=horiz?bb.x1:bb.y1;
+  const lines=[];for(let v=A0+clear+sp/2;v<=A1-clear-sp/2+0.01;v+=sp){const iv=[];let st=null;for(let w=B0+res/2;w<B1;w+=res){const X=horiz?w:v,Y=horiz?v:w,g=ok(X,Y)&&!(ex&&ex(X,Y));if(g&&st==null)st=w;if(!g&&st!=null){if(w-st>=4)iv.push([st,w]);st=null;}}if(st!=null&&B1-st>=4)iv.push([st,B1-res/2]);if(iv.length)lines.push({v,iv,len:iv.reduce((q,r)=>q+r[1]-r[0],0)});}
+  return{horiz,lines,mid:(B0+B1)/2,tot:lines.reduce((q,l)=>q+l.len,0)};};
  const pt=(o,b,v)=>o.horiz?[b,v]:[v,b];
- const grp=(o,a,b)=>{let best=null;for(const rev of[false,true])for(const fwd of[true,false]){const idx=[];for(let i=a;i<=b;i++)idx.push(i);if(rev)idx.reverse();const L=o.lines[idx[0]],q=fwd?L.iv[0]:L.iv[L.iv.length-1],p0=pt(o,fwd?q[0]:q[1],L.v),d=Math.hypot(p0[0]-conn[0],p0[1]-conn[1]);if(!best||d<best.d-0.01)best={d,idx,fwd,p0};}
+ const grp=(o,a,b,tg)=>{tg=tg||conn;let best=null;for(const rev of[false,true])for(const fwd of[true,false]){const idx=[];for(let i=a;i<=b;i++)idx.push(i);if(rev)idx.reverse();const L=o.lines[idx[0]],q=fwd?L.iv[0]:L.iv[L.iv.length-1],p0=pt(o,fwd?q[0]:q[1],L.v),d=Math.hypot(p0[0]-tg[0],p0[1]-tg[1]);if(!best||d<best.d-0.01)best={d,idx,fwd,p0};}
   let len=0;for(let i=a;i<=b;i++)len+=o.lines[i].len;best.gsf=o.tot?sf*len/o.tot:0;return best;};
  const nWant=H.n&&H.n!=='auto'?Math.max(1,+H.n):Math.max(1,Math.ceil(sf/maxSf-0.001));
  let plan=null;
@@ -1535,18 +1552,25 @@ function heatPlan(s,R){const H=s.heat;if(!H||!H.on)return null;const G=R.G,O=G.o
    const over=gs.reduce((q,g)=>q+Math.max(0,g.gsf-maxSf),0),mx=Math.max(...gs.map(g=>g.gsf)),mn=Math.min(...gs.map(g=>g.gsf));
    const score=gs.reduce((q,g)=>q+g.d,0)+over*40+(mx-mn)*0.3+L*0.5;
    if(!plan||score<plan.score)plan={o,gs,score};}}
+ if(nWant===1){const ea=O[SN.e],eb=O[(SN.e+1)%O.length],EL=Math.hypot(eb[0]-ea[0],eb[1]-ea[1])||1,u=[(eb[0]-ea[0])/EL,(eb[1]-ea[1])/EL],sg=sArea(O)>0?1:-1,inn=[-u[1]*sg,u[0]*sg];
+  if(Math.abs(u[0])<1e-6||Math.abs(u[1])<1e-6){const horiz=Math.abs(u[0])<1e-6,off=clear+sp/2,band=clear+1.5*sp,q0=[conn[0]+inn[0]*off,conn[1]+inn[1]*off];
+   for(const dir of[-1,1]){const ex=(x,y)=>{const dn=(x-conn[0])*inn[0]+(y-conn[1])*inn[1],al=((x-conn[0])*u[0]+(y-conn[1])*u[1])*dir;return dn<band&&al>-sp/2;};
+    const o=build(horiz,ex),L=o.lines.length;if(L<2)continue;const cn=dir>0?eb:ea,tg=[cn[0]+inn[0]*band,cn[1]+inn[1]*band];const g=grp(o,0,L-1,tg);
+    const al=(g.p0[0]-q0[0])*u[0]+(g.p0[1]-q0[1])*u[1];if(al*dir<0)continue;const q1=[q0[0]+u[0]*al,q0[1]+u[1]*al];
+    g.lead=[conn,q0,q1];g.d=0;const score=Math.abs(al)*0.3+L*0.5+Math.max(0,g.gsf-maxSf)*40;
+    if(!plan||score<plan.score)plan={o,gs:[g],score};}}}
  if(!plan)return{sf,sp,wsf,cables:[],path:[],lenFt:0,runs:0,sensor:null,conn,watts:0,amps:0,volt,maxSf,irregular:false,cableSf:0};
  const o=plan.o;
- const cables=plan.gs.map((g,ci)=>{const P2=[];let f=g.fwd;g.idx.forEach(i=>{const ln=o.lines[i];const iv=f?ln.iv:ln.iv.slice().reverse().map(q=>[q[1],q[0]]);iv.forEach(q=>P2.push(pt(o,q[0],ln.v),pt(o,q[1],ln.v)));f=!f;});
+ const cables=plan.gs.map((g,ci)=>{const P2=g.lead?g.lead.slice():[];let f=g.fwd;let pv=null;g.idx.forEach(i=>{const ln=o.lines[i];const iv=f?ln.iv:ln.iv.slice().reverse().map(q=>[q[1],q[0]]);const a0=iv[0][0];if(pv&&Math.abs(a0-pv.b)>0.3&&Math.abs(a0-pv.b)<=3*sp){if(Math.abs(a0-o.mid)>Math.abs(pv.b-o.mid))P2.push(pt(o,a0,pv.v));else P2.push(pt(o,pv.b,ln.v));}iv.forEach(q=>P2.push(pt(o,q[0],ln.v),pt(o,q[1],ln.v)));pv={b:iv[iv.length-1][1],v:ln.v};f=!f;});
   let len=0;for(let i=1;i<P2.length;i++)len+=Math.hypot(P2[i][0]-P2[i-1][0],P2[i][1]-P2[i-1][1]);
   return{path:P2,lenFt:len/12,runs:g.idx.length,sf:g.gsf,cableSf:Math.floor(g.gsf),lead:g.d,col:HEATCOL[ci%HEATCOL.length],idx:g.idx};});
  let sensor=null;const big=cables.slice().sort((a,b)=>b.sf-a.sf)[0];if(big&&big.idx.length>=2){const k=Math.floor((big.idx.length-1)/2),l1=o.lines[big.idx[k]],l2=o.lines[big.idx[k+1]],iv=l1.iv[0],m=(iv[0]+iv[1])/2,v=(l1.v+l2.v)/2;sensor=pt(o,m,v);}
  const watts=sf*wsf,amps=watts/volt;
  const irregular=s.shape!=='rect'||s.openings.some(o2=>o2.type!=='duct');
  return{sf,sp,wsf,cables,path:cables[0]?cables[0].path:[],lenFt:cables.reduce((q,c)=>q+c.lenFt,0),runs:cables.reduce((q,c)=>q+c.runs,0),sensor,conn,watts,amps,volt,maxSf,irregular,cableSf:Math.floor(sf)};}
-function heatSVG(s,R,px){const hp=R.heat;if(!hp||!s.heat.show)return'';let h='';const c=hp.conn,multi=hp.cables.length>1;
+function heatSVG(s,R,px){const hp=R.heat;if(!hp||!heatVis(s))return'';let h='';const c=hp.conn,multi=hp.cables.length>1;
  hp.cables.forEach((cb,i)=>{if(cb.path.length>1)h+=`<polyline points="${cb.path.map(q=>q[0].toFixed(2)+','+(-q[1]).toFixed(2)).join(' ')}" fill="none" stroke="${cb.col}" stroke-width="${px(1.6)}" stroke-linejoin="round" opacity=".9"/>`;});
- hp.cables.forEach((cb,i)=>{if(!cb.path.length)return;const p0=cb.path[0];h+=`<line x1="${c[0]}" y1="${-c[1]}" x2="${p0[0]}" y2="${-p0[1]}" stroke="#1d5fa8" stroke-width="${px(1.6)}" stroke-dasharray="${px(5)} ${px(3)}"/><circle cx="${p0[0]}" cy="${-p0[1]}" r="${px(3)}" fill="${cb.col}"/>`;
+ hp.cables.forEach((cb,i)=>{if(!cb.path.length)return;const p0=cb.path[0];if(cb.lead>1)h+=`<line x1="${c[0]}" y1="${-c[1]}" x2="${p0[0]}" y2="${-p0[1]}" stroke="#1d5fa8" stroke-width="${px(1.6)}" stroke-dasharray="${px(5)} ${px(3)}"/>`;if(cb.lead>1)h+=`<circle cx="${p0[0]}" cy="${-p0[1]}" r="${px(3)}" fill="${cb.col}"/>`;
   const p1=cb.path[1]||p0,fr=0.3+0.4*i/Math.max(1,hp.cables.length-1),mx=p0[0]+(p1[0]-p0[0])*fr,my=p0[1]+(p1[1]-p0[1])*fr;
   if(multi)h+=`<circle cx="${mx}" cy="${-my}" r="${px(8)}" fill="${cb.col}" stroke="#fff" stroke-width="${px(1.2)}"/><text x="${mx}" y="${-my}" font-size="${px(10)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-family="${FONT}">${i+1}</text>`;});
  h+=`<g data-conn="1"><circle cx="${c[0]}" cy="${-c[1]}" r="${px(18)}" fill="transparent"/><rect x="${c[0]-+px(10)}" y="${-c[1]-+px(10)}" width="${px(20)}" height="${px(20)}" rx="${px(4)}" fill="#1d5fa8" stroke="#fff" stroke-width="${px(1.5)}"/><text x="${c[0]}" y="${-c[1]}" font-size="${px(11)}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-weight="700" font-family="${FONT}">T</text></g>`;
