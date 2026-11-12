@@ -293,3 +293,36 @@ function zoneSnap(s, x, y, tol) {
   const r8 = (v) => Math.round(v * 8) / 8;
   return [bx != null ? x + bx : r8(x), by != null ? y + by : r8(y)];
 }
+
+/* double tap on the empty field around the drawing: full screen (inside full screen the drag code closes it) */
+{
+  let down = null,
+    lastEmpty = null;
+  svg.addEventListener(
+    "pointerdown",
+    (e) => {
+      down = { x: e.clientX, y: e.clientY };
+    },
+    true,
+  );
+  svg.addEventListener("pointerup", (e) => {
+    const d = down;
+    down = null;
+    if (!d || S.full || S.tab === "tot" || ptrs.size > 1) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) return (lastEmpty = null);
+    if (hitAt(e.clientX, e.clientY) || (e.target.closest && e.target.closest("[data-dim],[data-conn]")))
+      return (lastEmpty = null);
+    const now = Date.now();
+    if (
+      lastEmpty &&
+      now - lastEmpty.t < 380 &&
+      Math.hypot(e.clientX - lastEmpty.x, e.clientY - lastEmpty.y) < 40
+    ) {
+      lastEmpty = null;
+      S.fullFrom = null;
+      act("full");
+      return;
+    }
+    lastEmpty = { t: now, x: e.clientX, y: e.clientY };
+  });
+}
