@@ -1018,3 +1018,68 @@ body.pin .secnav {
   margin: -10px -10px 0;
   padding: 8px 10px 10px;
 }
+
+#tools button.xbig {
+  min-width: 44px;
+  min-height: 40px;
+  font-size: 18px;
+  font-weight: 700;
+  background: #141414;
+  color: #fff;
+  border-color: #141414;
+}
+
+@media (max-width: 440px) {
+  #tools .wl {
+    display: none;
+  }
+}
+
+.texrow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.texrow img,
+.libtx {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+.libtx {
+  width: 40px;
+  height: 40px;
+}
+
+#bProj {
+  position: relative;
+}
+#bProj[data-sync]::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+}
+#bProj[data-sync="ok"]::after {
+  background: #3fb950;
+}
+#bProj[data-sync="busy"]::after {
+  background: #a8a390;
+}
+#bProj[data-sync="err"]::after {
+  background: #e5534b;
+}
+.syol {
+  padding-left: 18px;
+  margin: 6px 0 10px;
+}
+.syol li {
+  margin: 4px 0;
+}

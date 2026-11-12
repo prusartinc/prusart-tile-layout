@@ -14,6 +14,7 @@ function moreMenu() {
       B("fit", "⤢", t("mFit")) +
       B("full", "⛶", t("mFull"), S.full) +
       B("site", "👷", t("mSite"), S.site) +
+      B("texToggle", "📷", t("mTex"), S.texOn) +
       B("pin", "📌", t("mPin"), S.pin !== false) +
       B("lib", "📚", t("lib")) +
       B("surfList", "▦", t("mSurfs"))
@@ -248,4 +249,47 @@ function applyPin() {
     applyPin();
   };
   addEventListener("resize", applyPin);
+}
+
+function openFull(s, fromTab) {
+  const i = P.surfaces.indexOf(s);
+  if (i < 0) return;
+  S.fullFrom = fromTab !== i ? fromTab : null;
+  S.tab = i;
+  S.view = { zoom: 1, panX: 0, panY: 0 };
+  S.full = true;
+  document.body.classList.add("full");
+  renderAll();
+}
+
+/* floor zones: move them on the whole-floor plan */
+const zoneMode = () => S.tab === "floor" && !!S.zoneMove && canEdit();
+// snap a zone's corners / edges to the other zones (tolerance in inches), else to 1/8″
+function zoneSnap(s, x, y, tol) {
+  const O = outerPoly(s),
+    others = P.surfaces.filter((q) => q !== s && q.type !== "wall");
+  const xs = [],
+    ys = [];
+  others.forEach((q) => {
+    const px = +(q.pos || {}).x || 0,
+      py = +(q.pos || {}).y || 0;
+    outerPoly(q).forEach(([a, b]) => {
+      xs.push(a + px);
+      ys.push(b + py);
+    });
+  });
+  let bx = null,
+    by = null;
+  O.forEach(([a, b]) => {
+    xs.forEach((v) => {
+      const d = v - (a + x);
+      if (Math.abs(d) < tol && (bx == null || Math.abs(d) < Math.abs(bx))) bx = d;
+    });
+    ys.forEach((v) => {
+      const d = v - (b + y);
+      if (Math.abs(d) < tol && (by == null || Math.abs(d) < Math.abs(by))) by = d;
+    });
+  });
+  const r8 = (v) => Math.round(v * 8) / 8;
+  return [bx != null ? x + bx : r8(x), by != null ? y + by : r8(y)];
 }

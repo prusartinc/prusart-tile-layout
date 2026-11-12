@@ -50,9 +50,17 @@ const COL = { full: "#ece5d7", cut: "#c9def3", warn: "#f7cf96", bad: "#f19c96" }
 const COL2 = { full: "#b8ac96", cut: "#97b5d6", warn: "#dfae6b", bad: "#d6766d" };
 const FONT = "-apple-system,Segoe UI,Roboto,Arial,sans-serif";
 const pd = (p) => "M" + p.map((q) => q[0].toFixed(3) + " " + (-q[1]).toFixed(3)).join("L") + "Z";
+// tile photo texture: set by surfBody while drawing the surface's own tiles
+let TEXON = false,
+  TXID = null,
+  TXT = null;
 function tileSVG(p, T, px) {
   const alt = (T.checker && p.q) || (patOf(T) === "pinwheel" && p.q);
-  const fill = (alt ? COL2 : COL)[p.c || "full"];
+  let fill = (alt ? COL2 : COL)[p.c || "full"];
+  if (TXID && T === TXT) {
+    const land = (T.texAR || 1) >= 1;
+    fill = `url(#${TXID}${p.lw >= p.lh === land ? "" : "r"})`;
+  }
   const sw = px(0.5);
   if (p.k === "p") return `<path d="${pd(p.t.poly)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;
   if (p.k === "c") {
@@ -337,6 +345,13 @@ function surfBody(s, R, o) {
     (n) => (h += `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}" fill="#8d877d"/>`),
   );
   const rt = R.a ? ` transform="rotate(${((-R.a * 180) / Math.PI).toFixed(4)} ${R.O[0]} ${-R.O[1]})"` : "";
+  if (TEXON && T.tex) {
+    TXID = "tx" + id;
+    TXT = T;
+    const im = (r) =>
+      `<image href="${T.tex}" x="0" y="0" width="1" height="1" preserveAspectRatio="none"${r ? ' transform="rotate(90 .5 .5)"' : ""}/>`;
+    h += `<defs><pattern id="${TXID}" patternContentUnits="objectBoundingBox" width="1" height="1">${im(0)}</pattern><pattern id="${TXID}r" patternContentUnits="objectBoundingBox" width="1" height="1">${im(1)}</pattern></defs>`;
+  }
   if (LAYER === "prep") h += prepSVG(s, R, id, px, fs0);
   else {
     if (LAYER === "wire") h += prepSVG(s, R, id, px, fs0, 1);
@@ -347,6 +362,7 @@ function surfBody(s, R, o) {
       h += `<g clip-path="url(#cN${id})">${R.nichOwn.map((q) => q.pieces.map((p) => tileSVG(p, q.T, px)).join("")).join("")}</g>`;
     h += "</g>";
   }
+  TXID = TXT = null;
   (R.nicheCalc || []).forEach((nc) => {
     const N = nc.N;
     N.comps.forEach(
@@ -659,10 +675,15 @@ function buildViewItems(Wpx, Hpx, v, fs, items, all, ins) {
     vw = k * Wpx;
     vh = k * Hpx;
   }
-  const upp = vw / Wpx,
-    cx = (bb.x0 + bb.x1) / 2 + v.panX - ((I.l - I.r) / 2) * upp,
+  let upp = vw / Wpx;
+  const cx = (bb.x0 + bb.x1) / 2 + v.panX - ((I.l - I.r) / 2) * upp,
     cy = (bb.y0 + bb.y1) / 2 + (all ? m * 0.25 : 0) + v.panY + ((I.t - I.b) / 2) * upp;
-  const vb = [cx - vw / 2, -(cy + vh / 2), vw, vh];
+  let vb = [cx - vw / 2, -(cy + vh / 2), vw, vh];
+  // while a floor zone is being dragged the view stays put, so the zone follows the finger
+  if (S.vbLock && fs === 1) {
+    vb = S.vbLock.vb.slice();
+    upp = S.vbLock.upp;
+  }
   let body = `<rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="${PAL.bg}"/>`;
   items.forEach((it, i) => {
     body += `<g transform="translate(${it.dx} ${-it.dy})">${surfBody(it.s, it.R, { upp, fs, id: "s" + i, m: all ? m * 0.6 : m, dimV: !all, title: !!all })}</g>`;
@@ -808,6 +829,7 @@ function draw() {
   }
   let V = null;
   LAYER = S.layer;
+  TEXON = !!(S.client || S.texOn);
   try {
     V = buildView(r.width, r.height, S.view, 1, overlayInsets(r));
   } catch (e) {

@@ -101,6 +101,10 @@ function startDrag(x, y, target, pt) {
     drag.opy = o.y;
   }
   if (s && isMulti()) S.sel = s.id;
+  if (s && zoneMode() && drag.op == null) {
+    drag.zone = { px0: +(s.pos || {}).x || 0, py0: +(s.pos || {}).y || 0 };
+    S.vbLock = { vb: S.vb.slice(), upp: S.upp };
+  }
   return true;
 }
 svg.addEventListener("pointerdown", (e) => {
@@ -139,6 +143,12 @@ svg.addEventListener("pointermove", (e) => {
     drawSoon();
     return;
   }
+  if (drag.zone) {
+    const p = zoneSnap(drag.s, drag.zone.px0 + dx, drag.zone.py0 - dy, 12 * drag.upp);
+    drag.s.pos = { x: p[0], y: p[1] };
+    drawSoon();
+    return;
+  }
   if (S.mode === "tiles" && canEdit() && drag.s && drag.op != null) {
     const o = drag.s.openings[drag.op];
     o.x = Math.round((drag.opx + dx) * 8) / 8;
@@ -167,11 +177,28 @@ function pEnd(e) {
   if (ptrs.size === 0 && drag) {
     const d = drag;
     drag = null;
+    if (d.zone) {
+      S.vbLock = null;
+      if (d.moved) {
+        changed();
+        return;
+      }
+    }
     if (d.conn) {
       if (d.moved) changed();
       return;
     }
     if (!d.moved && !cancel) {
+      // double tap on a surface: open it full screen (✕ brings you back)
+      const now = Date.now(),
+        lt = S.lastTap;
+      if (lt && d.it && !S.pickConn && now - lt.t < 380 && Math.hypot(d.x - lt.x, d.y - lt.y) < 36) {
+        clearTimeout(S.tapTimer);
+        S.lastTap = null;
+        openFull(d.it.s, lt.tab);
+        return;
+      }
+      S.lastTap = d.it ? { t: now, x: d.x, y: d.y, tab: S.tab } : null;
       if (S.pickConn && canEdit()) {
         const s2 = P.surfaces.find((x) => x.id === S.pickConn);
         const it = S.items.find((i) => i.s === s2);
@@ -197,9 +224,14 @@ function pEnd(e) {
         return;
       }
       if (isMulti() && d.it && !S.client) {
-        S.tab = P.surfaces.indexOf(d.it.s);
-        S.view = { zoom: 1, panX: 0, panY: 0 };
-        renderAll();
+        // wait a moment: a second tap opens the surface full screen instead
+        const it = d.it;
+        clearTimeout(S.tapTimer);
+        S.tapTimer = setTimeout(() => {
+          S.tab = P.surfaces.indexOf(it.s);
+          S.view = { zoom: 1, panX: 0, panY: 0 };
+          renderAll();
+        }, 300);
       }
       return;
     }

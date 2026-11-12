@@ -36,8 +36,8 @@ function renderTools() {
   $("#tools").innerHTML =
     (S.client
       ? ""
-      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button><button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button>${S.site ? `<button data-act="site" class="on">👷 ${t("siteOff")}</button>` : `<button data-act="more">⋯ ${t("moreB")}</button>`}`) +
-    `<span class="sp"></span>${S.client ? "" : `<button data-act="undo" title="${t("undoW")}">↶</button><button data-act="redo">↷</button>`}<button data-act="fit" title="${t("mFit")}">⤢</button><button data-act="full" class="${S.full ? "on" : ""}">${S.full ? "✕" : "⛶"}</button>`;
+      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button><button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button>${S.tab === "floor" ? `<button data-act="zoneMove" class="${S.zoneMove ? "on" : ""}" title="${t("zonesB")}">⤧<span class="wl"> ${t("zonesB")}</span></button>` : ""}${S.site ? `<button data-act="site" class="on">👷 ${t("siteOff")}</button>` : `<button data-act="more">⋯ ${t("moreB")}</button>`}`) +
+    `<span class="sp"></span>${S.client ? "" : `<button data-act="undo" title="${t("undoW")}">↶</button><button data-act="redo">↷</button>`}<button data-act="fit" title="${t("mFit")}">⤢</button><button data-act="full" class="${S.full ? "on xbig" : ""}" title="${S.full ? t("close") : t("mFull")}">${S.full ? "✕" : "⛶"}</button>`;
   renderLayers();
   renderPad();
 }
@@ -178,7 +178,8 @@ function renderClient() {
 }
 
 const F = (label, k, ty = "len", sc = "s", cls = "") => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
+  const base =
+    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
   let v;
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
@@ -187,12 +188,14 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
   return `<label class="f ${cls}"><span>${label}</span><input data-k="${k}" data-sc="${sc}" data-t="${ty}" value="${val}" autocomplete="off" ${ty === "num" ? 'inputmode="decimal"' : ""}></label>`;
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
+  const base =
+    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
   const v = getPath(base, k);
   return `<label class="f ${cls}"><span>${label}</span><select data-k="${k}" data-sc="${sc}" data-t="sel" ${rb ? 'data-rb="1"' : ""}>${opts.map((o) => `<option value="${o}" ${o === v ? "selected" : ""}>${esc(lab ? lab(o) : t(o === "L" ? "Lshape" : o))}</option>`).join("")}</select></label>`;
 };
 const CHK = (label, k, rb, sc = "s") => {
-  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
+  const base =
+    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
   return `<label class="c"><input type="checkbox" data-k="${k}" data-sc="${sc}" data-t="chk" ${getPath(base, k) ? "checked" : ""} ${rb ? 'data-rb="1"' : ""}>${label}</label>`;
 };
 const SEC = (id, title, body) =>
@@ -280,7 +283,7 @@ function tileSection(s) {
   b += CHK(t("sheetOn"), "tile.sheet.on", 1);
   if (T.sheet.on)
     b += `<div class="grid">${F(t("sheetW"), "tile.sheet.w")}${F(t("sheetH"), "tile.sheet.h")}</div>`;
-  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div><div class="grid">${F(t("libPrice"), "tile.price", "num")}</div><div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
+  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div><div class="grid">${F(t("libPrice"), "tile.price", "num")}</div>${texBlock(T)}<div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
   return SEC("tile", `${t("tile")} · ${T.name ? esc(T.name) + " · " : ""}${esc(tileDesc(T))}`, b);
 }
 
@@ -823,7 +826,7 @@ function onInp(e) {
   if (!k) return;
   const sc = el.dataset.sc || "s",
     ty = el.dataset.t,
-    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : cur();
+    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
   let v;
   if (ty === "len" && el.dataset.opt && String(el.value).trim() === "") {
     v = null;
@@ -1216,7 +1219,8 @@ $("#modal").addEventListener("click", (e) => {
 });
 function projectsModal() {
   const list = [...DB.projects].sort((a, b) => (b.updated || 0) - (a.updated || 0));
-  modal(`${themePicker()}<h3>${t("projects")}</h3><div class="btns"><button class="btn p" data-act="newProj">${t("newProj")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>
+  const sy = DB.sync && DB.sync.on;
+  modal(`${themePicker()}<h3>${t("projects")}</h3><div class="btns"><button class="btn p" data-act="newProj">${t("newProj")}</button><button class="btn" data-act="syModal">🔄 ${sy ? t("syOnShort") : t("syT")}</button><button class="btn" data-act="bkModal">💾 ${t("bkT")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>
  ${list.map((p) => `<div class="pl"><div class="nm"><b>${esc(p.name)}</b><small>${esc(p.client || "")} ${p.updated ? new Date(p.updated).toLocaleDateString() : ""}${p.id === P.id ? " · ✓" : ""}</small></div><button class="btn sm" data-act="openProj:${p.id}">${t("open")}</button><button class="btn sm" data-act="dupProj:${p.id}">${t("dup")}</button>${DB.projects.length > 1 ? `<button class="btn sm d" data-act="delProj:${p.id}">✕</button>` : ""}</div>`).join("")}
  <p style="margin-top:14px"><b>${t("exportT")}</b></p><textarea id="expTxt" rows="4" readonly>${esc(JSON.stringify(P))}</textarea><div class="btns"><button class="btn" data-act="copyExp">${t("copy")}</button></div>
  <p><b>${t("importT")}</b></p><textarea id="impTxt" rows="3" placeholder="{...}"></textarea><div class="btns"><input type="file" id="impFile" accept=".json,application/json,text/plain"><button class="btn" data-act="importProj">${t("importBtn")}</button></div><p class="hint">${t("storeNote")}</p>`);
@@ -1262,6 +1266,7 @@ function exportImage() {
   const pp = PAL;
   PAL = PAL_L;
   LAYER = S.layer;
+  TEXON = !!(S.client || S.texOn);
   try {
     B = buildView(W, 0, { zoom: 1, panX: 0, panY: 0 }, 2);
   } catch (e) {

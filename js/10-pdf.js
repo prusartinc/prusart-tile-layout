@@ -218,6 +218,7 @@ async function makePdf(kind) {
       P.name,
       [P.client, date, kind === "cut" ? t("pdfCut") : t("pdfClient")].filter(Boolean).join(" · "),
     );
+    TEXON = kind !== "cut";
     const all = P.surfaces.map((s) => ({ s, R: compute(s) }));
     rep.table(
       [

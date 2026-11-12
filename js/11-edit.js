@@ -65,6 +65,14 @@ function padTarget() {
 function nudgeS(s, dir) {
   if (!s) return;
   const d = S.step;
+  if (zoneMode()) {
+    const p = (s.pos = s.pos || { x: 0, y: 0 });
+    if (dir === "l") p.x = +p.x - d;
+    if (dir === "r") p.x = +p.x + d;
+    if (dir === "u") p.y = +p.y + d;
+    if (dir === "d") p.y = +p.y - d;
+    return;
+  }
   if (S.layer === "prep") {
     const o = (s.prepO = s.prepO || { x: 0, y: 0 });
     if (dir === "l") o.x -= d;
@@ -103,6 +111,7 @@ $("#pad").addEventListener("pointerdown", (e) => {
   const dir = b.dataset.nudge,
     s = padTarget();
   if (!s) return;
+  if (zoneMode()) S.vbLock = { vb: S.vb.slice(), upp: S.upp };
   nudgeS(s, dir);
   drawSoon();
   stopRep();
@@ -117,6 +126,7 @@ $("#pad").addEventListener("pointerdown", (e) => {
   }, 380);
   const end = () => {
     stopRep();
+    S.vbLock = null;
     changed();
     b.removeEventListener("pointerup", end);
     b.removeEventListener("pointerleave", end);

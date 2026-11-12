@@ -28,6 +28,13 @@ function libToTile(q, T) {
   T.name = q.name || "";
   T.price = +q.price || 0;
   T.libId = q.id;
+  if (q.tex) {
+    T.tex = q.tex;
+    T.texAR = q.texAR;
+  } else {
+    delete T.tex;
+    delete T.texAR;
+  }
   T.sheet = q.sheet ? { on: true, w: 12, h: 12 } : Object.assign({}, T.sheet || {}, { on: false });
   return T;
 }
@@ -37,7 +44,7 @@ function libModal(applyTo) {
   h += L.length
     ? `<div class="liblist">${L.map(
         (q, i) =>
-          `<div class="librow"><div><b>${esc(q.name || "—")}</b><br><small>${fmtIn(+q.w)}×${fmtIn(+q.h)} · ${t("thick").toLowerCase()} ${fmtIn(+q.thick || 0.375)} · ${t("grout").toLowerCase()} ${fmtIn(+q.g || 0.125)}${+q.sqftBox ? ` · ${q.sqftBox} sf/box` : ""}${+q.price ? ` · $${(+q.price).toFixed(2)}/sf` : ""}</small></div><div class="btns">${applyTo !== "none" && cur() ? `<button class="btn sm p" data-act="libApply:${q.id}">${t("libUse")}</button>` : ""}<button class="btn sm" data-act="libEdit:${i}">✎</button></div></div>`,
+          `<div class="librow">${q.tex ? `<img class="libtx" src="${q.tex}" alt="">` : ""}<div><b>${esc(q.name || "—")}</b><br><small>${fmtIn(+q.w)}×${fmtIn(+q.h)} · ${t("thick").toLowerCase()} ${fmtIn(+q.thick || 0.375)} · ${t("grout").toLowerCase()} ${fmtIn(+q.g || 0.125)}${+q.sqftBox ? ` · ${q.sqftBox} sf/box` : ""}${+q.price ? ` · $${(+q.price).toFixed(2)}/sf` : ""}</small></div><div class="btns">${applyTo !== "none" && cur() ? `<button class="btn sm p" data-act="libApply:${q.id}">${t("libUse")}</button>` : ""}<button class="btn sm" data-act="libEdit:${i}">✎</button></div></div>`,
       ).join("")}</div>`
     : `<p class="hint">${t("libEmpty")}</p>`;
   h += `<div class="btns">${cur() ? `<button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button>` : ""}<button class="btn" data-act="libNew">＋ ${t("libNew")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>`;
@@ -86,6 +93,8 @@ function libAct(cmd, arg) {
       sqftBox: +T.sqftBox || 0,
       price: +T.price || 0,
       sheet: !!(T.sheet && T.sheet.on),
+      tex: T.tex,
+      texAR: T.texAR,
     });
     saveSoon();
     return libEdit(L.length - 1);
@@ -107,6 +116,7 @@ function libAct(cmd, arg) {
   }
   if (cmd === "libEdit") return libEdit(+arg);
   if (cmd === "libDel") {
+    if (L[+arg]) markDeleted("t:" + L[+arg].id);
     L.splice(+arg, 1);
     saveSoon();
     return libModal();

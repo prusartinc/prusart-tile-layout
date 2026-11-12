@@ -16,8 +16,25 @@ function act(a, arg, b) {
   )
     closeModal();
   if (/^lib/.test(a)) return libAct(a, arg);
+  if (/^(bk|sy)[A-Z]/.test(a)) return syncAct(a, arg);
+  if (/^tex/.test(a) && a !== "texToggle") {
+    if (a === "texPick") closeModal();
+    return texAct(a);
+  }
   if (/^wiz(Apply|Default|Cancel|Lib)$/.test(a)) return wizAct(a);
   switch (a) {
+    case "texToggle":
+      S.texOn = !S.texOn;
+      closeModal();
+      renderPanel();
+      draw();
+      break;
+    case "zoneMove":
+      S.zoneMove = !S.zoneMove;
+      if (S.zoneMove) S.mode = "tiles";
+      renderTools();
+      toast(S.zoneMove ? t("zonesOn") : t("zonesOff"), false);
+      break;
     case "more":
       moreMenu();
       break;
@@ -517,7 +534,16 @@ function act(a, arg, b) {
     case "full":
       S.full = !S.full;
       document.body.classList.toggle("full", S.full);
+      if (!S.full && S.fullFrom != null) {
+        // came here by double tap: go back to the view it was opened from
+        S.tab = S.fullFrom;
+        S.fullFrom = null;
+        S.view = { zoom: 1, panX: 0, panY: 0 };
+        renderAll();
+        break;
+      }
       renderTools();
+      if (typeof applyPin === "function") applyPin();
       requestAnimationFrame(() => draw());
       break;
     case "layer":
@@ -604,6 +630,7 @@ function act(a, arg, b) {
         return;
       }
       DB.projects = DB.projects.filter((p) => p.id !== arg);
+      markDeleted(arg);
       if (P.id === arg) P = DB.projects[0];
       S.tab = 0;
       saveSoon();
