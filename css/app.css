@@ -818,3 +818,55 @@ body.client #sbar {
   border-top: 1px solid var(--line);
   padding-top: 10px;
 }
+
+.liblist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+.librow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.librow .btns {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+.librow small {
+  color: var(--mut);
+}
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 140%);
+  background: #141414;
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 12px 10px 16px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 14px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s;
+  z-index: 60;
+  max-width: calc(100vw - 24px);
+}
+#toast.on {
+  transform: translate(-50%, 0);
+}
+#toast button {
+  background: #a8a390;
+  color: #000;
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-weight: 700;
+}

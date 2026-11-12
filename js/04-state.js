@@ -336,8 +336,8 @@ function doRedo() {
 function saveSoon() {
   clearTimeout(saveT);
   saveT = setTimeout(() => {
+    P.updated = Date.now(); // before the undo snapshot, so the timestamp alone never looks like an edit
     commitUndo();
-    P.updated = Date.now();
     DB.curId = P.id;
     DB.lang = lang;
     DB.theme = THEME;

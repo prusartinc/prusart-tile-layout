@@ -176,7 +176,7 @@ function renderClient() {
 }
 
 const F = (label, k, ty = "len", sc = "s", cls = "") => {
-  const base = sc === "p" ? P : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
   let v;
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
@@ -185,12 +185,12 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
   return `<label class="f ${cls}"><span>${label}</span><input data-k="${k}" data-sc="${sc}" data-t="${ty}" value="${val}" autocomplete="off" ${ty === "num" ? 'inputmode="decimal"' : ""}></label>`;
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
-  const base = sc === "p" ? P : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
   const v = getPath(base, k);
   return `<label class="f ${cls}"><span>${label}</span><select data-k="${k}" data-sc="${sc}" data-t="sel" ${rb ? 'data-rb="1"' : ""}>${opts.map((o) => `<option value="${o}" ${o === v ? "selected" : ""}>${esc(lab ? lab(o) : t(o === "L" ? "Lshape" : o))}</option>`).join("")}</select></label>`;
 };
 const CHK = (label, k, rb, sc = "s") => {
-  const base = sc === "p" ? P : cur();
+  const base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
   return `<label class="c"><input type="checkbox" data-k="${k}" data-sc="${sc}" data-t="chk" ${getPath(base, k) ? "checked" : ""} ${rb ? 'data-rb="1"' : ""}>${label}</label>`;
 };
 const SEC = (id, title, body) =>
@@ -278,8 +278,8 @@ function tileSection(s) {
   b += CHK(t("sheetOn"), "tile.sheet.on", 1);
   if (T.sheet.on)
     b += `<div class="grid">${F(t("sheetW"), "tile.sheet.w")}${F(t("sheetH"), "tile.sheet.h")}</div>`;
-  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div><div class="btns"><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
-  return SEC("tile", `${t("tile")} · ${esc(tileDesc(T))}`, b);
+  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div><div class="grid">${F(t("libPrice"), "tile.price", "num")}</div><div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
+  return SEC("tile", `${t("tile")} · ${T.name ? esc(T.name) + " · " : ""}${esc(tileDesc(T))}`, b);
 }
 
 function openingCard(o, i) {
@@ -751,17 +751,28 @@ function renderTot() {
       g[k] = g[k] || { k, need: 0, perBox: 0 };
       g[k].need += R.nb[k];
       if (R.perBox && Object.keys(R.nb).length === 1) g[k].perBox = R.perBox;
+      const T = R.T;
+      if (+T.price > 0 && k === tileDesc(T)) {
+        g[k].price = +T.price;
+        g[k].unit = (+T.w * (+T.h || +T.w)) / 144;
+        g[k].name = T.name || "";
+      }
     }
   });
+  let tileCost = 0;
   let h = `<p><b>${t("surfaces")}</b></p><table><tr><th>${t("name")}</th><th>${t("tile")}</th><th class="n">sf</th><th class="n">${t("need")}</th></tr>${rows.map(({ s, R }) => `<tr><td>${esc(s.name)}${R.bad ? " ⚠︎" : ""}</td><td>${esc(tileDesc(R.T))}<br><small style="color:var(--mut)">${esc(patName(R.T))}</small></td><td class="n">${sq(R.area)}</td><td class="n">${R.need}</td></tr>`).join("")}</table>`;
   h += `<p style="margin-top:14px"><b>${t("byTile")}</b></p><table><tr><th>${t("tile")}</th><th class="n">${t("need")}</th><th class="n">${t("order")}</th><th class="n">${t("boxes")}</th></tr>${Object.values(
     g,
   )
     .map((e) => {
       const o = Math.ceil(e.need * (1 + (+P.waste || 0) / 100));
-      return `<tr><td>${esc(e.k)}</td><td class="n">${e.need}</td><td class="n"><b>${o}</b></td><td class="n">${e.perBox ? Math.ceil(o / e.perBox) : "—"}</td></tr>`;
+      const cost = e.price ? o * e.unit * e.price : 0;
+      if (cost) tileCost += cost;
+      return `<tr><td>${e.name ? esc(e.name) + "<br><small>" + esc(e.k) + "</small>" : esc(e.k)}</td><td class="n">${e.need}</td><td class="n"><b>${o}</b>${cost ? `<br><small>≈$${Math.round(cost)}</small>` : ""}</td><td class="n">${e.perBox ? Math.ceil(o / e.perBox) : "—"}</td></tr>`;
     })
     .join("")}</table>`;
+  if (tileCost)
+    h += `<p style="margin-top:8px"><b>${t("tileCost")}: ≈$${Math.round(tileCost)}</b> <small style="color:var(--mut)">${t("tileCostNote")}</small></p>`;
   Object.keys(pf).forEach((k) => {
     h += `<p style="margin-top:10px"><b>Schluter ${esc(k)}</b>: ${(pf[k] / 12).toFixed(1)} ft → ${Math.ceil(pf[k] / 98.5)} ${t("sticks")}</p>`;
   });
@@ -810,7 +821,7 @@ function onInp(e) {
   if (!k) return;
   const sc = el.dataset.sc || "s",
     ty = el.dataset.t,
-    base = sc === "p" ? P : cur();
+    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : cur();
   let v;
   if (ty === "len" && el.dataset.opt && String(el.value).trim() === "") {
     v = null;

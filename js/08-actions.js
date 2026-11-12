@@ -8,7 +8,20 @@ document.addEventListener("click", (e) => {
 });
 function act(a, arg, b) {
   const s = cur();
+  if (/^lib/.test(a)) return libAct(a, arg);
+  if (/^wiz(Apply|Default|Cancel|Lib)$/.test(a)) return wizAct(a);
   switch (a) {
+    case "wizPick":
+      if (S.wiz) S.wiz.src = "l:" + arg;
+      wizOpen();
+      break;
+    case "wizBack":
+      wizOpen();
+      break;
+    case "toastUndo":
+      doUndo();
+      $("#toast").classList.remove("on");
+      break;
     case "tab":
       S.tab = +arg;
       S.view = { zoom: 1, panX: 0, panY: 0 };
@@ -193,17 +206,9 @@ function act(a, arg, b) {
         `<h3>${t("addWhat")}</h3><div class="btns">${["wall", "floor", "pan"].map((x) => `<button class="btn p" data-act="addSurf:${x}">${ICON[x]} ${t(x)}</button>`).join("")}<button class="btn" data-act="closeModal">${t("close")}</button></div>`,
       );
       break;
-    case "addSurf": {
-      const n = newSurface(arg);
-      P.surfaces.push(n);
-      if (!isLinked(n)) autoLayout(n);
-      S.tab = P.surfaces.length - 1;
-      S.view = { zoom: 1, panX: 0, panY: 0 };
-      closeModal();
-      renderAll();
-      saveSoon();
+    case "addSurf":
+      wizStart("new", arg);
       break;
-    }
     case "quickSize": {
       if (!s) return;
       const si = S.tab;
@@ -229,23 +234,8 @@ function act(a, arg, b) {
     }
     case "clearSurf":
       if (!s) return;
-      modal(
-        `<h3>⌫ ${t("qClearT")}</h3><p>${t("qClearMsg").replace("{n}", esc(s.name))}</p><div class="btns"><button class="btn d" data-act="clearSurfGo">${t("qClearGo")}</button><button class="btn" data-act="closeModal">${t("cancel")}</button></div>`,
-      );
+      wizStart("reset");
       break;
-    case "clearSurfGo": {
-      if (!s) return;
-      commitUndo();
-      const f = newSurface(s.type),
-        other = P.surfaces.find((x) => x !== s && x.type === "wall");
-      if (s.type === "wall") f.tile = other ? JSON.parse(JSON.stringify(other.tile)) : defTile();
-      Object.assign(f, { id: s.id, name: s.name, nk: s.nk, nn: s.nn, pos: s.pos });
-      P.surfaces[S.tab] = f;
-      closeModal();
-      renderAll();
-      changed();
-      break;
-    }
     case "delSurfQ":
       if (!s) return;
       modal(
@@ -259,7 +249,8 @@ function act(a, arg, b) {
       if (!P.surfaces.length) P.surfaces.push(newSurface("wall"));
       S.tab = Math.min(S.tab, P.surfaces.length - 1);
       renderAll();
-      saveSoon();
+      changed();
+      toast(t("toastDeleted"));
       break;
     case "delSurf":
       if (!b.dataset.armed) {
