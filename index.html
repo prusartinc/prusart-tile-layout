@@ -17,8 +17,11 @@
 html[data-theme="dark"]{--bg:#0b0b0b;--card:#161616;--card2:#1b1b1a;--ink:#f1efe9;--mut:#a29e92;--line:#2c2b28;--line2:#242321;--acc:#a8a390;--accInk:#0b0b0b;--brand:#a8a390;--brandInk:#c9c4b0;--hdr:#000;--stage:#121212;--chip:#141414;--tool:rgba(30,30,29,.94);--kp:#1e1e1c;--hl:#2e2c25;--noteBg:#211f19;--noteLn:#3f3a2c;--warnBg:#3a1714;--warnInk:#ffb4ab;--input:#1d1d1b;--shadow:0 1px 2px rgba(0,0,0,.5);color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
+html{background:var(--hdr)}
+body{min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);background:var(--hdr);z-index:7;pointer-events:none}
 body{font:14px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
-header{display:flex;align-items:center;gap:6px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right));background:var(--hdr);color:#fff;position:sticky;top:0;z-index:6;border-bottom:1px solid #222}
+header{display:flex;align-items:center;gap:6px;padding:8px 10px;padding-top:calc(8px + env(safe-area-inset-top));padding-left:calc(10px + env(safe-area-inset-left));padding-right:calc(10px + env(safe-area-inset-right));background:var(--hdr);color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;position:sticky;top:0;z-index:6;border-bottom:1px solid #222}
 header .brand{flex:1;min-width:0;display:flex;align-items:center;gap:9px}
 header .brand svg{width:30px;height:30px;flex:none}
 header .ttl{min-width:0;line-height:1.15}
@@ -845,7 +848,7 @@ new ResizeObserver(()=>drawSoon()).observe($('#stage'));
 
 /* ================= UI render ================= */
 const ICON={floor:'▦',wall:'▥',pan:'◫'};
-function renderHeader(){$('#hT').textContent=P.name||t('app');$('#hS').textContent='PrusArt Inc'+(P.client?' · '+P.client:' · '+t('app'));
+function renderHeader(){$('#hT').textContent=P.name||t('app');$('#hS').textContent=t('app')+(P.client?' · '+P.client:'');
  $('#bLang').textContent=lang==='ru'?'EN':'RU';$('#bProj').textContent='☰';$('#bProj').title=t('projects');$('#bImg').textContent='⤓';$('#bImg').title=t('image');$('#bCli').textContent=S.client?t('exitClient'):t('client');}
 function renderTabs(){const nw=P.surfaces.filter(s=>s.type==='wall').length,nf=P.surfaces.filter(s=>s.type!=='wall').length;
  $('#tabs').innerHTML=(nw>=2?`<button data-act="all" class="all ${S.tab==='all'?'on':''}">▥▥ ${t('allWalls')}</button>`:'')+(nf>=2?`<button data-act="floorTab" class="all ${S.tab==='floor'?'on':''}">▦▦ ${t('allFloor')}</button>`:'')+P.surfaces.map((s,i)=>`<button data-act="tab:${i}" class="${S.tab===i?'on':''}">${ICON[s.type]||''} ${esc(s.name)}</button>`).join('')+
