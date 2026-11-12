@@ -76,7 +76,7 @@ function startDrag(x, y, target, pt) {
   }
   const h = hitAt(x, y);
   const dimEl = target && target.closest ? target.closest("[data-dim]") : null;
-  if (pt === "touch" && !h && !dimEl && S.mode !== "view" && !S.pickConn) return false;
+  if (pt === "touch" && !h && !dimEl && S.mode !== "view" && !S.pickConn && !S.full) return false;
   const s = h ? h.it.s : null;
   const T = s ? effT(s) : null;
   drag = {
@@ -192,13 +192,20 @@ function pEnd(e) {
       // double tap on a surface: open it full screen (✕ brings you back)
       const now = Date.now(),
         lt = S.lastTap;
-      if (lt && d.it && !S.pickConn && now - lt.t < 380 && Math.hypot(d.x - lt.x, d.y - lt.y) < 36) {
+      if (
+        lt &&
+        (d.it || S.full) &&
+        !S.pickConn &&
+        now - lt.t < 380 &&
+        Math.hypot(d.x - lt.x, d.y - lt.y) < 36
+      ) {
         clearTimeout(S.tapTimer);
         S.lastTap = null;
-        openFull(d.it.s, lt.tab);
+        if (S.full) act("full");
+        else openFull(d.it.s, lt.tab);
         return;
       }
-      S.lastTap = d.it ? { t: now, x: d.x, y: d.y, tab: S.tab } : null;
+      S.lastTap = d.it || S.full ? { t: now, x: d.x, y: d.y, tab: S.tab } : null;
       if (S.pickConn && canEdit()) {
         const s2 = P.surfaces.find((x) => x.id === S.pickConn);
         const it = S.items.find((i) => i.s === s2);

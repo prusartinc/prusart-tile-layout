@@ -1083,3 +1083,19 @@ body.pin .secnav {
 .syol li {
   margin: 4px 0;
 }
+
+/* full screen on iPhone: keep a solid black band under the status bar (like the normal header),
+   so the drawing never shows through the translucent status bar */
+body.full::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: env(safe-area-inset-top);
+  background: #000;
+  z-index: 40;
+}
+body.full #stage {
+  background: var(--bg);
+}

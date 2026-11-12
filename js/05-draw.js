@@ -808,7 +808,10 @@ function overlayInsets(r) {
   let rr = 0;
   const sb = $("#sbar");
   if (vis(sb)) {
-    sb.style.top = (t ? t + 6 : 8) + "px";
+    // place it under the toolbar, measured against its own positioned parent (the stage may have a safe-area padding)
+    const op = sb.offsetParent,
+      base = op ? op.getBoundingClientRect().top : r.top;
+    sb.style.top = Math.round(r.top - base + (t ? t + 6 : 8)) + "px";
     const q = sb.getBoundingClientRect();
     rr = r.right - q.left;
   }
