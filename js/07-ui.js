@@ -42,12 +42,16 @@ function renderTabs() {
     `<button data-act="tot" class="${S.tab === "tot" ? "on" : ""}">Σ ${t("totals")}</button>` +
     (S.client ? "" : `<button data-act="addMenu" class="add">${t("addSurf")}</button>`);
 }
+function ptEditable() {
+  const s = typeof S.tab === "number" ? P.surfaces[S.tab] : null;
+  return !!(s && s.type !== "wall" && !isShaped(s) && !(s.bs && s.bs.on));
+}
 function renderTools() {
   const ml = { tiles: t("moveTiles"), view: t("moveView"), lock: t("moveLock") }[S.mode];
   $("#tools").innerHTML =
     (S.client
       ? ""
-      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button><button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button>${S.tab === "floor" ? `<button data-act="zoneMove" class="${S.zoneMove ? "on" : ""}" title="${t("zonesB")}">⤧<span class="wl"> ${t("zonesB")}</span></button>` : ""}${S.site ? `<button data-act="site" class="on">👷 ${t("siteOff")}</button>` : `<button data-act="more">⋯ ${t("moreB")}</button>`}`) +
+      : `<button data-act="mode" class="${S.mode === "tiles" ? "on" : ""}">${ml}</button><button data-act="${S.tab === "all" ? "autoAll" : S.tab === "floor" ? "autoFloor" : "auto"}">${t("auto")}</button>${S.tab === "floor" ? `<button data-act="zoneMove" class="${S.zoneMove ? "on" : ""}" title="${t("zonesB")}">⤧<span class="wl"> ${t("zonesB")}</span></button>` : ""}${ptEditable() ? `<button data-act="ptEdit" class="${S.ptEdit ? "on" : ""}" title="${t("ptB")}">◇<span class="wl"> ${t("ptB")}</span></button>` : ""}${S.site ? `<button data-act="site" class="on">👷 ${t("siteOff")}</button>` : `<button data-act="more">⋯ ${t("moreB")}</button>`}`) +
     `<span class="sp"></span>${S.client ? "" : `<button data-act="undo" title="${t("undoW")}">↶</button><button data-act="redo">↷</button>`}<button data-act="fit" title="${t("mFit")}">⤢</button><button data-act="full" class="${S.full ? "on xbig" : ""}" title="${S.full ? t("close") : t("mFull")}">${S.full ? "✕" : "⛶"}</button>`;
   renderLayers();
   renderPad();
@@ -461,8 +465,9 @@ function transSection(s) {
       }).join("");
       return `<div class="op"><div class="grid"><label class="f w2"><span>${t("edgeOf")}</span><select data-k="trans.${i}.edge" data-sc="s" data-t="selnum" data-rb="1">${eo}</select></label>${F(t("fromStart"), `trans.${i}.from`)}${F(t("doorW"), `trans.${i}.len`)}
   ${SEL(t("adjFloor"), `trans.${i}.adj`, Object.keys(ADJ), 1, "s", "", (o) => t("adj_" + o))}${F(t("adjT"), `trans.${i}.at`)}${F(t("adjSub"), `trans.${i}.sub`, "slen")}
-  ${SEL(t("transProf"), `trans.${i}.prof`, ["auto", "RENO-T", "RENO-TK", "RENO-U", "RENO-V", "RENO-RAMP"], 1, "s", "", (o) => (o === "auto" ? t("autoV") : o))}</div>
-  <div class="note"><b>${c.diff >= 0 ? "+" : "−"}${fmt(Math.abs(c.diff))}</b> · ${esc(c.key)}</div><div class="btns"><button class="btn sm p" data-act="section:${si}:${i}">${t("section")}</button><button class="btn sm d" data-act="delTrans:${i}">${t("del")}</button></div></div>`;
+  ${SEL(t("transProf"), `trans.${i}.prof`, ["auto", "RENO-T", "RENO-TK", "RENO-U", "RENO-V", "RENO-RAMP"], 1, "s", "", (o) => (o === "auto" ? t("autoV") : o))}
+  ${SEL(t("trStop"), `trans.${i}.stop`, ["wall", "mid", "full", "cust"], 1, "s", "w2", (o) => t("stop_" + o))}${tr.stop === "mid" || tr.stop === "full" ? F(t("trWt"), `trans.${i}.wt`) : ""}${tr.stop === "cust" ? F(t("trExt"), `trans.${i}.ext`) : ""}</div>
+  <div class="note"><b>${c.diff >= 0 ? "+" : "−"}${fmt(Math.abs(c.diff))}</b> · ${esc(c.key)}</div><div class="btns"><button class="btn sm" data-act="transStart:${i}">⊞ ${t("trStart")}</button><button class="btn sm p" data-act="section:${si}:${i}">${t("section")}</button><button class="btn sm d" data-act="delTrans:${i}">${t("del")}</button></div></div>`;
     })
     .join("");
   b += `<p class="hint">${t("transHint")}</p><div class="btns"><button class="btn" data-act="addTrans">${t("addTrans")}</button></div>`;

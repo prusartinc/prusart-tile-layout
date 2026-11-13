@@ -234,7 +234,7 @@ function walkPoly(s) {
   const segs = s.segs || [];
   let x = 0,
     y = 0,
-    h = 0;
+    h = ((+s.a0 || 0) * Math.PI) / 180;
   const raw = [[0, 0]];
   segs.forEach((g, i) => {
     const L = +g.l || 0;
@@ -275,6 +275,78 @@ function polyToSegs(pts) {
     0,
   );
   return out.slice(i0).concat(out.slice(0, i0));
+}
+/* points (in walk order) -> walk segments; keeps side order so side numbers stay the same */
+function ptsToWalk(s, pts) {
+  const n = pts.length,
+    hd = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
+  s.a0 = Math.round(((hd(pts[0], pts[1]) * 180) / Math.PI) * 1000) / 1000;
+  s.segs = pts.map((a, i) => {
+    const b = pts[(i + 1) % n],
+      c = pts[(i + 2) % n];
+    let d = ((hd(b, c) - hd(a, b)) * 180) / Math.PI;
+    while (d > 180) d -= 360;
+    while (d < -180) d += 360;
+    return { l: Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 10000) / 10000, a: Math.round(d * 1000) / 1000 };
+  });
+  s.shape = "walk";
+}
+/* inside angle at each corner, degrees */
+function cornerAngles(pts) {
+  const n = pts.length,
+    sg = sArea(pts) > 0 ? 1 : -1;
+  return pts.map((b, i) => {
+    const a = pts[(i - 1 + n) % n],
+      c = pts[(i + 1) % n];
+    let d = Math.atan2(c[1] - b[1], c[0] - b[0]) - Math.atan2(b[1] - a[1], b[0] - a[0]);
+    while (d > Math.PI) d -= 2 * Math.PI;
+    while (d < -Math.PI) d += 2 * Math.PI;
+    return 180 - ((d * 180) / Math.PI) * sg;
+  });
+}
+/* how far the tile runs past the wall line into a doorway */
+function transExt(tr) {
+  const wt = +tr.wt || 4.5;
+  return { mid: wt / 2, full: wt, cust: Math.max(0, +tr.ext || 0) }[tr.stop] || 0;
+}
+/* the floor outline with tile tongues into doorways */
+function transTabs(s, outer) {
+  const T = (s.trans || []).filter((tr) => transExt(tr) > 0.01);
+  if (!T.length || s.type === "wall" || isShaped(s)) return outer;
+  const n = outer.length,
+    sg = sArea(outer) > 0 ? 1 : -1,
+    out = [];
+  const push = (q) => {
+    const l = out[out.length - 1];
+    if (!l || Math.hypot(l[0] - q[0], l[1] - q[1]) > 1e-6) out.push(q);
+  };
+  for (let i = 0; i < n; i++) {
+    const a = outer[i],
+      b = outer[(i + 1) % n],
+      L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1,
+      ux = (b[0] - a[0]) / L,
+      uy = (b[1] - a[1]) / L,
+      nx = uy * sg,
+      ny = -ux * sg;
+    push(a);
+    T.filter((tr) => +tr.edge % n === i)
+      .map((tr) => {
+        const f0 = Math.max(0, Math.min(L, +tr.from || 0));
+        return [f0, Math.max(f0, Math.min(L, f0 + (+tr.len || 0))), transExt(tr)];
+      })
+      .filter((v) => v[1] - v[0] > 0.1)
+      .sort((p, q) => p[0] - q[0])
+      .forEach(([f0, f1, d]) => {
+        push([a[0] + ux * f0, a[1] + uy * f0]);
+        push([a[0] + ux * f0 + nx * d, a[1] + uy * f0 + ny * d]);
+        push([a[0] + ux * f1 + nx * d, a[1] + uy * f1 + ny * d]);
+        push([a[0] + ux * f1, a[1] + uy * f1]);
+      });
+  }
+  const f = out[0],
+    l = out[out.length - 1];
+  if (out.length > 1 && Math.hypot(f[0] - l[0], f[1] - l[1]) < 1e-6) out.pop();
+  return out;
 }
 function outerPoly(s) {
   if (isShaped(s)) return wallPoly(s, 0, 0, 0, 0);

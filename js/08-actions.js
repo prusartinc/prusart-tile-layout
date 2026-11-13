@@ -31,6 +31,13 @@ function act(a, arg, b) {
       renderPanel();
       draw();
       break;
+    case "ptEdit":
+      S.ptEdit = !S.ptEdit;
+      if (S.ptEdit) S.mode = "tiles";
+      renderTools();
+      draw();
+      if (S.ptEdit) toast(t("ptOn"), false);
+      break;
     case "zoneMove":
       S.zoneMove = !S.zoneMove;
       if (S.zoneMove) S.mode = "tiles";
@@ -121,11 +128,24 @@ function act(a, arg, b) {
         at: ADJ.hardwood,
         sub: 0,
         prof: "auto",
+        stop: "wall",
+        wt: 4.5,
+        ext: 0,
       });
       S.open.add("trans");
       renderPanel();
       changed();
       break;
+    case "transStart": {
+      const tr = s.trans[+arg];
+      if (!tr || !transStart(s, tr)) toast(t("trStartNo"), false);
+      else {
+        changed();
+        renderPanel();
+        toast("✓ " + t("trStartOk"));
+      }
+      break;
+    }
     case "delTrans":
       s.trans.splice(+arg, 1);
       renderPanel();

@@ -505,11 +505,12 @@ function surfBody(s, R, o) {
       uy = (b[1] - a[1]) / L,
       f0 = Math.max(0, Math.min(L, +tr.from || 0)),
       f1 = Math.max(0, Math.min(L, f0 + (+tr.len || 0)));
-    const p0 = [a[0] + ux * f0, a[1] + uy * f0],
-      p1 = [a[0] + ux * f1, a[1] + uy * f1],
-      sg = sArea(O) > 0 ? 1 : -1,
+    const sg = sArea(O) > 0 ? 1 : -1,
       nx = uy * sg,
       ny = -ux * sg,
+      d = transExt(tr),
+      p0 = [a[0] + ux * f0 + nx * d, a[1] + uy * f0 + ny * d],
+      p1 = [a[0] + ux * f1 + nx * d, a[1] + uy * f1 + ny * d],
       off = -px(16 * fs0),
       mx = (p0[0] + p1[0]) / 2 + nx * off,
       my = (p0[1] + p1[1]) / 2 + ny * off;
@@ -529,7 +530,8 @@ function surfBody(s, R, o) {
       x1 = G.bb.x1;
     h += `<line x1="${x0 - +px(6)}" x2="${x1 + +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1 + +px(8)}" y="${y}" font-size="${px(10 * o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;
   }
-  h += `<path class="lbE" d="${pd(G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
+  h += `<path class="lbE" d="${pd(G.line || G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
+  h += cornerSVG(s, G, px, fs0, o);
   if (s.bs && s.bs.on && !o.title) h += bsLabels(s, px);
   // cut labels
   const sheet = T.sheet && T.sheet.on;
@@ -734,6 +736,52 @@ function buildViewItems(Wpx, Hpx, v, fs, items, all, ins) {
 
 const svg = $("#svg");
 let R = null;
+/* corner angles (always for odd ones; all of them + drag handles in points mode) */
+function cornerSVG(s, G, px, fs0, o) {
+  if (o.title || s.type === "wall" || isShaped(s) || (s.bs && s.bs.on)) return "";
+  const O = G.outer,
+    edit = S.ptEdit && !isMulti() && !S.client,
+    A = cornerAngles(O),
+    sg = sArea(O) > 0 ? 1 : -1,
+    si = P.surfaces.indexOf(s);
+  let h = "";
+  O.forEach((b, i) => {
+    const ang = A[i],
+      odd = Math.abs(ang - 90) > 0.3 && Math.abs(ang - 270) > 0.3;
+    if (edit || (odd && (s.shape === "walk" || s.shape === "custom"))) {
+      const a = O[(i - 1 + O.length) % O.length],
+        c = O[(i + 1) % O.length],
+        u1 = norm2([a[0] - b[0], a[1] - b[1]]),
+        u2 = norm2([c[0] - b[0], c[1] - b[1]]);
+      let bx = u1[0] + u2[0],
+        by = u1[1] + u2[1];
+      const bl = Math.hypot(bx, by);
+      if (bl < 1e-6) {
+        bx = -u1[1] * sg;
+        by = u1[0] * sg;
+      } else {
+        bx /= bl;
+        by /= bl;
+      }
+      if (ang > 180) {
+        bx = -bx;
+        by = -by;
+      }
+      const r = +px((edit ? 30 : 22) * fs0),
+        lx = b[0] + bx * r,
+        ly = b[1] + by * r;
+      const alt = [1.7, -1, -1.7, 2.4].map((k) => (b[0] + bx * r * k).toFixed(3) + "," + (-(b[1] + by * r * k)).toFixed(3)).join(";");
+      h += `<text class="lbO" data-alt="${alt}" x="${lx.toFixed(3)}" y="${(-ly).toFixed(3)}" font-size="${px((edit ? 11 : 9.5) * fs0)}" text-anchor="middle" dominant-baseline="central" fill="${odd ? "#b4441b" : "#8a8476"}" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}">${Math.round(ang * 10) / 10}°</text>`;
+    }
+    if (edit)
+      h += `<g data-vx="${si}:${i}" style="cursor:move"><circle cx="${b[0]}" cy="${-b[1]}" r="${px(20)}" fill="transparent"/><circle cx="${b[0]}" cy="${-b[1]}" r="${px(8)}" fill="#fff" stroke="#1d5fa8" stroke-width="${px(2.5)}"/></g>`;
+  });
+  return h;
+}
+const norm2 = (v) => {
+  const l = Math.hypot(v[0], v[1]) || 1;
+  return [v[0] / l, v[1] / l];
+};
 function declutter(root) {
   const ol = [...root.querySelectorAll("text.lbO")];
   if (!ol.length) return;
@@ -897,6 +945,7 @@ const drawSoon = () => {
   if (rafP) return;
   rafP = requestAnimationFrame(() => {
     rafP = 0;
+    if (!P) return;
     draw();
     syncOff();
   });

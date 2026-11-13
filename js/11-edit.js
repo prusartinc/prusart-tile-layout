@@ -367,7 +367,7 @@ function straighten(raw, target) {
 function walkMiss(s) {
   let x = 0,
     y = 0,
-    h = 0;
+    h = ((+s.a0 || 0) * Math.PI) / 180;
   const H = [];
   (s.segs || []).forEach((g) => {
     H.push(h);
@@ -438,4 +438,33 @@ function helpModal() {
   modal(
     `<h3>? ${t("helpTitle")}</h3>${t("helpHtml")}<div class="btns"><button class="btn p" data-act="closeModal">${t("close")}</button></div>`,
   );
+}
+
+/* put a full tile edge on the threshold line, a tile centered on the door */
+function transStart(s, tr) {
+  const T = effT(s);
+  if (angOf(T) || !["grid", "offset"].includes(patOf(T)) || T.shape === "hex" || T.shape === "penny") return false;
+  const O = outerPoly(s),
+    n = O.length,
+    a = O[+tr.edge % n],
+    b = O[(+tr.edge + 1) % n],
+    L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1,
+    ux = (b[0] - a[0]) / L,
+    uy = (b[1] - a[1]) / L,
+    sg = sArea(O) > 0 ? 1 : -1,
+    nx = uy * sg,
+    ny = -ux * sg,
+    d = transExt(tr),
+    f0 = Math.max(0, Math.min(L, +tr.from || 0)),
+    fc = Math.min(L, f0 + (+tr.len || 0) / 2),
+    { tw: lw, th: lh } = rdims(T);
+  const cx = a[0] + ux * fc + nx * d,
+    cy = a[1] + uy * fc + ny * d;
+  if (Math.abs(uy) < 1e-6) {
+    // horizontal side: rows start at the threshold
+    setO(s, cx - lw / 2, ny < 0 ? cy : cy - lh);
+  } else if (Math.abs(ux) < 1e-6) {
+    setO(s, nx < 0 ? cx : cx - lw, cy - lh / 2);
+  } else return false;
+  return true;
 }

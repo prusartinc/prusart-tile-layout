@@ -60,6 +60,7 @@ svg.addEventListener(
     }
     const tc = e.touches[0];
     if (
+      (e.target && e.target.closest && e.target.closest("[data-vx]")) ||
       S.pickConn ||
       connAt(tc.clientX, tc.clientY) ||
       (S.mode === "tiles" && canEdit() && hitAt(tc.clientX, tc.clientY))
@@ -69,6 +70,38 @@ svg.addEventListener(
   { passive: false },
 );
 function startDrag(x, y, target, pt) {
+  const vxEl = S.ptEdit && target && target.closest ? target.closest("[data-vx]") : null;
+  if (vxEl && canEdit()) {
+    const [si, vi] = vxEl.dataset.vx.split(":").map(Number),
+      s = P.surfaces[si];
+    if (s) {
+      const T = effT(s);
+      drag = {
+        x,
+        y,
+        vx: {
+          s,
+          i: vi,
+          pts: outerPoly(s).map((q) => q.slice()),
+          ox: +T.ox || 0,
+          oy: +T.oy || 0,
+          ops: s.openings.map((o) => [o.x, o.y]),
+          conn: s.heat && s.heat.conn ? s.heat.conn.slice() : null,
+          sen: s.heat && s.heat.sensor ? s.heat.sensor.slice() : null,
+          pos: s.pos ? { x: +s.pos.x || 0, y: +s.pos.y || 0 } : null,
+          pan: [S.view.panX, S.view.panY],
+        },
+        s: null,
+        op: null,
+        px: S.view.panX,
+        py: S.view.panY,
+        upp: S.upp,
+        moved: false,
+      };
+      S.vbLock = { vb: S.vb.slice(), upp: S.upp };
+      return true;
+    }
+  }
   const ci = S.pickConn ? null : connAt(x, y);
   if (ci) {
     drag = { x, y, conn: ci, s: null, op: null, px: S.view.panX, py: S.view.panY, upp: S.upp, moved: false };
@@ -143,6 +176,11 @@ svg.addEventListener("pointermove", (e) => {
     drawSoon();
     return;
   }
+  if (drag.vx) {
+    vxMove(drag.vx, dx, -dy, 10 * drag.upp);
+    drawSoon();
+    return;
+  }
   if (drag.zone) {
     const p = zoneSnap(drag.s, drag.zone.px0 + dx, drag.zone.py0 - dy, 12 * drag.upp);
     drag.s.pos = { x: p[0], y: p[1] };
@@ -177,6 +215,14 @@ function pEnd(e) {
   if (ptrs.size === 0 && drag) {
     const d = drag;
     drag = null;
+    if (d.vx) {
+      S.vbLock = null;
+      if (d.moved) {
+        changed();
+        renderPanel();
+      } else draw();
+      return;
+    }
     if (d.zone) {
       S.vbLock = null;
       if (d.moved) {
@@ -267,3 +313,36 @@ svg.addEventListener(
   { passive: false },
 );
 new ResizeObserver(() => drawSoon()).observe($("#stage"));
+
+/* move one corner; the others stay put. Snaps to 1/8" and to the neighbours' lines. */
+function vxMove(v, dx, dy, tol) {
+  const s = v.s,
+    pts = v.pts.map((q) => q.slice()),
+    n = pts.length,
+    i = v.i,
+    r8 = (x) => Math.round(x * 8) / 8;
+  let x = r8(v.pts[i][0] + dx),
+    y = r8(v.pts[i][1] + dy);
+  [pts[(i - 1 + n) % n], pts[(i + 1) % n]].forEach((q) => {
+    if (Math.abs(q[0] - x) < tol) x = q[0];
+    if (Math.abs(q[1] - y) < tol) y = q[1];
+  });
+  pts[i] = [x, y];
+  if (polyArea(pts) < 1) return;
+  const m0 = [Math.min(...v.pts.map((q) => q[0])), Math.min(...v.pts.map((q) => q[1]))],
+    m1 = [Math.min(...pts.map((q) => q[0])), Math.min(...pts.map((q) => q[1]))],
+    sx = m1[0] - m0[0],
+    sy = m1[1] - m0[1];
+  ptsToWalk(s, pts);
+  // the outline is re-based at its corner: shift everything else back so it stays in place
+  s.openings.forEach((o, k) => {
+    o.x = v.ops[k][0] - sx;
+    o.y = v.ops[k][1] - sy;
+  });
+  if (v.conn) s.heat.conn = [v.conn[0] - sx, v.conn[1] - sy];
+  if (v.sen) s.heat.sensor = [v.sen[0] - sx, v.sen[1] - sy];
+  if (!isZLinked(s)) setO(s, v.ox - sx, v.oy - sy);
+  if (v.pos) s.pos = { x: v.pos.x + sx, y: v.pos.y + sy };
+  S.view.panX = v.pan[0] - sx;
+  S.view.panY = v.pan[1] - sy;
+}

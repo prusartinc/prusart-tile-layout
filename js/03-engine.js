@@ -577,6 +577,13 @@ function geom(s) {
       tp = tr.t ? sw : 0;
     region = rectPoly(l, b, s.w - l - r, s.h - b - tp);
   }
+  const line = transTabs(s, outer);
+  if (line !== outer) {
+    const same =
+      region === outer ||
+      (region.length === outer.length && region.every((q, i) => Math.hypot(q[0] - outer[i][0], q[1] - outer[i][1]) < 1e-6));
+    if (same) region = line;
+  }
   const holes = [],
     niches = [];
   for (const o of s.openings) {
@@ -598,7 +605,7 @@ function geom(s) {
     const d = s.drain;
     holes.push({ poly: rectPoly(d.x, d.y, d.len, d.wid), type: "drain" });
   }
-  return { outer, region, holes, niches, bb: bboxOf(outer), rb: bboxOf(region) };
+  return { outer, line, region, holes, niches, bb: bboxOf(line), rb: bboxOf(region) };
 }
 
 /* ================= linking ================= */
