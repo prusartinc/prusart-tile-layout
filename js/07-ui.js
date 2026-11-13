@@ -344,7 +344,7 @@ function walkEditor(s) {
     .join("");
   h += `<div class="btns"><button class="btn" data-act="addSeg">${t("addSeg")}</button></div>`;
   if (wk.gap > 0.1)
-    h += `<div class="note">${t("walkGap")} ${fmt(wk.gap)} <button class="btn sm" data-act="closeWalk">${t("closeWalk")}</button></div>`;
+    h += `<div class="note">${t("walkGap")} ${fmt(wk.gap)} <button class="btn sm p" data-act="walkFixOpen:${P.surfaces.indexOf(s)}">${t("walkFix")}</button> <button class="btn sm" data-act="closeWalk">${t("closeWalk")}</button></div>`;
   return h;
 }
 function optLen(label, k, auto) {

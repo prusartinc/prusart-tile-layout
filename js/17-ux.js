@@ -70,6 +70,8 @@ function pieceInfo(it, x, y) {
   if (p.row) m += ` · ${t("rowW")} ${p.row}`;
   m += " · " + (p.full ? t("fullTile") : `${t("cutW")} ${fmtIn(p.cw)} × ${fmtIn(p.ch)}`);
   if (p.hl && p.hl.length) m += " + " + [...new Set(p.hl)].map((x2) => t(x2)).join(", ");
+  const nt = notchTxt(p, " × ");
+  if (nt) m += ` · ${t("notchW")} ${nt}`;
   toast(m.replace(/^ · /, ""), false);
 }
 

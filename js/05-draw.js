@@ -563,8 +563,13 @@ function surfBody(s, R, o) {
       } else if (p.notch)
         tx = (p.arc ? "◠ " : p.cutX || p.cutY || (p.ax && !p.hl) ? "L " : p.hl ? "⊙ " : "◿ ") + tx;
       const lw = p.lp ? p.lp[2] : b.x1 - b.x0,
-        lh = p.lp ? p.lp[3] : b.y1 - b.y0,
-        L = tx.length * 0.58;
+        lh = p.lp ? p.lp[3] : b.y1 - b.y0;
+      const nt = p.notch && !p.taper && !p.taperW && !p.arc ? notchTxt(p, "×") : "";
+      if (nt) {
+        const lt = tx0 + " ⌐" + nt;
+        if (Math.max(lw, lh) / (lt.length * 0.58) >= fMin) tx = lt;
+      }
+      const L = tx.length * 0.58;
       let f = Math.min(fMax, (lw / L) * 0.94, lh * 0.62),
         rot = false;
       if (f < fMin) {
@@ -581,6 +586,11 @@ function surfBody(s, R, o) {
       const ang = (rot ? -90 : 0) - (p.own ? 0 : (R.a * 180) / Math.PI);
       const col = p.c === "bad" ? "#7d1410" : "#1d3550";
       let inner = esc(tx);
+      if (nt && tx.indexOf("⌐") < 0 && !(S.nums && p.no)) {
+        const f2 = Math.min(f * 0.85, ((rot ? lh : lw) / ((nt.length + 2) * 0.58)) * 0.94);
+        if ((rot ? lw : lh) >= f + f2 * 1.5 && f2 >= fMin * 0.6)
+          inner = `<tspan x="${x.toFixed(3)}" dy="${(-f * 0.55).toFixed(3)}">${esc(tx)}</tspan><tspan x="${x.toFixed(3)}" dy="${(f * 1.15).toFixed(3)}" font-size="${f2.toFixed(3)}" fill="#b4441b">⌐ ${esc(nt)}</tspan>`;
+      }
       if (S.nums && p.no) {
         const two = (rot ? lw : lh) >= f * 2.5;
         if (two)
@@ -623,6 +633,16 @@ function surfBody(s, R, o) {
         off = +px(13 * fs0);
       h += `<text x="${(mx + nx * off).toFixed(3)}" y="${(-(my + ny * off)).toFixed(3)}" font-size="${px(12.5 * fs0)}" text-anchor="middle" dominant-baseline="central" fill="${PAL.blue}" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" data-dim="${P.surfaces.indexOf(s)}:seg:${i}" style="cursor:pointer">${fmt(s.segs[i] ? +s.segs[i].l : L)}</text>`;
     });
+    if (wk.gap > 0.1 && wk.edges.length) {
+      const a0 = wk.edges[wk.edges.length - 1][1],
+        b0 = wk.edges[0][0],
+        r = +px(5);
+      h += `<path d="M${a0[0]} ${-a0[1]}L${b0[0]} ${-b0[1]}" stroke="#d0342c" stroke-width="${px(2.5)}" stroke-dasharray="${px(5)} ${px(4)}" fill="none"/>`;
+      h += `<circle cx="${a0[0]}" cy="${-a0[1]}" r="${r}" fill="#d0342c"/><circle cx="${b0[0]}" cy="${-b0[1]}" r="${r}" fill="none" stroke="#d0342c" stroke-width="${px(2)}"/>`;
+      const lx = (a0[0] + b0[0]) / 2,
+        ly = Math.min(a0[1], b0[1], bb.y0) - +px(30 * fs0);
+      h += `<text x="${lx.toFixed(3)}" y="${(-ly).toFixed(3)}" font-size="${px(13 * fs0)}" text-anchor="middle" dominant-baseline="central" fill="#d0342c" font-weight="800" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(4)}" data-dim="${P.surfaces.indexOf(s)}:gap" style="cursor:pointer">⚠ ${t("walkGapS")} ${fmt(wk.gap)} · ${t("walkFix")}</text>`;
+    }
   }
   if (o.title)
     h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-bb.y1 - +px(10 * fs0)}" font-size="${Math.min(+px(13 * fs0), (bb.x1 - bb.x0) / ((s.name.length + 2) * 0.62)).toFixed(3)}" text-anchor="middle" fill="${PAL.ink}" font-weight="700" font-family="${FONT}">${esc(s.name)}${isLinked(s) ? " 🔗" : ""}</text>`;

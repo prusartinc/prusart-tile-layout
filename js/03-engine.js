@@ -797,6 +797,8 @@ function compute(s) {
               " × " +
               fmtIn(p.ch);
         if (p.hl) k += " + " + [...new Set(p.hl)].map((x) => t(x)).join(", ");
+        const nt = notchTxt(p, " × ");
+        if (nt) k += " · " + t("notchW") + " " + nt;
         const e = gl[k] || (gl[k] = { k, n: 0, c: p.c, cw: p.cw, ch: p.ch });
         e.n++;
         if (RANK[p.c] > RANK[e.c]) e.c = p.c;
@@ -915,6 +917,38 @@ function numberPieces(R) {
     }
   });
 }
+/* L / U cut: size of each corner notch to cut out of the piece (axis-aligned pieces only) */
+function notchDims(p) {
+  if (!p || !p.notch || !p.ax || p.hl || p.k !== "r" || !p.C || p.C.length < 5) return [];
+  const C = p.C,
+    e = 1e-3,
+    on = (v, a) => Math.abs(v - a) < e,
+    x0 = Math.min(...C.map((q) => q[0])),
+    x1 = Math.max(...C.map((q) => q[0])),
+    y0 = Math.min(...C.map((q) => q[1])),
+    y1 = Math.max(...C.map((q) => q[1])),
+    g = +P.edgeGap || 0;
+  const miss = [
+    [x0, y0],
+    [x1, y0],
+    [x1, y1],
+    [x0, y1],
+  ].filter((c) => !C.some((q) => on(q[0], c[0]) && on(q[1], c[1])));
+  if (!miss.length) return [];
+  const inner = C.filter((q) => !on(q[0], x0) && !on(q[0], x1) && !on(q[1], y0) && !on(q[1], y1));
+  return inner
+    .map((r) => {
+      const c = miss.reduce((m, k) => (Math.hypot(k[0] - r[0], k[1] - r[1]) < Math.hypot(m[0] - r[0], m[1] - r[1]) ? k : m));
+      const w = Math.abs(r[0] - c[0]),
+        h = Math.abs(r[1] - c[1]);
+      return w > 0.05 && h > 0.05 ? [w + g, h + g] : null;
+    })
+    .filter(Boolean);
+}
+const notchTxt = (p, sep) =>
+  notchDims(p)
+    .map((d) => fmtIn(d[0]) + sep + fmtIn(d[1]))
+    .join(" + ");
 function pieceSize(p) {
   const w = p.taperW ? p.taperW.map(fmtIn).join("→") : fmtIn(p.cw),
     h = p.taper ? p.taper.map(fmtIn).join("→") : fmtIn(p.ch);

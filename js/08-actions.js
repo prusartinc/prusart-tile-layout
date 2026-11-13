@@ -199,8 +199,25 @@ function act(a, arg, b) {
       changed();
       break;
     }
+    case "walkFixOpen":
+      walkFixModal(+arg);
+      break;
+    case "walkFix": {
+      const [si, i, nl] = arg.split(":");
+      const ss = P.surfaces[+si];
+      if (!ss || !ss.segs[+i]) break;
+      ss.segs[+i].l = +nl;
+      renderPanel();
+      changed();
+      walkFixModal(+si);
+      break;
+    }
     case "closeWalk":
       if (closeWalk(s)) {
+        if (b && b.closest && b.closest("#mbody")) {
+          closeModal();
+          toast("✓ " + t("walkFixOk"));
+        }
         renderPanel();
         changed();
       } else {

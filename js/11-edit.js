@@ -5,6 +5,7 @@ function editDim(key) {
   const si = +a,
     s = P.surfaces[si];
   if (!s) return;
+  if (b === "gap") return walkFixModal(si);
   let path, label;
   if (b === "seg") {
     path = `surfaces.${si}.segs.${c}.l`;
@@ -361,6 +362,48 @@ function straighten(raw, target) {
     g.a = Math.round(g.a);
   });
   return segs;
+}
+/* which measured side is wrong? offer to fix one horizontal and one vertical side */
+function walkMiss(s) {
+  let x = 0,
+    y = 0,
+    h = 0;
+  const H = [];
+  (s.segs || []).forEach((g) => {
+    H.push(h);
+    x += (+g.l || 0) * Math.cos(h);
+    y += (+g.l || 0) * Math.sin(h);
+    h += ((+g.a || 0) * Math.PI) / 180;
+  });
+  return { x, y, H };
+}
+function walkFixModal(si) {
+  const s = P.surfaces[si];
+  if (!s || s.shape !== "walk") return;
+  const { x, y, H } = walkMiss(s);
+  if (Math.hypot(x, y) <= 0.1) {
+    closeModal();
+    toast("✓ " + t("walkFixOk"));
+    return;
+  }
+  const opts = (ax, d) =>
+    s.segs
+      .map((g, i) => {
+        const c = ax ? Math.sin(H[i]) : Math.cos(H[i]);
+        if (Math.abs(c) < 0.999) return "";
+        const nl = Math.round((+g.l - d * Math.sign(c)) * 16) / 16;
+        if (nl < 0.5) return "";
+        return `<button class="btn" data-act="walkFix:${si}:${i}:${nl}">${t("wallN")} ${i + 1}: ${fmt(+g.l)} → <b>${fmt(nl)}</b></button>`;
+      })
+      .join("");
+  let h = `<h3>⚠ ${t("walkFixT")}</h3><p class="hint">${t("walkFixQ")}</p>`;
+  const ox = Math.abs(x) > 0.05 ? opts(0, x) : "",
+    oy = Math.abs(y) > 0.05 ? opts(1, y) : "";
+  if (Math.abs(x) > 0.05) h += `<h4>${t("walkFixX")} ${fmt(Math.abs(x))}</h4><div class="btns">${ox || "—"}</div>`;
+  if (Math.abs(y) > 0.05) h += `<h4>${t("walkFixY")} ${fmt(Math.abs(y))}</h4><div class="btns">${oy || "—"}</div>`;
+  if ((Math.abs(x) > 0.05 && !ox) || (Math.abs(y) > 0.05 && !oy)) h += `<p class="note">${t("walkFixA")}</p>`;
+  h += `<div class="btns"><button class="btn" data-act="closeWalk">${t("closeWalk")}</button><button class="btn p" data-act="closeModal">${t("manual")}</button></div>`;
+  modal(h);
 }
 function closeWalk(s) {
   const g = s.segs,
