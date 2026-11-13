@@ -45,4 +45,5 @@
     renderAll();
   }
   saveSoon();
+  showHome(true); // start on the dashboard
 })();

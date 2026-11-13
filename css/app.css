@@ -1099,3 +1099,315 @@ body.full::before {
 body.full #stage {
   background: var(--bg);
 }
+
+/* ===== home / dashboard ===== */
+body.homeon > header,
+body.homeon > #app {
+  display: none !important;
+}
+#home {
+  display: none;
+}
+body.homeon #home {
+  display: block;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  padding-bottom: calc(30px + env(safe-area-inset-bottom));
+}
+.hhead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #000;
+  color: #fff;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+}
+.hbrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hbrand svg {
+  width: 34px;
+  height: 34px;
+}
+.hbrand b {
+  display: block;
+  font-size: 17px;
+}
+.hbrand small {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a8a390;
+}
+.hhb {
+  display: flex;
+  gap: 6px;
+}
+.hhb button,
+.hback {
+  background: #1d1d1d;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 10px;
+  min-width: 40px;
+  height: 38px;
+  font-size: 15px;
+}
+.hwrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 14px;
+}
+.hcont,
+.hnew {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.hcont {
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  flex-wrap: wrap;
+}
+.hcont span {
+  font-size: 12px;
+  color: var(--mut);
+  width: 100%;
+}
+.hcont b {
+  font-size: 17px;
+}
+.hcont small {
+  color: var(--mut);
+}
+.hcont i {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 20px;
+}
+.hnew {
+  background: #a8a390;
+  color: #000;
+  border: 0;
+}
+.hnew > span {
+  font-size: 34px;
+  line-height: 1;
+  font-weight: 300;
+}
+.hnew b {
+  display: block;
+  font-size: 18px;
+}
+.hnew small {
+  display: block;
+  font-size: 13px;
+  opacity: 0.8;
+}
+.hsearch input {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 16px;
+}
+.hsec {
+  margin: 18px 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+.hgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.hcard {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  overflow: hidden;
+}
+.hcard.on {
+  border-color: var(--ink);
+}
+.hopen {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  padding: 12px 44px 12px 12px;
+  cursor: pointer;
+}
+.hth {
+  flex: 0 0 96px;
+  height: 70px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  background: #f3efe6;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.hth svg {
+  max-width: 44px;
+  max-height: 32px;
+}
+.hth.empty {
+  color: #8d877d;
+  font-size: 24px;
+}
+.hinfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.hinfo b {
+  font-size: 15.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hinfo small,
+.hinfo span {
+  color: var(--mut);
+  font-size: 12.5px;
+}
+.hmore {
+  position: absolute;
+  right: 6px;
+  top: 8px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 20px;
+}
+.htools {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.htools button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 20px;
+}
+.htools span {
+  font-size: 11.5px;
+  text-align: center;
+}
+/* interview */
+.hsteps {
+  display: flex;
+  gap: 6px;
+}
+.hsteps i {
+  width: 26px;
+  height: 4px;
+  border-radius: 2px;
+  background: #444;
+}
+.hsteps i.on {
+  background: #a8a390;
+}
+.hwrap.nh h2 {
+  font-size: 22px;
+  margin: 6px 0 10px;
+}
+.jobs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.job {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--ink);
+}
+.job span {
+  font-size: 26px;
+}
+.job b {
+  font-size: 15px;
+}
+.job small {
+  color: var(--mut);
+  font-size: 12px;
+}
+.job.on {
+  border-color: #000;
+  background: #a8a390;
+  color: #000;
+}
+.job.on small {
+  color: #222;
+}
+.hwrap.nh .nh {
+  margin: 18px 0 6px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.nhsum {
+  padding-left: 18px;
+  line-height: 1.6;
+}
+.nhbar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 0 calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--bg) 30%);
+  margin-top: 16px;
+}
+.nhbar .btn {
+  flex: 1;
+  min-height: 48px;
+  font-size: 16px;
+}
+html[data-theme="dark"] .hth {
+  background: #2a2926;
+}

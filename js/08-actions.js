@@ -18,6 +18,7 @@ function act(a, arg, b) {
   if (/^lib/.test(a)) return libAct(a, arg);
   if (/^(bk|sy)[A-Z]/.test(a)) return syncAct(a, arg);
   if (/^(bs|ms)[A-Z]/.test(a)) return kitchenAct(a, arg);
+  if (/^(home|nh)/.test(a)) return homeAct(a, arg);
   if (/^tex/.test(a) && a !== "texToggle") {
     if (a === "texPick") closeModal();
     return texAct(a);
@@ -53,12 +54,6 @@ function act(a, arg, b) {
       closeModal();
       applyPin();
       draw();
-      break;
-    case "npGo":
-      newProjGo();
-      break;
-    case "newProjBlank":
-      act("newProjOld");
       break;
     case "wizPick":
       if (S.wiz) S.wiz.src = "l:" + arg;
@@ -570,9 +565,10 @@ function act(a, arg, b) {
       document.documentElement.lang = lang;
       saveSoon();
       renderAll();
+      if (S.home) renderHome();
       break;
     case "projects":
-      projectsModal();
+      showHome(true);
       break;
     case "theme":
       THEME = arg;
@@ -587,19 +583,10 @@ function act(a, arg, b) {
       closeModal();
       break;
     case "newProj":
-      newProjModal();
-      break;
-    case "newProjOld": {
-      const p = newProject(false);
-      DB.projects.push(p);
-      P = p;
-      resetUndo();
-      S.tab = 0;
       closeModal();
-      renderAll();
-      saveSoon();
+      showHome(true);
+      homeAct("nhStart");
       break;
-    }
     case "openProj":
       P = DB.projects.find((p) => p.id === arg) || P;
       resetUndo();
@@ -620,7 +607,10 @@ function act(a, arg, b) {
       P = c;
       S.tab = 0;
       saveSoon();
-      projectsModal();
+      if (S.home) {
+        closeModal();
+        renderHome();
+      } else projectsModal();
       renderAll();
       break;
     }

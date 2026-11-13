@@ -1,11 +1,22 @@
 "use strict";
 /* ================= UI render ================= */
+// input scopes: s surface, p project, d device DB, w surface wizard, n/h new-project drafts, x app state, m mosaic draft
+const SCOPES = {
+  p: () => P,
+  d: () => DB,
+  w: () => S.wiz,
+  n: () => S.np,
+  h: () => S.nh,
+  x: () => S,
+  m: () => S.msd,
+};
+const scopeBase = (sc) => (SCOPES[sc] ? SCOPES[sc]() : cur());
 const ICON = { floor: "▦", wall: "▥", pan: "◫" };
 function renderHeader() {
   $("#hT").textContent = P.name || t("app");
   $("#hS").textContent = t("app") + (P.client ? " · " + P.client : "");
   $("#bLang").textContent = lang === "ru" ? "EN" : "RU";
-  $("#bProj").textContent = "☰";
+  $("#bProj").textContent = "⌂";
   $("#bProj").title = t("projects");
   $("#bImg").textContent = "⤓";
   $("#bImg").title = t("image");
@@ -178,20 +189,7 @@ function renderClient() {
 }
 
 const F = (label, k, ty = "len", sc = "s", cls = "") => {
-  const base =
-    sc === "p"
-      ? P
-      : sc === "d"
-        ? DB
-        : sc === "w"
-          ? S.wiz
-          : sc === "n"
-            ? S.np
-            : sc === "x"
-              ? S
-              : sc === "m"
-                ? S.msd
-                : cur();
+  const base = scopeBase(sc);
   let v;
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
@@ -200,38 +198,12 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
   return `<label class="f ${cls}"><span>${label}</span><input data-k="${k}" data-sc="${sc}" data-t="${ty}" value="${val}" autocomplete="off" ${ty === "num" ? 'inputmode="decimal"' : ""}></label>`;
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
-  const base =
-    sc === "p"
-      ? P
-      : sc === "d"
-        ? DB
-        : sc === "w"
-          ? S.wiz
-          : sc === "n"
-            ? S.np
-            : sc === "x"
-              ? S
-              : sc === "m"
-                ? S.msd
-                : cur();
+  const base = scopeBase(sc);
   const v = getPath(base, k);
   return `<label class="f ${cls}"><span>${label}</span><select data-k="${k}" data-sc="${sc}" data-t="sel" ${rb ? 'data-rb="1"' : ""}>${opts.map((o) => `<option value="${o}" ${o === v ? "selected" : ""}>${esc(lab ? lab(o) : t(o === "L" ? "Lshape" : o))}</option>`).join("")}</select></label>`;
 };
 const CHK = (label, k, rb, sc = "s") => {
-  const base =
-    sc === "p"
-      ? P
-      : sc === "d"
-        ? DB
-        : sc === "w"
-          ? S.wiz
-          : sc === "n"
-            ? S.np
-            : sc === "x"
-              ? S
-              : sc === "m"
-                ? S.msd
-                : cur();
+  const base = scopeBase(sc);
   return `<label class="c"><input type="checkbox" data-k="${k}" data-sc="${sc}" data-t="chk" ${getPath(base, k) ? "checked" : ""} ${rb ? 'data-rb="1"' : ""}>${label}</label>`;
 };
 const SEC = (id, title, body) =>
@@ -872,20 +844,7 @@ function onInp(e) {
   if (!k) return;
   const sc = el.dataset.sc || "s",
     ty = el.dataset.t,
-    base =
-      sc === "p"
-        ? P
-        : sc === "d"
-          ? DB
-          : sc === "w"
-            ? S.wiz
-            : sc === "n"
-              ? S.np
-              : sc === "x"
-                ? S
-                : sc === "m"
-                  ? S.msd
-                  : cur();
+    base = scopeBase(sc);
   let v;
   if (ty === "len" && el.dataset.opt && String(el.value).trim() === "") {
     v = null;
@@ -1073,6 +1032,10 @@ function onInp(e) {
     renderTools();
   }
   changed();
+  if (el.closest && el.closest("#home")) {
+    if (el.dataset.rb) renderHome();
+    return;
+  }
   if (inModal) {
     if (el.dataset.rb && S.reModal) S.reModal();
     else if (S.modalLive) S.modalLive();
