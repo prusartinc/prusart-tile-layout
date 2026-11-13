@@ -320,6 +320,7 @@ const OPT = {
   round: { shape: "circle", dia: 4, on: ["wall", "floor", "pan"] },
   noheat: { shape: "rect", w: 36, h: 22, on: ["floor"], nohole: true },
   warm: { shape: "rect", w: 36, h: 24, on: ["floor"], nohole: true },
+  shelf: { shape: "rect", w: 36, h: 2, on: ["wall"], nohole: true },
 };
 const TRIMMABLE = { niche: 1, window: 1, cutout: 1 };
 

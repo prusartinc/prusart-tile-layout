@@ -221,6 +221,52 @@ function materials() {
   Object.keys(pf).forEach((k) =>
     rows.push(["Schluter " + k, `${Math.ceil(pf[k] / 98.5)} × 8′2½″`, `${(pf[k] / 12).toFixed(1)} ft`]),
   );
+  // kitchen / backsplash extras
+  {
+    const bsw = P.surfaces.filter((x) => x.bs && x.bs.on);
+    if (bsw.length) {
+      let lf = 0;
+      bsw.forEach((x) => x.bs.segs.forEach((q) => q.k !== "skip" && (lf += +q.len || 0)));
+      lf += Math.max(0, bsw.length - 1) * 18;
+      rows.push([
+        t("mCaulkCounter"),
+        `${Math.ceil(lf / 12)} lf`,
+        `≈${Math.max(1, Math.ceil(lf / 12 / 50))} × 10 oz`,
+      ]);
+    }
+    let rings = 0,
+      shelves = 0,
+      ins = 0,
+      insCut = 0,
+      stoneSf = 0;
+    P.surfaces.forEach((x) => {
+      if (x.type === "wall") rings += x.openings.filter((o) => o.type === "outlet").length;
+      shelves += x.openings.filter((o) => o.type === "shelf").length;
+      const R2 = compute(x);
+      if (R2.insN) {
+        ins += R2.insN;
+        insCut += R2.insCut || 0;
+      }
+      if (x.tile.stone) stoneSf += R2.area / 144;
+    });
+    if (rings)
+      rows.push([
+        t("mRings"),
+        `${rings} ${t("pcs")}`,
+        ringHint(P.surfaces.find((x) => x.type === "wall") || P.surfaces[0]),
+      ]);
+    if (ins)
+      rows.push([
+        t("mInserts"),
+        `${Math.ceil(ins * (1 + (P.waste || 10) / 100))} ${t("pcs")}`,
+        `${insCut} ${t("mInsCut")}`,
+      ]);
+    if (shelves) rows.push([t("mBlocking"), `${shelves} ${t("pcs")}`, t("mBlockingNote")]);
+    if (stoneSf > 0) {
+      rows.push([t("mSealer"), `${Math.max(1, Math.ceil(stoneSf / 80))} qt`, t("mSealerNote")]);
+      rows.push([t("mWhite"), "✓", ""]);
+    }
+  }
   Object.keys(nItems).forEach((k) => {
     const [name, note] = k.split("|");
     rows.push([name, `${nItems[k]} ${t("pcs")}`, note]);

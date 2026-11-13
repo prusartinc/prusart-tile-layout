@@ -580,6 +580,10 @@ function geom(s) {
   const holes = [],
     niches = [];
   for (const o of s.openings) {
+    if (o.type === "shelf") {
+      shelfBolts(o).forEach((b) => holes.push({ poly: circlePoly(b.x, b.y, b.dia / 2), type: "bolt", o: b }));
+      continue;
+    }
     if ((OPT[o.type] || {}).nohole) continue;
     let poly;
     if (o.shape === "circle") poly = circlePoly(o.x, o.y, Math.max(0.05, (+o.dia || 1) / 2));
@@ -979,7 +983,7 @@ function ledgerOf(s, R) {
 function drillList(s, R) {
   const out = [];
   if (R.T.shape !== "rect" || (R.T.sheet && R.T.sheet.on)) return out;
-  for (const o of s.openings) {
+  for (const o of s.openings.flatMap((q) => (q.type === "shelf" ? shelfBolts(q) : [q]))) {
     if (!(o.shape === "circle" || o.type === "outlet" || o.type === "duct")) continue;
     const c = o.shape === "circle" ? [o.x, o.y] : [o.x + o.w / 2, o.y + o.h / 2],
       cl = R.toL(c);
@@ -990,7 +994,9 @@ function drillList(s, R) {
       out.push({ o, joint: true });
       continue;
     }
-    const h = R.holes.find((h) => h.o === o);
+    const h = R.holes.find(
+      (h) => h.o === o || (o.parent && h.o && h.o.parent === o.parent && h.o.x === o.x && h.o.y === o.y),
+    );
     const hb = h ? h.bb : { x0: cl[0], x1: cl[0], y0: cl[1], y1: cl[1] };
     const cross =
       hb.x0 < p.x0 - EPS || hb.x1 > p.x0 + p.lw + EPS || hb.y0 < p.y0 - EPS || hb.y1 > p.y0 + p.lh + EPS;

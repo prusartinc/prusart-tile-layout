@@ -17,6 +17,7 @@ function act(a, arg, b) {
     closeModal();
   if (/^lib/.test(a)) return libAct(a, arg);
   if (/^(bk|sy)[A-Z]/.test(a)) return syncAct(a, arg);
+  if (/^(bs|ms)[A-Z]/.test(a)) return kitchenAct(a, arg);
   if (/^tex/.test(a) && a !== "texToggle") {
     if (a === "texPick") closeModal();
     return texAct(a);

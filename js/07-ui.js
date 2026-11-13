@@ -179,7 +179,19 @@ function renderClient() {
 
 const F = (label, k, ty = "len", sc = "s", cls = "") => {
   const base =
-    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
+    sc === "p"
+      ? P
+      : sc === "d"
+        ? DB
+        : sc === "w"
+          ? S.wiz
+          : sc === "n"
+            ? S.np
+            : sc === "x"
+              ? S
+              : sc === "m"
+                ? S.msd
+                : cur();
   let v;
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
@@ -189,13 +201,37 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
   const base =
-    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
+    sc === "p"
+      ? P
+      : sc === "d"
+        ? DB
+        : sc === "w"
+          ? S.wiz
+          : sc === "n"
+            ? S.np
+            : sc === "x"
+              ? S
+              : sc === "m"
+                ? S.msd
+                : cur();
   const v = getPath(base, k);
   return `<label class="f ${cls}"><span>${label}</span><select data-k="${k}" data-sc="${sc}" data-t="sel" ${rb ? 'data-rb="1"' : ""}>${opts.map((o) => `<option value="${o}" ${o === v ? "selected" : ""}>${esc(lab ? lab(o) : t(o === "L" ? "Lshape" : o))}</option>`).join("")}</select></label>`;
 };
 const CHK = (label, k, rb, sc = "s") => {
   const base =
-    sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
+    sc === "p"
+      ? P
+      : sc === "d"
+        ? DB
+        : sc === "w"
+          ? S.wiz
+          : sc === "n"
+            ? S.np
+            : sc === "x"
+              ? S
+              : sc === "m"
+                ? S.msd
+                : cur();
   return `<label class="c"><input type="checkbox" data-k="${k}" data-sc="${sc}" data-t="chk" ${getPath(base, k) ? "checked" : ""} ${rb ? 'data-rb="1"' : ""}>${label}</label>`;
 };
 const SEC = (id, title, body) =>
@@ -283,7 +319,7 @@ function tileSection(s) {
   b += CHK(t("sheetOn"), "tile.sheet.on", 1);
   if (T.sheet.on)
     b += `<div class="grid">${F(t("sheetW"), "tile.sheet.w")}${F(t("sheetH"), "tile.sheet.h")}</div>`;
-  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div><div class="grid">${F(t("libPrice"), "tile.price", "num")}</div>${texBlock(T)}<div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
+  b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div>${CHK(t("stoneOn"), "tile.stone")}<div class="btns">${T.msheet ? `<span class="hint">🧩 ${t("msOnHint")} ${fmtIn(+T.w)}×${fmtIn(+T.h)}</span><button class="btn sm" data-act="msOff">✕</button>` : `<button class="btn sm" data-act="msOpen">🧩 ${t("msT")}</button>`}</div>${insBlock(T)}<div class="grid">${F(t("libPrice"), "tile.price", "num")}</div>${texBlock(T)}<div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
   return SEC("tile", `${t("tile")} · ${T.name ? esc(T.name) + " · " : ""}${esc(tileDesc(T))}`, b);
 }
 
@@ -300,6 +336,11 @@ function openingCard(o, i) {
       F(t("width"), `openings.${i}.w`) +
       F(t("height"), `openings.${i}.h`);
   if (o.type === "niche") b += F(t("depth"), `openings.${i}.d`);
+  if (o.type === "shelf")
+    b +=
+      F(t("shBrk"), `openings.${i}.brk`, "num") +
+      F(t("shPer"), `openings.${i}.bper`, "num") +
+      F(t("shDia"), `openings.${i}.bdia`);
   if (o.type === "toilet" && cur().type !== "wall")
     b +=
       SEL(t("tFace"), `openings.${i}.face`, ["auto", "u", "d", "l", "r"], 1, "s", "w2", (k) => t("tf_" + k)) +
@@ -307,6 +348,8 @@ function openingCard(o, i) {
       optLen(t("tWidth"), `openings.${i}.tw`, 20);
   b += "</div>";
   if (TRIMMABLE[o.type] && o.type !== "niche") b += CHK(t("trimmed"), `openings.${i}.trim`);
+  if (o.type === "shelf") b += `<p class="hint">${t("shHint")}</p>`;
+  if (o.type === "outlet" && cur().type === "wall") b += `<p class="hint">${ringHint(cur())}</p>`;
   if (o.type === "niche") {
     const c = nicheCfg(o, cur());
     b += `<p class="hint">${[t("nk_" + c.kind), t("nf_" + c.form), c.form === "shelf" ? t("ns_" + c.shelf) : "", t("ne_" + c.edge), c.back.mode === "own" ? t("nBackT") + ": " + fmtIn(+c.back.w) + "×" + fmtIn(+c.back.h) : ""].filter(Boolean).join(" · ")}</p>`;
@@ -598,7 +641,10 @@ function renderPanel() {
   }
   sb += CHK(t("wet"), "wet");
   sb += `<div class="btns"><button class="btn d" data-act="delSurfQ">${t("delSurf")}</button></div>`;
+  if (s.type === "wall" && !(s.bs && s.bs.on))
+    sb += `<div class="btns"><button class="btn" data-act="bsOn">🍳 ${t("bsMake")}</button></div>`;
   h += SEC("surf", t("surface"), sb);
+  if (s.type === "wall" && s.bs && s.bs.on) h += bsSection(s);
   if (S.layer === "prep") {
     h = prepSection(s) + h;
     h += SEC(
@@ -826,7 +872,20 @@ function onInp(e) {
   if (!k) return;
   const sc = el.dataset.sc || "s",
     ty = el.dataset.t,
-    base = sc === "p" ? P : sc === "d" ? DB : sc === "w" ? S.wiz : sc === "n" ? S.np : sc === "x" ? S : cur();
+    base =
+      sc === "p"
+        ? P
+        : sc === "d"
+          ? DB
+          : sc === "w"
+            ? S.wiz
+            : sc === "n"
+              ? S.np
+              : sc === "x"
+                ? S
+                : sc === "m"
+                  ? S.msd
+                  : cur();
   let v;
   if (ty === "len" && el.dataset.opt && String(el.value).trim() === "") {
     v = null;
@@ -1002,6 +1061,10 @@ function onInp(e) {
       nicheCfg(o2, s2);
       nichePrefab(o2);
     }
+  }
+  if (/^bs\./.test(k) && cur() && cur().bs) {
+    bsApply(cur());
+    if (/^bs\.(center|cmode|bottomFull)/.test(k)) bsAlign(cur());
   }
   const inModal = el.closest && el.closest("#mbody");
   if (inModal) S.panelStale = true;

@@ -35,6 +35,7 @@ they load in this order:
 | `js/17-ux.js` | Tools menu, surfaces list, tap-a-tile info, expandable stats, section chips, pinned drawing on phones, on-site mode, new-project presets |
 | `js/18-texture.js` | Tile photo texture (camera / file / paste / link), cropped to the tile |
 | `js/19-sync.js` | Daily local backups + backup file, sync between devices through a private GitHub Gist |
+| `js/20-kitchen.js` | Kitchen backsplash by cabinets (segments, slope, gap, centering), floating shelves with bolt holes, mosaic inserts, mosaic from a sheet photo, outlet extender rings |
 | `js/14-init.js` | Startup (loads last) |
 | `sw.js` | Offline cache (bump `CACHE` on each deploy) |
 | `tools/bundle.py` | Makes one self-contained HTML file (for sharing as a single file) |

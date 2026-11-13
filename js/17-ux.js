@@ -152,6 +152,7 @@ const ROOMS = {
   ],
   floor: [],
   splash: [["wall", null, 120, 18]],
+  kitchen: [],
   empty: [["wall", null, 60, 96]],
 };
 function newProjModal() {
@@ -173,8 +174,30 @@ function newProjModal() {
   h += SEL(t("npRoom"), "room", Object.keys(ROOMS), 1, "n", "w2", (v) => t("room_" + v));
   if (N.room !== "floor" && N.room !== "empty")
     h += SEL(t("npWallTile"), "wallSrc", srcOpts, 0, "n", "w2", srcLab);
+  if (N.room === "kitchen") {
+    Object.assign(
+      N,
+      Object.assign({ kl: "I", ka: 120, kb: 96, kc: 96, kcab: 18, khood: 30, kwin: "none" }, N),
+    );
+    h +=
+      SEL(t("kLayout"), "kl", ["I", "L", "U"], 1, "n", "w2", (v) => t("kl_" + v)) +
+      F(t("kA"), "ka", "len", "n") +
+      (N.kl !== "I" ? F(t("kB"), "kb", "len", "n") : "") +
+      (N.kl === "U" ? F(t("kC"), "kc", "len", "n") : "") +
+      F(t("kCab"), "kcab", "len", "n") +
+      F(t("kHood"), "khood", "len", "n") +
+      SEL(
+        t("kWin"),
+        "kwin",
+        ["none", "A"].concat(N.kl !== "I" ? ["B"] : [], N.kl === "U" ? ["C"] : []),
+        0,
+        "n",
+        "w2",
+        (v) => (v === "none" ? t("kw_none") : t("k" + v)),
+      );
+  }
   h += `</div>`;
-  h += CHK(t("npFloor"), "floor", 1, "n");
+  if (N.room !== "kitchen") h += CHK(t("npFloor"), "floor", 1, "n");
   if (N.floor || N.room === "floor")
     h += `<div class="grid">${F(t("width"), "fw", "len", "n")}${F(t("length"), "fh", "len", "n")}${SEL(t("npFloorTile"), "floorSrc", srcOpts, 0, "n", "w2", srcLab)}</div>`;
   h += `<p class="hint">${t("npHint")}</p><div class="btns"><button class="btn p" data-act="npGo">${t("npCreate")}</button><button class="btn" data-act="newProjBlank">${t("npBlank")}</button><button class="btn" data-act="closeModal">${t("cancel")}</button></div>`;
@@ -206,7 +229,54 @@ function newProjGo() {
     if (type === "wall") pick(N.wallSrc, s.tile);
     P.surfaces.push(s);
   });
-  if (N.floor || N.room === "floor" || !P.surfaces.length) {
+  if (N.room === "kitchen") {
+    const runs = [["A", +N.ka || 120]];
+    if (N.kl !== "I") runs.push(["B", +N.kb || 96]);
+    if (N.kl === "U") runs.push(["C", +N.kc || 96]);
+    const ch = +N.kcab || 18,
+      hood = +N.khood || 30;
+    runs.forEach(([nm, L]) => {
+      const s = newSurface("wall");
+      s.name = t("k" + nm).replace(/\s*\(.*\)/, "");
+      s.nk = null;
+      s.nn = 0;
+      s.h = ch;
+      pick(N.wallSrc, s.tile);
+      const segs = [];
+      if (nm === "A" && L >= 54) {
+        const a = Math.round(((L - 30) / 2) * 8) / 8;
+        segs.push(
+          { k: "cab", len: a, h: ch },
+          { k: "hood", len: 30, h: hood },
+          { k: "cab", len: L - 30 - a, h: ch },
+        );
+      } else if (N.kwin === nm && L >= 48) {
+        const a = Math.round(((L - 36) / 2) * 8) / 8;
+        segs.push(
+          { k: "cab", len: a, h: ch },
+          { k: "window", len: 36, h: ch },
+          { k: "cab", len: L - 36 - a, h: ch },
+        );
+      } else segs.push({ k: "cab", len: L, h: ch });
+      s.bs = Object.assign(bsDefault(L), { segs: segs.map((q) => Object.assign({ sl: false, hR: q.h }, q)) });
+      bsApply(s);
+      if (N.kwin === nm) {
+        const a = segs[0].len;
+        s.openings.push({
+          id: uid(),
+          type: "window",
+          shape: "rect",
+          x: a,
+          y: 6,
+          w: 36,
+          h: ch + 12,
+          trim: false,
+        });
+      }
+      P.surfaces.push(s);
+    });
+  }
+  if ((N.floor && N.room !== "kitchen") || N.room === "floor" || !P.surfaces.length) {
     const f = newSurface("floor", "bathFloor");
     f.w = +N.fw || 96;
     f.h = +N.fh || 72;

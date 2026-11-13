@@ -57,7 +57,8 @@ let TEXON = false,
 function tileSVG(p, T, px) {
   const alt = (T.checker && p.q) || (patOf(T) === "pinwheel" && p.q);
   let fill = (alt ? COL2 : COL)[p.c || "full"];
-  if (TXID && T === TXT) {
+  if (p.ins && T.ins && T.ins.on) fill = T.ins.col || "#c8a24a";
+  else if (TXID && T === TXT) {
     const land = (T.texAR || 1) >= 1;
     fill = `url(#${TXID}${p.lw >= p.lh === land ? "" : "r"})`;
   }
@@ -345,7 +346,7 @@ function surfBody(s, R, o) {
     (n) => (h += `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}" fill="#8d877d"/>`),
   );
   const rt = R.a ? ` transform="rotate(${((-R.a * 180) / Math.PI).toFixed(4)} ${R.O[0]} ${-R.O[1]})"` : "";
-  if (TEXON && T.tex) {
+  if ((TEXON || T.msheet) && T.tex) {
     TXID = "tx" + id;
     TXT = T;
     const im = (r) =>
@@ -445,6 +446,19 @@ function surfBody(s, R, o) {
       );
       continue;
     }
+    if (op.type === "shelf") {
+      h += `<rect x="${op.x}" y="${-(op.y + op.h)}" width="${op.w}" height="${op.h}" rx="${px(1.5)}" fill="#b08a5a" fill-opacity=".9" stroke="#5a4129" stroke-width="${px(1.1)}"/>`;
+      shelfBolts(op).forEach(
+        (b) =>
+          (h += `<circle cx="${b.x}" cy="${-b.y}" r="${Math.max(b.dia / 2, +px(2.2))}" fill="#fff" stroke="#5a4129" stroke-width="${px(0.9)}"/>`),
+      );
+      h += lbl(
+        { x0: op.x, x1: op.x + op.w, y0: op.y, y1: op.y + op.h },
+        `${t("shelf")} ${fmtIn(op.w)}″`,
+        Math.max(op.w * 1.4, +px(110)),
+      );
+      continue;
+    }
     const e = op.trim && TRIMMABLE[op.type] ? sw : 0;
     if (op.type === "window" || op.type === "cutout")
       h += `<rect x="${op.x}" y="${-(op.y + op.h)}" width="${op.w}" height="${op.h}" fill="url(#ht${id})"/>`;
@@ -516,6 +530,7 @@ function surfBody(s, R, o) {
     h += `<line x1="${x0 - +px(6)}" x2="${x1 + +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1 + +px(8)}" y="${y}" font-size="${px(10 * o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;
   }
   h += `<path class="lbE" d="${pd(G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
+  if (s.bs && s.bs.on && !o.title) h += bsLabels(s, px);
   // cut labels
   const sheet = T.sheet && T.sheet.on;
   if (
@@ -581,18 +596,19 @@ function surfBody(s, R, o) {
     tk = +px(5),
     bb = G.bb,
     m = o.m;
-  if (s.shape !== "walk") {
+  const bsOn = !!(s.bs && s.bs.on);
+  if (s.shape !== "walk" || bsOn) {
     const yb = Math.min(bb.y0, curbOn ? -s.curb.w : bb.y0) - m * 0.42;
     h += `<path d="M${bb.x0} ${-yb}H${bb.x1}M${bb.x0} ${-yb - tk}v${2 * tk}M${bb.x1} ${-yb - tk}v${2 * tk}" stroke="${dimC}" stroke-width="${px(1)}"/>`;
-    h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-yb + +px(5)}" dominant-baseline="hanging" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" ${dimKey(s, "w")}>${fmt(bb.x1 - bb.x0)}</text>`;
-    if (o.dimV) {
+    h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-yb + +px(5)}" dominant-baseline="hanging" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" ${bsOn ? "" : dimKey(s, "w")}>${fmt(bb.x1 - bb.x0)}</text>`;
+    if (o.dimV && !bsOn) {
       const xl = bb.x0 - m * 0.42,
         ym = -(bb.y0 + bb.y1) / 2;
       h += `<path d="M${xl} ${-bb.y0}V${-bb.y1}M${xl - tk} ${-bb.y0}h${2 * tk}M${xl - tk} ${-bb.y1}h${2 * tk}" stroke="${dimC}" stroke-width="${px(1)}"/>`;
       h += `<text class="lbD" x="${xl - +px(5)}" y="${ym}" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" transform="rotate(-90 ${xl - +px(5)} ${ym})" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" ${dimKey(s, "h")}>${fmt(bb.y1 - bb.y0)}</text>`;
     }
   }
-  if (s.shape === "walk") {
+  if (s.shape === "walk" && !bsOn) {
     const wk = walkPoly(s);
     wk.edges.forEach((e2, i) => {
       const mx = (e2[0][0] + e2[1][0]) / 2,
