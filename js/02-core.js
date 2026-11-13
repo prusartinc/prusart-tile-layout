@@ -306,8 +306,10 @@ function cornerAngles(pts) {
 }
 /* how far the tile runs past the wall line into a doorway */
 function transExt(tr) {
-  const wt = +tr.wt || 4.5;
-  return { mid: wt / 2, full: wt, cust: Math.max(0, +tr.ext || 0) }[tr.stop] || 0;
+  const wt = +tr.wt || 4.5,
+    dt = Math.min(wt, +tr.dt || 1.375);
+  // the joint hides under the middle of the closed door slab
+  return { mid: wt / 2, pocket: wt / 2, in: dt / 2, out: wt - dt / 2, full: wt, cust: Math.max(0, +tr.ext || 0) }[tr.stop] || 0;
 }
 /* the floor outline with tile tongues into doorways */
 function transTabs(s, outer) {

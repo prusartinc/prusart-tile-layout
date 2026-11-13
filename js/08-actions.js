@@ -130,6 +130,7 @@ function act(a, arg, b) {
         prof: "auto",
         stop: "wall",
         wt: 4.5,
+        dt: 1.375,
         ext: 0,
       });
       S.open.add("trans");

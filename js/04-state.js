@@ -284,6 +284,12 @@ function migrate(p) {
       s.stack = { under: s.type === "floor" ? "ditra" : "none", under2: "none", ub: null, tb: null };
     if (!s.prof) s.prof = { type: "inherit", size: "auto", vis: null };
     if (!s.trans) s.trans = [];
+    s.trans.forEach((tr) => {
+      if (!tr) return;
+      if (tr.stop === "mid") tr.stop = "pocket";
+      if (tr.wt == null) tr.wt = 4.5;
+      if (tr.dt == null) tr.dt = 1.375;
+    });
     if (!s.heat)
       s.heat = {
         on: false,

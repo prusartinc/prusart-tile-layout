@@ -466,7 +466,7 @@ function transSection(s) {
       return `<div class="op"><div class="grid"><label class="f w2"><span>${t("edgeOf")}</span><select data-k="trans.${i}.edge" data-sc="s" data-t="selnum" data-rb="1">${eo}</select></label>${F(t("fromStart"), `trans.${i}.from`)}${F(t("doorW"), `trans.${i}.len`)}
   ${SEL(t("adjFloor"), `trans.${i}.adj`, Object.keys(ADJ), 1, "s", "", (o) => t("adj_" + o))}${F(t("adjT"), `trans.${i}.at`)}${F(t("adjSub"), `trans.${i}.sub`, "slen")}
   ${SEL(t("transProf"), `trans.${i}.prof`, ["auto", "RENO-T", "RENO-TK", "RENO-U", "RENO-V", "RENO-RAMP"], 1, "s", "", (o) => (o === "auto" ? t("autoV") : o))}
-  ${SEL(t("trStop"), `trans.${i}.stop`, ["wall", "mid", "full", "cust"], 1, "s", "w2", (o) => t("stop_" + o))}${tr.stop === "mid" || tr.stop === "full" ? F(t("trWt"), `trans.${i}.wt`) : ""}${tr.stop === "cust" ? F(t("trExt"), `trans.${i}.ext`) : ""}</div>
+  ${SEL(t("trStop"), `trans.${i}.stop`, ["wall", "pocket", "in", "out", "full", "cust"], 1, "s", "w2", (o) => t("stop_" + o))}${["mid", "pocket", "in", "out", "full"].includes(tr.stop) ? F(t("trWt"), `trans.${i}.wt`) : ""}${tr.stop === "in" || tr.stop === "out" ? F(t("trDt"), `trans.${i}.dt`) : ""}${tr.stop === "cust" ? F(t("trExt"), `trans.${i}.ext`) : ""}</div>${transExt(tr) > 0.01 ? `<p class="hint">${t("trExtIs")} <b>${fmt(transExt(tr))}</b></p>` : ""}
   <div class="note"><b>${c.diff >= 0 ? "+" : "−"}${fmt(Math.abs(c.diff))}</b> · ${esc(c.key)}</div><div class="btns"><button class="btn sm" data-act="transStart:${i}">⊞ ${t("trStart")}</button><button class="btn sm p" data-act="section:${si}:${i}">${t("section")}</button><button class="btn sm d" data-act="delTrans:${i}">${t("del")}</button></div></div>`;
     })
     .join("");
