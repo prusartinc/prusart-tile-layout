@@ -82,6 +82,10 @@ const PLT = {
     k_register: "Решётка (пол)",
     plFloorName: "Пол (из плана)",
     plPanName: "Поддон душа",
+    plTz: "Плитка на стене только по размеру элемента",
+    plTzh: "Плитка до высоты",
+    plTzo: "Запас по бокам",
+    plTzs: "И на боковых стенах (торцы)",
   },
   en: {
     plT: "Room plan",
@@ -157,6 +161,10 @@ const PLT = {
     k_register: "Floor register",
     plFloorName: "Floor (from plan)",
     plPanName: "Shower pan",
+    plTz: "Tile on the wall only over this item",
+    plTzh: "Tile up to",
+    plTzo: "Extra on each side",
+    plTzs: "Also on the side walls (ends)",
   },
 };
 const pt = (k) => (PLT[lang] || PLT.en)[k] || t(k);
@@ -166,13 +174,13 @@ const PL_KINDS = {
   door: { ic: "🚪", w: 30, h: 80, dp: 0, z: 0, inwall: 1 },
   window: { ic: "🪟", w: 36, h: 36, dp: 0, z: 42, inwall: 1 },
   toilet: { ic: "🚽", w: 20, dp: 28, h: 30, z: 0, ri: 12 },
-  vanity: { ic: "🚰", w: 36, dp: 21, h: 34, z: 0 },
-  tub: { ic: "🛁", w: 60, dp: 30, h: 20, z: 0 },
-  shower: { ic: "🚿", w: 48, dp: 36, h: 0, z: 0 },
-  cab: { ic: "🗄", w: 36, dp: 24, h: 34.5, z: 0 },
+  vanity: { ic: "🚰", w: 36, dp: 21, h: 34, z: 0, tz: 0, tzh: 40 },
+  tub: { ic: "🛁", w: 60, dp: 30, h: 20, z: 0, tz: 1, tzh: 84, side: 1 },
+  shower: { ic: "🚿", w: 48, dp: 36, h: 0, z: 0, tz: 1, tzh: 84, side: 1 },
+  cab: { ic: "🗄", w: 36, dp: 24, h: 34.5, z: 0, tz: 1, tzh: 54 },
   ucab: { ic: "▭", w: 30, dp: 12, h: 30, z: 54 },
   fridge: { ic: "🧊", w: 36, dp: 30, h: 70, z: 0 },
-  range: { ic: "🔥", w: 30, dp: 25, h: 36, z: 0 },
+  range: { ic: "🔥", w: 30, dp: 25, h: 36, z: 0, tz: 1, tzh: 54 },
   mirror: { ic: "🪞", w: 30, dp: 1, h: 36, z: 40 },
   niche: { ic: "▢", w: 12, dp: 3.5, h: 24, z: 42, inwall: 1 },
   shelf: { ic: "▬", w: 36, dp: 10, h: 1.5, z: 54 },
@@ -201,6 +209,10 @@ function planEnsure() {
   while (pl.walls.length < pl.room.segs.length) pl.walls.push({ th: 4.5, tile: false, tileH: null });
   pl.walls.length = pl.room.segs.length;
   pl.items = pl.items.filter((it) => PL_KINDS[it.k] && (PL_KINDS[it.k].floor || it.wall < pl.room.segs.length));
+  pl.items.forEach((it) => {
+    const K = PL_KINDS[it.k];
+    if (K.tzh != null && it.tz == null) Object.assign(it, { tz: !!K.tz, tzh: K.tzh, tzo: 0, tzs: !!K.side });
+  });
   return pl;
 }
 function planFromFloor(f) {
@@ -233,6 +245,7 @@ function planNew(k, wall, c, extra) {
   const K = PL_KINDS[k];
   const it = { id: uid(), k, wall: K.floor ? null : wall, c, w: K.w, dp: K.dp, h: K.h, z: K.z };
   if (k === "toilet") it.ri = K.ri;
+  if (K.tzh != null) Object.assign(it, { tz: !!K.tz, tzh: K.tzh, tzo: 0, tzs: !!K.side });
   if (k === "door") Object.assign(it, { dtype: "swing", swing: "in", hinge: "a", dt: 1.375 });
   return Object.assign(it, extra || {});
 }
@@ -304,6 +317,65 @@ function planOuter(pts) {
   });
 }
 
+/* tile zones: tile only over a tub / shower / cabinet run (+ adjustable overlap), per wall,
+   in that wall's elevation coordinates. Walls tiled in full are skipped. */
+function planZoneBottom(it) {
+  const z = +it.z || 0,
+    h = +it.h || 0;
+  return it.k === "shower" ? 0 : it.k === "cab" ? z + h + 1.5 : z + h;
+}
+function planZones(pts) {
+  const pl = P.plan,
+    n = pts.length,
+    raw = [];
+  pl.items.forEach((it) => {
+    const K = PL_KINDS[it.k];
+    if (K.tzh == null || !it.tz || K.floor) return;
+    const top = Math.min(+pl.H || 96, +it.tzh || 0),
+      bot = planZoneBottom(it),
+      over = Math.max(0, +it.tzo || 0);
+    if (top - bot < 0.5) return;
+    const add = (j, s0, s1) => {
+      if ((pl.walls[j] || {}).tile) return;
+      const W = planWall(j, pts);
+      s0 = Math.max(0, s0);
+      s1 = Math.min(W.L, s1);
+      if (s1 - s0 < 0.5) return;
+      const xa = W.cx(s0),
+        xb = W.cx(s1);
+      raw.push({ wall: j, s0, s1, x0: Math.min(xa, xb), x1: Math.max(xa, xb), z0: bot, z1: top, ids: [it.id], k: it.k });
+    };
+    add(it.wall, +it.c - it.w / 2 - over, +it.c + it.w / 2 + over);
+    if (it.tzs && K.side) {
+      const Fp = planFoot(it, pts);
+      for (let j = 0; j < n; j++) {
+        if (j === it.wall) continue;
+        const W = planWall(j, pts),
+          ss = Fp.map((q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1]),
+          dd = Fp.map((q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1]);
+        if (Math.min(...dd) > 1 || Math.min(...dd) < -1 || Math.max(...ss) < 0 || Math.min(...ss) > W.L) continue;
+        add(j, Math.min(...ss) - over, Math.max(...ss) + over);
+      }
+    }
+  });
+  // merge touching zones on the same wall with about the same bottom (a cabinet run + range)
+  const out = [];
+  raw
+    .sort((a, b) => a.wall - b.wall || a.x0 - b.x0)
+    .forEach((z) => {
+      const p = out[out.length - 1];
+      if (p && p.wall === z.wall && z.x0 <= p.x1 + 0.5 && Math.abs(z.z0 - p.z0) <= 2) {
+        p.x1 = Math.max(p.x1, z.x1);
+        p.s0 = Math.min(p.s0, z.s0);
+        p.s1 = Math.max(p.s1, z.s1);
+        p.z0 = Math.max(p.z0, z.z0);
+        p.z1 = Math.max(p.z1, z.z1);
+        p.ids = p.ids.concat(z.ids);
+      } else out.push(Object.assign({}, z));
+    });
+  return out;
+}
+
 /* ---------- page ---------- */
 function planEl() {
   let el = $("#plan");
@@ -373,6 +445,17 @@ function planSheet() {
     if (["window", "ucab", "mirror", "niche", "shelf"].includes(it.k)) h += F(pt("plZ"), p + "z", "len", "p");
     if (K.pt) h += F(pt("plZc"), p + "z", "len", "p");
     if (it.k === "toilet") h += F(pt("plRi"), p + "ri", "len", "p");
+    if (K.tzh != null) {
+      h += `</div>${CHK(pt("plTz"), p + "tz", 1, "p")}`;
+      if (it.tz) {
+        h += `<div class="grid2">${F(pt("plTzh"), p + "tzh", "len", "p")}${F(pt("plTzo"), p + "tzo", "len", "p")}</div>`;
+        if (K.side) h += CHK(pt("plTzs"), p + "tzs", 1, "p");
+        const zs = planZones(planPts()).filter((z) => z.ids.includes(it.id));
+        if (zs.length)
+          h += `<p class="hint">${zs.map((z) => `${pt("plWall")} ${z.wall + 1}: ${fmt(z.x1 - z.x0)} × ${fmt(z.z1 - z.z0)}`).join(" · ")}</p>`;
+      }
+      h += `<div class="grid2">`;
+    }
     if (it.k === "door") {
       h += SEL(pt("plDtype"), p + "dtype", ["swing", "pocket", "slide", "opening"], 1, "p", "", (o) => pt(o));
       if (it.dtype === "swing") {
@@ -499,6 +582,20 @@ function planTopSVG(W0, H0) {
     h += `<circle cx="${nb[0]}" cy="${nb[1]}" r="${7 * k}" fill="${on ? PLC.sel : "#fff"}" stroke="${on ? PLC.sel : PLC.wall}" stroke-width="${k}" data-pw="${i}"/>${plText(nb[0], nb[1], String(i + 1), 9 * k, { fill: on ? "#fff" : PLC.wall, bg: "none" }).replace("<text", `<text data-pw="${i}"`)}`;
     void mid;
   }
+  // tiled stretches of wall: blue band on the inner face
+  for (let i = 0; i < n; i++)
+    if ((pl.walls[i] || {}).tile) {
+      const W = planWall(i, pts),
+        a = sp(plAt(W, 0, 1.2 * k)),
+        b = sp(plAt(W, W.L, 1.2 * k));
+      h += `<path d="M${a[0]} ${a[1]}L${b[0]} ${b[1]}" stroke="#2f7fd0" stroke-width="${2.6 * k}" opacity=".75"/>`;
+    }
+  planZones(pts).forEach((z) => {
+    const W = planWall(z.wall, pts),
+      a = sp(plAt(W, z.s0, 1.2 * k)),
+      b = sp(plAt(W, z.s1, 1.2 * k));
+    h += `<path d="M${a[0]} ${a[1]}L${b[0]} ${b[1]}" stroke="#2f7fd0" stroke-width="${2.6 * k}" opacity=".75"/>`;
+  });
   // items
   pl.items.forEach((it) => (h += planItemTop(it, pts, k, it.id === V.sel)));
   // dimensions outside each wall: chain of item edges + overall
@@ -711,6 +808,14 @@ function planElevSVG(i, W0, H0) {
   const xs = [0, L],
     zs = [0, H];
   if (ws.tile) zs.push(Math.min(H, +ws.tileH || H));
+  planZones(pts)
+    .filter((z) => z.wall === i)
+    .forEach((z) => {
+      h += `<rect x="${z.x0}" y="${Y(z.z1)}" width="${z.x1 - z.x0}" height="${z.z1 - z.z0}" fill="#e6eef5" stroke="${PLC.dim}" stroke-width="${0.8 * k}" stroke-dasharray="${4 * k} ${3 * k}"/>`;
+      h += plText((z.x0 + z.x1) / 2, Y(z.z1) + 8 * k, `${t("tile")} ${fmt(z.x1 - z.x0)} × ${fmt(z.z1 - z.z0)}`, Math.min(8 * k, (z.x1 - z.x0) / 9), { fill: PLC.dim, fw: 600, bg: "#e6eef5" });
+      xs.push(z.x0, z.x1);
+      zs.push(z.z0, z.z1);
+    });
   // items on this wall, then side views of items standing against it from other walls
   const own = pl.items.filter((it) => it.wall === i && !PL_KINDS[it.k].floor);
   const side = [];
@@ -1229,6 +1334,90 @@ function planBuild() {
     s.h = H;
     s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
     s.openings = s.openings.filter((o) => !o.pl);
+    planWallOps(i, pts, 0, 0, s);
+  }
+  // tile zones over tubs, shower pans, cabinet runs
+  {
+    const zones = planZones(pts),
+      used = new Set(),
+      old = P.surfaces.filter((x) => /^z\d+:/.test(x.fromPlan || ""));
+    zones.forEach((z) => {
+      const key = `z${z.wall}:${z.ids.slice().sort().join("+")}`;
+      let s = P.surfaces.find((x) => x.fromPlan === key);
+      // a zone that merged/split keeps the surface (and its tile settings) of an old zone on that wall
+      if (!s) s = old.find((x) => !used.has(x) && x.fromPlan.startsWith(`z${z.wall}:`));
+      let isNew = false;
+      if (s) b++;
+      else {
+        s = newSurface("wall");
+        s.nk = null;
+        P.surfaces.push(s);
+        fresh.push(s);
+        isNew = true;
+        a++;
+      }
+      used.add(s);
+      s.fromPlan = key;
+      if (isNew || s.name === s.plName) s.name = s.plName = `${pt("k_" + z.k)} · ${pt("plWall")} ${z.wall + 1}`;
+      s.shape = "rect";
+      s.w = Math.round((z.x1 - z.x0) * 16) / 16;
+      s.h = Math.round((z.z1 - z.z0) * 16) / 16;
+      s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
+      s.openings = s.openings.filter((o) => !o.pl);
+      planWallOps(z.wall, pts, z.x0, z.z0, s);
+    });
+    const gone = old.filter((x) => !used.has(x));
+    if (gone.length) P.surfaces = P.surfaces.filter((x) => !gone.includes(x));
+  }
+  // shower pans
+  pl.items
+    .filter((it) => it.k === "shower")
+    .forEach((it) => {
+      const [s, isNew] = get("it" + it.id, () => {
+        const s2 = newSurface("pan");
+        s2.name = pt("plPanName");
+        s2.nk = null;
+        s2.tile = stdTile("pan");
+        return s2;
+      });
+      s.shape = "rect";
+      s.w = +it.w;
+      s.h = +it.dp;
+      s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
+      if (isNew) {
+        s.curb.on = true;
+        s.curb.len = s.w;
+        s.drain = Object.assign(s.drain || {}, { type: "center", x: s.w / 2, y: s.h / 2 });
+        fresh.push(s);
+      }
+    });
+  // drop surfaces whose plan wall lost its tile
+  P.surfaces = P.surfaces.filter((s) => {
+    const m = /^w(\d+)$/.exec(s.fromPlan || "");
+    if (m && !(pl.walls[+m[1]] && pl.walls[+m[1]].tile)) {
+      delete s.fromPlan; // keep the surface, just unlink it
+    }
+    const mi = /^it(.+)$/.exec(s.fromPlan || "");
+    if (mi && !pl.items.find((x) => x.id === mi[1])) delete s.fromPlan;
+    return true;
+  });
+  try {
+    if (fresh.some((s) => s.type !== "wall")) arrangeFloors(P);
+  } catch (e) {}
+  P.surfaces.forEach((s) => {
+    if (s.fromPlan && (fresh.includes(s) || true)) {
+      try {
+        if (fresh.includes(s)) autoLayout(s);
+      } catch (e) {}
+    }
+  });
+  return { a, b };
+}
+
+/* openings of plan wall i, in a surface whose origin sits at (ox, oy) of that wall's elevation */
+function planWallOps(i, pts, ox, oy, s) {
+  const pl = P.plan,
+    W = planWall(i, pts);
     const clip = (o) => {
       if (o.shape === "circle") return o.x >= 0 && o.x <= s.w && o.y >= 0 && o.y <= s.h ? o : null;
       const x0 = Math.max(0, o.x),
@@ -1239,7 +1428,7 @@ function planBuild() {
       return Object.assign(o, { x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
     };
     const push = (o) => {
-      const c = clip(Object.assign({ id: uid(), pl: 1 }, o));
+      const c = clip(Object.assign({ id: uid(), pl: 1 }, o, { x: o.x - ox, y: o.y - oy }));
       if (c) s.openings.push(c);
     };
     pl.items.forEach((it) => {
@@ -1293,48 +1482,4 @@ function planBuild() {
         x1 = W.cx(Math.min(W.L, Math.max(...ss)));
       push({ type: "cutout", shape: "rect", trim: false, x: Math.min(x0, x1), y: +it.z || 0, w: Math.abs(x1 - x0), h: +it.h });
     });
-  }
-  // shower pans
-  pl.items
-    .filter((it) => it.k === "shower")
-    .forEach((it) => {
-      const [s, isNew] = get("it" + it.id, () => {
-        const s2 = newSurface("pan");
-        s2.name = pt("plPanName");
-        s2.nk = null;
-        s2.tile = stdTile("pan");
-        return s2;
-      });
-      s.shape = "rect";
-      s.w = +it.w;
-      s.h = +it.dp;
-      s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
-      if (isNew) {
-        s.curb.on = true;
-        s.curb.len = s.w;
-        s.drain = Object.assign(s.drain || {}, { type: "center", x: s.w / 2, y: s.h / 2 });
-        fresh.push(s);
-      }
-    });
-  // drop surfaces whose plan wall lost its tile
-  P.surfaces = P.surfaces.filter((s) => {
-    const m = /^w(\d+)$/.exec(s.fromPlan || "");
-    if (m && !(pl.walls[+m[1]] && pl.walls[+m[1]].tile)) {
-      delete s.fromPlan; // keep the surface, just unlink it
-    }
-    const mi = /^it(.+)$/.exec(s.fromPlan || "");
-    if (mi && !pl.items.find((x) => x.id === mi[1])) delete s.fromPlan;
-    return true;
-  });
-  try {
-    if (fresh.some((s) => s.type !== "wall")) arrangeFloors(P);
-  } catch (e) {}
-  P.surfaces.forEach((s) => {
-    if (s.fromPlan && (fresh.includes(s) || true)) {
-      try {
-        if (fresh.includes(s)) autoLayout(s);
-      } catch (e) {}
-    }
-  });
-  return { a, b };
 }
