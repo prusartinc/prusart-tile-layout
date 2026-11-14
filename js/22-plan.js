@@ -346,6 +346,17 @@ function planEnsure() {
     (it) =>
       PL_KINDS[it.k] && (PL_KINDS[it.k].floor || it.wall < pl.room.segs.length),
   );
+  const pts0 = walkPoly(pl.room).pts;
+  pl.items.forEach((it) => {
+    const K = PL_KINDS[it.k];
+    if (!K.floor && it.wall != null && pts0.length > 2) {
+      it.wall = +it.wall;
+      const W = planWall(it.wall, pts0),
+        half = K.pt ? 0 : Math.min(+it.w || 0, W.L) / 2;
+      if (!(+it.c >= half && +it.c <= W.L - half))
+        it.c = Math.max(half, Math.min(W.L - half, +it.c || 0));
+    }
+  });
   pl.items.forEach((it) => {
     const K = PL_KINDS[it.k];
     if (K.tzh != null && it.tz == null)
@@ -1584,7 +1595,7 @@ function planElevSVG(i, W0, H0) {
       hh = +it.h || 0;
     let g = "";
     const R = (x, z, ww, hhh, extra) =>
-      `<rect x="${x.toFixed(2)}" y="${Y(z + hhh).toFixed(2)}" width="${ww.toFixed(2)}" height="${hhh.toFixed(2)}" ${extra}/>`;
+      `<rect x="${x.toFixed(2)}" y="${Y(z + Math.max(0, hhh)).toFixed(2)}" width="${Math.max(0, ww).toFixed(2)}" height="${Math.max(0, hhh).toFixed(2)}" ${extra}/>`;
     switch (it.k) {
       case "door": {
         g += R(
@@ -1883,6 +1894,7 @@ function plPinchMove() {
 function planDown(e) {
   const svg = e.target.closest && e.target.closest("#plsvg svg");
   if (!svg) return;
+  if (e.isPrimary) PLP.clear(); // a lost pointerup must not leave a ghost finger behind
   PLP.set(e.pointerId, { x: e.clientX, y: e.clientY });
   const clr = (ev) => {
     PLP.delete(ev.pointerId);
@@ -2295,6 +2307,14 @@ function planAct(a, arg) {
       if (pl.room.segs.length <= 3) break;
       pl.room.segs.splice(i, 1);
       pl.walls.splice(i, 1);
+      // surfaces built from walls after the deleted one move down one number; the deleted wall's are unlinked
+      P.surfaces.forEach((s2) => {
+        const m = /^(w|z)(\d+)(:.*)?$/.exec(s2.fromPlan || "");
+        if (!m) return;
+        const j = +m[2];
+        if (j === i) delete s2.fromPlan;
+        else if (j > i) s2.fromPlan = m[1] + (j - 1) + (m[3] || "");
+      });
       pl.items = pl.items
         .filter((x) => x.wall !== i)
         .map((x) =>
