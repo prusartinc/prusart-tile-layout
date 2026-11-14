@@ -1411,7 +1411,10 @@ body.homeon #home {
 html[data-theme="dark"] .hth {
   background: #2a2926;
 }
-#mbody h4{margin:14px 0 6px;font-size:14px}
+#mbody h4 {
+  margin: 14px 0 6px;
+  font-size: 14px;
+}
 
 /* ===== room plan page ===== */
 #plan {
@@ -1554,4 +1557,15 @@ body.planon #plan {
 }
 .plnudge .btn {
   min-width: 44px;
+}
+.plsep {
+  flex: none;
+  width: 1px;
+  background: var(--line);
+  margin: 2px 2px;
+}
+.plviews button.lay.on2 {
+  background: #e6eef5;
+  border-color: #2f7fd0;
+  color: #1d5fa8;
 }

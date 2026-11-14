@@ -48,7 +48,10 @@ function backupFile() {
     blob = new Blob([data], { type: "application/json" });
   DB.lastFile = Date.now();
   saveSoon();
-  const file = typeof File === "function" ? new File([blob], name, { type: "application/json" }) : null;
+  const file =
+    typeof File === "function"
+      ? new File([blob], name, { type: "application/json" })
+      : null;
   if (
     file &&
     navigator.canShare &&
@@ -94,7 +97,9 @@ function bkRestore(i) {
 }
 function bkApply(d) {
   bkSnapshot(true); // keep what we have now, so the restore itself can be undone from the list
-  const projects = (d.projects || []).filter((p) => p && Array.isArray(p.surfaces));
+  const projects = (d.projects || []).filter(
+    (p) => p && Array.isArray(p.surfaces),
+  );
   if (!projects.length) return toast(t("importErr"), false);
   projects.forEach((p) => migrate(p));
   DB.projects = projects;
@@ -163,7 +168,11 @@ async function gistFind() {
     body: JSON.stringify({
       description: "PrusArt Tile Layout — projects (synced by the app)",
       public: false,
-      files: { [GIST_FILE]: { content: JSON.stringify({ projects: [], tiles: [], deleted: {} }) } },
+      files: {
+        [GIST_FILE]: {
+          content: JSON.stringify({ projects: [], tiles: [], deleted: {} }),
+        },
+      },
     }),
   });
   return g.id;
@@ -182,17 +191,21 @@ async function gistRead() {
 }
 function syncMerge(loc, rem) {
   const del = Object.assign({}, rem.deleted || {}, loc.deleted || {});
-  for (const k in rem.deleted || {}) del[k] = Math.max(del[k] || 0, rem.deleted[k]);
+  for (const k in rem.deleted || {})
+    del[k] = Math.max(del[k] || 0, rem.deleted[k]);
   const map = {};
   [...(rem.projects || []), ...(loc.projects || [])].forEach((p) => {
     if (!p || !p.id) return;
     const q = map[p.id];
     if (!q || (+p.updated || 0) > (+q.updated || 0)) map[p.id] = p;
   });
-  const projects = Object.values(map).filter((p) => !(del[p.id] && del[p.id] >= (+p.updated || 0)));
+  const projects = Object.values(map).filter(
+    (p) => !(del[p.id] && del[p.id] >= (+p.updated || 0)),
+  );
   const tmap = {};
   [...(rem.tiles || []), ...(loc.tiles || [])].forEach((q) => {
-    if (q && q.id && !del["t:" + q.id]) tmap[q.id] = Object.assign({}, tmap[q.id] || {}, q);
+    if (q && q.id && !del["t:" + q.id])
+      tmap[q.id] = Object.assign({}, tmap[q.id] || {}, q);
   });
   return { projects, tiles: Object.values(tmap), deleted: del };
 }
@@ -209,11 +222,16 @@ async function syncNow(manual) {
   try {
     if (!C.gist) C.gist = await gistFind();
     const rem = await gistRead();
-    const loc = { projects: DB.projects, tiles: libTiles(), deleted: DB.deleted || {} };
+    const loc = {
+      projects: DB.projects,
+      tiles: libTiles(),
+      deleted: DB.deleted || {},
+    };
     const m = syncMerge(loc, rem);
     const changedLocal = projKey(m) !== projKey(loc);
     const changedRemote =
-      projKey(m) !== projKey({ projects: rem.projects || [], tiles: rem.tiles || [] }) ||
+      projKey(m) !==
+        projKey({ projects: rem.projects || [], tiles: rem.tiles || [] }) ||
       JSON.stringify(m.deleted) !== JSON.stringify(rem.deleted || {});
     if (changedLocal) {
       const curId = P && P.id;
@@ -232,7 +250,11 @@ async function syncNow(manual) {
       await ghJSON("/gists/" + C.gist, {
         method: "PATCH",
         body: JSON.stringify({
-          files: { [GIST_FILE]: { content: JSON.stringify({ v: 1, t: Date.now(), ...m }) } },
+          files: {
+            [GIST_FILE]: {
+              content: JSON.stringify({ v: 1, t: Date.now(), ...m }),
+            },
+          },
         }),
       });
     C.last = Date.now();
@@ -241,7 +263,12 @@ async function syncNow(manual) {
     setSyncState("ok");
     if (manual) toast(t("syDone"), false);
   } catch (e) {
-    C.err = e.status === 401 ? "token" : e.status === 403 || e.status === 404 ? "access" : "net";
+    C.err =
+      e.status === 401
+        ? "token"
+        : e.status === 403 || e.status === 404
+          ? "access"
+          : "net";
     if (e.status === 404) C.gist = null;
     saveLocal();
     setSyncState("err");

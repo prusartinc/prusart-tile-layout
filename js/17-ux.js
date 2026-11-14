@@ -30,7 +30,8 @@ function surfThumb(s) {
     W = Math.max(1, bb.x1 - bb.x0),
     H = Math.max(1, bb.y1 - bb.y0),
     k = Math.min(84 / W, 60 / H);
-  const pt = (p) => `${((p[0] - bb.x0) * k + 2).toFixed(1)},${((bb.y1 - p[1]) * k + 2).toFixed(1)}`;
+  const pt = (p) =>
+    `${((p[0] - bb.x0) * k + 2).toFixed(1)},${((bb.y1 - p[1]) * k + 2).toFixed(1)}`;
   let g = `<polygon points="${O.map(pt).join(" ")}" fill="#ece5d7" stroke="#141414" stroke-width="1.4"/>`;
   s.openings
     .filter((o) => o.shape !== "circle")
@@ -58,8 +59,10 @@ function pieceAt(it, x, y) {
     ly = w[1] - it.dy,
     R = it.R;
   if (!R || !R.all) return null;
-  const inR = (p, q) => q[0] >= p.x0 && q[0] <= p.x0 + p.lw && q[1] >= p.y0 && q[1] <= p.y0 + p.lh;
-  for (const q of R.nichOwn || []) for (const p of q.pieces) if (inR(p, [lx, ly])) return p;
+  const inR = (p, q) =>
+    q[0] >= p.x0 && q[0] <= p.x0 + p.lw && q[1] >= p.y0 && q[1] <= p.y0 + p.lh;
+  for (const q of R.nichOwn || [])
+    for (const p of q.pieces) if (inR(p, [lx, ly])) return p;
   const L = R.toL([lx, ly]);
   for (const p of (R.nich || []).concat(R.main || [])) if (inR(p, L)) return p;
   return null;
@@ -69,8 +72,11 @@ function pieceInfo(it, x, y) {
   if (!p) return;
   let m = p.no ? `№${p.no}` : "";
   if (p.row) m += ` · ${t("rowW")} ${p.row}`;
-  m += " · " + (p.full ? t("fullTile") : `${t("cutW")} ${fmtIn(p.cw)} × ${fmtIn(p.ch)}`);
-  if (p.hl && p.hl.length) m += " + " + [...new Set(p.hl)].map((x2) => t(x2)).join(", ");
+  m +=
+    " · " +
+    (p.full ? t("fullTile") : `${t("cutW")} ${fmtIn(p.cw)} × ${fmtIn(p.ch)}`);
+  if (p.hl && p.hl.length)
+    m += " + " + [...new Set(p.hl)].map((x2) => t(x2)).join(", ");
   const nt = notchTxt(p, " × ");
   if (nt) m += ` · ${t("notchW")} ${nt}`;
   toast(m.replace(/^ · /, ""), false);
@@ -101,7 +107,11 @@ function secChips() {
   nav.className = "secnav";
   nav.innerHTML = ds
     .map((d) => {
-      const tt = d.querySelector("summary").textContent.replace(/\s+/g, " ").trim().split(" · ")[0];
+      const tt = d
+        .querySelector("summary")
+        .textContent.replace(/\s+/g, " ")
+        .trim()
+        .split(" · ")[0];
       return `<button data-act="secGo:${d.dataset.sec}" class="${d.open ? "on" : ""}">${esc(tt)}</button>`;
     })
     .join("");
@@ -119,8 +129,12 @@ function secGo(id) {
     .forEach((b) => b.classList.toggle("on", b.dataset.act === "secGo:" + id));
   const d = document.querySelector(`#panel details[data-sec="${id}"]`);
   if (d) {
-    const y = d.getBoundingClientRect().top + window.scrollY - ($("#vw").getBoundingClientRect().height + 8);
-    if (document.body.classList.contains("pin")) window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    const y =
+      d.getBoundingClientRect().top +
+      window.scrollY -
+      ($("#vw").getBoundingClientRect().height + 8);
+    if (document.body.classList.contains("pin"))
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
     else d.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
@@ -148,10 +162,14 @@ $("#stat").addEventListener("click", () => {
   applyPin();
 });
 function applyPin() {
-  document.body.classList.toggle("pin", S.pin !== false && innerWidth < 900 && !S.client && !S.full);
+  document.body.classList.toggle(
+    "pin",
+    S.pin !== false && innerWidth < 900 && !S.client && !S.full,
+  );
   document.body.classList.toggle("site", !!S.site);
   const vw = $("#vw");
-  if (vw) document.documentElement.style.setProperty("--vwh", vw.offsetHeight + "px");
+  if (vw)
+    document.documentElement.style.setProperty("--vwh", vw.offsetHeight + "px");
 }
 {
   const rp = renderPanel;
@@ -199,11 +217,13 @@ function zoneSnap(s, x, y, tol) {
   O.forEach(([a, b]) => {
     xs.forEach((v) => {
       const d = v - (a + x);
-      if (Math.abs(d) < tol && (bx == null || Math.abs(d) < Math.abs(bx))) bx = d;
+      if (Math.abs(d) < tol && (bx == null || Math.abs(d) < Math.abs(bx)))
+        bx = d;
     });
     ys.forEach((v) => {
       const d = v - (b + y);
-      if (Math.abs(d) < tol && (by == null || Math.abs(d) < Math.abs(by))) by = d;
+      if (Math.abs(d) < tol && (by == null || Math.abs(d) < Math.abs(by)))
+        by = d;
     });
   });
   const r8 = (v) => Math.round(v * 8) / 8;
@@ -225,8 +245,12 @@ function zoneSnap(s, x, y, tol) {
     const d = down;
     down = null;
     if (!d || S.full || S.tab === "tot" || ptrs.size > 1) return;
-    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10) return (lastEmpty = null);
-    if (hitAt(e.clientX, e.clientY) || (e.target.closest && e.target.closest("[data-dim],[data-conn]")))
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10)
+      return (lastEmpty = null);
+    if (
+      hitAt(e.clientX, e.clientY) ||
+      (e.target.closest && e.target.closest("[data-dim],[data-conn]"))
+    )
       return (lastEmpty = null);
     const now = Date.now();
     if (

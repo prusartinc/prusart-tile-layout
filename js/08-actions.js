@@ -205,7 +205,8 @@ function act(a, arg, b) {
         if (h) h.textContent = t("drawNeed3");
         break;
       }
-      const target = s.type === "wall" ? +s.h || 96 : Math.max(+s.w || 96, +s.h || 72);
+      const target =
+        s.type === "wall" ? +s.h || 96 : Math.max(+s.w || 96, +s.h || 72);
       const sg = straighten(DRAW.pts, target);
       if (!sg) {
         break;
@@ -309,8 +310,15 @@ function act(a, arg, b) {
       modal(
         `<h3>▦ ${t("tile")} — ${esc(s.name)}</h3><div class="grid">${
           two
-            ? F(t("tileW"), pre + ".w", "len", "p") + F(t("tileL"), pre + ".h", "len", "p")
-            : F(t(T.shape === "hex" ? "hexW" : "pennyD"), pre + ".w", "len", "p", "w2")
+            ? F(t("tileW"), pre + ".w", "len", "p") +
+              F(t("tileL"), pre + ".h", "len", "p")
+            : F(
+                t(T.shape === "hex" ? "hexW" : "pennyD"),
+                pre + ".w",
+                "len",
+                "p",
+                "w2",
+              )
         }${F(t("grout"), pre + ".g", "len", "p")}${F(t("thick"), pre + ".thick", "len", "p")}</div><p class="hint">${t("qTileHint")}</p><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button></div>`,
       );
       break;
@@ -423,7 +431,12 @@ function act(a, arg, b) {
     case "cTile":
     case "cJoint": {
       const G = geom(s);
-      centerOn(s, (G.rb.x0 + G.rb.x1) / 2, (G.rb.y0 + G.rb.y1) / 2, a === "cJoint");
+      centerOn(
+        s,
+        (G.rb.x0 + G.rb.x1) / 2,
+        (G.rb.y0 + G.rb.y1) / 2,
+        a === "cJoint",
+      );
       changed();
       break;
     }
@@ -591,7 +604,8 @@ function act(a, arg, b) {
       renderPanel();
       break;
     case "mode":
-      S.mode = S.mode === "tiles" ? "view" : S.mode === "view" ? "lock" : "tiles";
+      S.mode =
+        S.mode === "tiles" ? "view" : S.mode === "view" ? "lock" : "tiles";
       renderTools();
       break;
     case "client":

@@ -23,12 +23,25 @@ function hitAt(cx, cy) {
     for (let j = s.openings.length - 1; j >= 0; j--) {
       const o = s.openings[j];
       if (o.shape === "circle") {
-        if (Math.hypot(lx - o.x, ly - o.y) <= o.dia / 2 + tol) return { it, op: j };
-      } else if (lx >= o.x - tol && lx <= o.x + o.w + tol && ly >= o.y - tol && ly <= o.y + o.h + tol)
+        if (Math.hypot(lx - o.x, ly - o.y) <= o.dia / 2 + tol)
+          return { it, op: j };
+      } else if (
+        lx >= o.x - tol &&
+        lx <= o.x + o.w + tol &&
+        ly >= o.y - tol &&
+        ly <= o.y + o.h + tol
+      )
         return { it, op: j };
     }
     if (pip(it.R.G.outer, lx, ly)) return { it };
-    if (s.type === "pan" && s.curb.on && lx >= 0 && lx <= s.curb.len && ly >= -s.curb.w && ly <= 0)
+    if (
+      s.type === "pan" &&
+      s.curb.on &&
+      lx >= 0 &&
+      lx <= s.curb.len &&
+      ly >= -s.curb.w &&
+      ly <= 0
+    )
       return { it };
   }
   return null;
@@ -40,7 +53,13 @@ function connAt(cx, cy) {
     tol = 22 * S.upp;
   for (const it of S.items) {
     const hp = it.R && it.R.heat;
-    if (!hp || !(S.layer === "wire" || (S.layer !== "tile" && S.layer !== "prep" && it.s.heat.show)))
+    if (
+      !hp ||
+      !(
+        S.layer === "wire" ||
+        (S.layer !== "tile" && S.layer !== "prep" && it.s.heat.show)
+      )
+    )
       continue;
     const c = hp.conn;
     if (Math.hypot(w[0] - it.dx - c[0], w[1] - it.dy - c[1]) <= tol) return it;
@@ -70,7 +89,8 @@ svg.addEventListener(
   { passive: false },
 );
 function startDrag(x, y, target, pt) {
-  const vxEl = S.ptEdit && target && target.closest ? target.closest("[data-vx]") : null;
+  const vxEl =
+    S.ptEdit && target && target.closest ? target.closest("[data-vx]") : null;
   if (vxEl && canEdit()) {
     const [si, vi] = vxEl.dataset.vx.split(":").map(Number),
       s = P.surfaces[si];
@@ -104,12 +124,30 @@ function startDrag(x, y, target, pt) {
   }
   const ci = S.pickConn ? null : connAt(x, y);
   if (ci) {
-    drag = { x, y, conn: ci, s: null, op: null, px: S.view.panX, py: S.view.panY, upp: S.upp, moved: false };
+    drag = {
+      x,
+      y,
+      conn: ci,
+      s: null,
+      op: null,
+      px: S.view.panX,
+      py: S.view.panY,
+      upp: S.upp,
+      moved: false,
+    };
     return true;
   }
   const h = hitAt(x, y);
   const dimEl = target && target.closest ? target.closest("[data-dim]") : null;
-  if (pt === "touch" && !h && !dimEl && S.mode !== "view" && !S.pickConn && !S.full) return false;
+  if (
+    pt === "touch" &&
+    !h &&
+    !dimEl &&
+    S.mode !== "view" &&
+    !S.pickConn &&
+    !S.full
+  )
+    return false;
   const s = h ? h.it.s : null;
   const T = s ? effT(s) : null;
   drag = {
@@ -182,7 +220,12 @@ svg.addEventListener("pointermove", (e) => {
     return;
   }
   if (drag.zone) {
-    const p = zoneSnap(drag.s, drag.zone.px0 + dx, drag.zone.py0 - dy, 12 * drag.upp);
+    const p = zoneSnap(
+      drag.s,
+      drag.zone.px0 + dx,
+      drag.zone.py0 - dy,
+      12 * drag.upp,
+    );
     drag.s.pos = { x: p[0], y: p[1] };
     drawSoon();
     return;
@@ -195,7 +238,11 @@ svg.addEventListener("pointermove", (e) => {
     setO(drag.s, sn(drag.ox + dx), sn(drag.oy - dy));
   } else if (S.mode === "tiles" && S.layer === "prep" && canEdit() && drag.s) {
     drag.s.prepO = { x: sn(drag.pox + dx), y: sn(drag.poy - dy) };
-  } else if (S.mode === "view" || e.pointerType !== "touch" || S.layer === "wire") {
+  } else if (
+    S.mode === "view" ||
+    e.pointerType !== "touch" ||
+    S.layer === "wire"
+  ) {
     S.view.panX = drag.px - dx;
     S.view.panY = drag.py + dy;
   }
@@ -251,7 +298,8 @@ function pEnd(e) {
         else openFull(d.it.s, lt.tab);
         return;
       }
-      S.lastTap = d.it || S.full ? { t: now, x: d.x, y: d.y, tab: S.tab } : null;
+      S.lastTap =
+        d.it || S.full ? { t: now, x: d.x, y: d.y, tab: S.tab } : null;
       if (S.pickConn && canEdit()) {
         const s2 = P.surfaces.find((x) => x.id === S.pickConn);
         const it = S.items.find((i) => i.s === s2);
@@ -307,7 +355,10 @@ svg.addEventListener(
   "wheel",
   (e) => {
     e.preventDefault();
-    S.view.zoom = Math.min(14, Math.max(0.4, S.view.zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
+    S.view.zoom = Math.min(
+      14,
+      Math.max(0.4, S.view.zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12)),
+    );
     drawSoon();
   },
   { passive: false },
@@ -329,7 +380,10 @@ function vxMove(v, dx, dy, tol) {
   });
   pts[i] = [x, y];
   if (polyArea(pts) < 1) return;
-  const m0 = [Math.min(...v.pts.map((q) => q[0])), Math.min(...v.pts.map((q) => q[1]))],
+  const m0 = [
+      Math.min(...v.pts.map((q) => q[0])),
+      Math.min(...v.pts.map((q) => q[1])),
+    ],
     m1 = [Math.min(...pts.map((q) => q[0])), Math.min(...pts.map((q) => q[1]))],
     sx = m1[0] - m0[0],
     sy = m1[1] - m0[1];

@@ -52,7 +52,10 @@ function bsPoly(s) {
   });
   if (
     out.length > 1 &&
-    Math.hypot(out[0][0] - out[out.length - 1][0], out[0][1] - out[out.length - 1][1]) < 1e-6
+    Math.hypot(
+      out[0][0] - out[out.length - 1][0],
+      out[0][1] - out[out.length - 1][1],
+    ) < 1e-6
   )
     out.pop();
   return out;
@@ -107,7 +110,9 @@ function bsSection(s) {
     b += `<div class="op"><div class="oph"><b>${i + 1}. ${t("bk_" + q.k)}</b><span class="btns" style="margin:0"><button class="btn sm" data-act="bsAdd:${i}">＋</button>${n > 1 ? `<button class="btn sm d" data-act="bsDel:${i}">✕</button>` : ""}</span></div><div class="grid">${SEL(t("bsKind"), p + ".k", BS_KINDS, 1, "s", "w2", (k) => t("bk_" + k))}${F(t("bsLen"), p + ".len")}`;
     if (q.k !== "skip") {
       b += F(
-        q.sl ? t("bsHL") : t(q.k === "cab" ? "bsHcab" : q.k === "hood" ? "bsHhood" : "bsHtop"),
+        q.sl
+          ? t("bsHL")
+          : t(q.k === "cab" ? "bsHcab" : q.k === "hood" ? "bsHhood" : "bsHtop"),
         p + ".h",
       );
       if (q.sl) b += F(t("bsHR"), p + ".hR");
@@ -126,7 +131,8 @@ function bsSection(s) {
     1,
     "s",
     "",
-    (v) => (v === "auto" ? t("autoV") : `${+v + 1}. ${t("bk_" + B.segs[+v].k)}`),
+    (v) =>
+      v === "auto" ? t("autoV") : `${+v + 1}. ${t("bk_" + B.segs[+v].k)}`,
   )}${B.center !== "auto" ? SEL(t("bsCmode"), "bs.cmode", ["tile", "joint"], 1, "s", "w2", (v) => t(v === "tile" ? "nax_center" : "nax_joint")) : ""}</div>`;
   b += CHK(t("bsBottomFull"), "bs.bottomFull", 1);
   b += `<div class="btns"><button class="btn p" data-act="bsLay">✦ ${t("bsLay")}</button><button class="btn" data-act="bsOff">${t("bsOff")}</button></div>`;
@@ -141,7 +147,14 @@ function bsAct(a, arg) {
     autoLayout(s);
     S.open.add("bs");
   } else if (!s.bs) return;
-  else if (a === "bsAdd") s.bs.segs.splice(+arg + 1, 0, { k: "cab", len: 30, h: 18, sl: false, hR: 18 });
+  else if (a === "bsAdd")
+    s.bs.segs.splice(+arg + 1, 0, {
+      k: "cab",
+      len: 30,
+      h: 18,
+      sl: false,
+      hR: 18,
+    });
   else if (a === "bsDel") s.bs.segs.splice(+arg, 1);
   else if (a === "bsOff") {
     s.bs.on = false;
@@ -163,7 +176,8 @@ function bsAct(a, arg) {
     });
   }
   if (a !== "bsLay") bsApply(s);
-  if (a === "bsLay" || a === "bsAdd" || a === "bsDel" || a === "bsOn") autoLayout(s);
+  if (a === "bsLay" || a === "bsAdd" || a === "bsDel" || a === "bsOn")
+    autoLayout(s);
   renderPanel();
   changed();
 }
@@ -180,7 +194,10 @@ function bsLabels(s, px) {
       [a, b] = bsTop(q, B.gap),
       y = Math.max(a, b),
       cx = (x + L / 2).toFixed(2),
-      hh = q.k === "skip" ? "" : ` × ${fmtIn(+q.h)}${q.sl ? "–" + fmtIn(+q.hR) : ""}″`;
+      hh =
+        q.k === "skip"
+          ? ""
+          : ` × ${fmtIn(+q.h)}${q.sl ? "–" + fmtIn(+q.hR) : ""}″`;
     if (L > 4) {
       h += `<text class="lbD" x="${cx}" y="${(-y - +px(6)).toFixed(2)}" font-size="${f2}" font-weight="700" text-anchor="middle" fill="${PAL.blue}" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}">${fmtIn(L)}″${hh}</text>`;
       if (L > 14)
@@ -200,9 +217,13 @@ function shelfBolts(o) {
     m = Math.min(6, (+o.w || 24) / 4),
     out = [];
   for (let i = 0; i < n; i++) {
-    const x = n === 1 ? +o.x + +o.w / 2 : +o.x + m + ((+o.w - 2 * m) * i) / (n - 1);
+    const x =
+      n === 1 ? +o.x + +o.w / 2 : +o.x + m + ((+o.w - 2 * m) * i) / (n - 1);
     for (let j = 0; j < per; j++) {
-      const y = +o.y + +o.h / 2 + (per === 1 ? 0 : (j - (per - 1) / 2) * Math.min(1.5, +o.h / per));
+      const y =
+        +o.y +
+        +o.h / 2 +
+        (per === 1 ? 0 : (j - (per - 1) / 2) * Math.min(1.5, +o.h / per));
       out.push({ type: "bolt", shape: "circle", x, y, dia, parent: o });
     }
   }
@@ -245,7 +266,14 @@ function markInserts(R, T) {
   R.insCut = cut;
 }
 function insBlock(T) {
-  const I = (T.ins = T.ins || { on: false, rule: "rows", n: 3, pct: 10, col: "#c8a24a", name: "" });
+  const I = (T.ins = T.ins || {
+    on: false,
+    rule: "rows",
+    n: 3,
+    pct: 10,
+    col: "#c8a24a",
+    name: "",
+  });
   let b = `<p style="margin:12px 0 4px"><b>✨ ${t("insT")}</b></p>${CHK(t("insOn"), "tile.ins.on", 1)}`;
   if (I.on)
     b += `<div class="grid">${SEL(t("insRule"), "tile.ins.rule", ["rows", "cols", "diag", "checker", "dots", "pct"], 1, "s", "w2", (v) => t("ir_" + v))}${
@@ -315,6 +343,7 @@ function kitchenAct(a, arg) {
 /* outlets on tiled walls: the box must come out to the new face */
 function ringHint(s) {
   const d = (+s.tile.thick || 0.375) + 0.1875; // tile + thinset
-  const std = [0.25, 0.5, 0.625, 0.75, 1, 1.5].find((x) => x >= d - 0.01) || 1.5;
+  const std =
+    [0.25, 0.5, 0.625, 0.75, 1, 1.5].find((x) => x >= d - 0.01) || 1.5;
   return `${t("ringHint")} ≥ ${fmtIn(d)}″ → ${fmtIn(std)}″`;
 }

@@ -15,7 +15,8 @@ const PLT = {
     plBack: "Проект",
     plRoom: "Комната",
     plH: "Высота потолка",
-    plWalls: "Стены (обход: от левого нижнего угла вправо, против часовой = поворот влево)",
+    plWalls:
+      "Стены (обход: от левого нижнего угла вправо, против часовой = поворот влево)",
     plLen: "Длина",
     plTurn: "Поворот°",
     plTh: "Толщина",
@@ -123,17 +124,31 @@ const PLT = {
     plNoPan: "Сначала поставь поддон душа",
     plChk: "Проверка зазоров (IRC/NEC, основное):",
     plChkOk: "Зазоры в норме",
-    ckToiletSide: "Унитаз: от центра до стены/предмета {d} — нужно не меньше 15″",
+    ckToiletSide:
+      "Унитаз: от центра до стены/предмета {d} — нужно не меньше 15″",
     ckToiletFront: "Унитаз: спереди нужно 21″ свободного места (по UPC 24″)",
     ckVanityFront: "Vanity: спереди нужно 21″ свободного места",
     ckOutlet: "Нет розетки в пределах 36″ от vanity (NEC — нужна, GFCI)",
     ckShower: "Душ меньше минимума: 30″ по каждой стороне и 900 кв. дюймов",
     ckDoor: "Дверь при открывании задевает предмет",
     plTpl: "Шаблон комнаты",
-    plTplQ: "Заменить план шаблоном? Текущие элементы удалятся (можно отменить ↶).",
+    plTplQ:
+      "Заменить план шаблоном? Текущие элементы удалятся (можно отменить ↶).",
     tpl_bath58: "Ванная 5×8 (ванна)",
     tpl_walkin: "5×8 walk-in душ",
     tpl_kitchen: "Кухня прямая",
+    k_fan: "Вентилятор (потолок)",
+    k_light: "Светильник (потолок)",
+    plElec: "Электрика",
+    plTilesL: "Раскладка",
+    ckFan: "Санузел без окна и вентилятора — по коду нужен вытяжной вентилятор",
+    ckGfci: "Розетка в санузле должна быть GFCI",
+    pdfPlan: "План комнаты",
+    pdfElev: "Стена {n} — вид изнутри",
+    pdfScale: "Масштаб",
+    pdfMat: "Материалы",
+    pdfSheet: "Лист",
+    pdfNote: "Размеры в дюймах, от чистовых стен. Проверить на объекте.",
   },
   en: {
     plT: "Room plan",
@@ -142,7 +157,8 @@ const PLT = {
     plBack: "Project",
     plRoom: "Room",
     plH: "Ceiling height",
-    plWalls: "Walls (walk: from the bottom-left corner going right; counter-clockwise = left turn)",
+    plWalls:
+      "Walls (walk: from the bottom-left corner going right; counter-clockwise = left turn)",
     plLen: "Length",
     plTurn: "Turn°",
     plTh: "Thickness",
@@ -257,10 +273,23 @@ const PLT = {
     ckShower: "Shower below minimum: 30″ each way and 900 sq in",
     ckDoor: "Door swing hits an item",
     plTpl: "Room template",
-    plTplQ: "Replace the plan with a template? Current items will be removed (undo ↶ works).",
+    plTplQ:
+      "Replace the plan with a template? Current items will be removed (undo ↶ works).",
     tpl_bath58: "5×8 bath (tub)",
     tpl_walkin: "5×8 walk-in shower",
     tpl_kitchen: "Straight kitchen",
+    k_fan: "Exhaust fan (ceiling)",
+    k_light: "Light (ceiling)",
+    plElec: "Electrical",
+    plTilesL: "Layout",
+    ckFan: "Bathroom with no window or fan — code requires an exhaust fan",
+    ckGfci: "Bathroom outlet must be GFCI",
+    pdfPlan: "Room plan",
+    pdfElev: "Wall {n} — inside view",
+    pdfScale: "Scale",
+    pdfMat: "Materials",
+    pdfSheet: "Sheet",
+    pdfNote: "Dimensions in inches, to finished walls. Verify on site.",
   },
 };
 const pt = (k) => (PLT[lang] || PLT.en)[k] || t(k);
@@ -282,8 +311,10 @@ const PL_KINDS = {
   shelf: { ic: "▬", w: 36, dp: 10, h: 1.5, z: 54 },
   valve: { ic: "⊗", w: 3, dp: 3, h: 3, z: 48, pt: 1 },
   head: { ic: "◔", w: 3, dp: 6, h: 3, z: 80, pt: 1 },
-  outlet: { ic: "⏚", w: 2.25, dp: 1, h: 3.75, z: 44, pt: 1 },
-  switch: { ic: "⏻", w: 2.25, dp: 1, h: 3.75, z: 48, pt: 1 },
+  outlet: { ic: "⏚", w: 2.25, dp: 1, h: 3.75, z: 44, pt: 1, el: 1 },
+  switch: { ic: "⏻", w: 2.25, dp: 1, h: 3.75, z: 48, pt: 1, el: 1 },
+  fan: { ic: "🌀", w: 10, dp: 10, h: 0, z: 0, floor: 1, el: 1, ceil: 1 },
+  light: { ic: "💡", w: 6, dp: 6, h: 0, z: 0, floor: 1, el: 1, ceil: 1 },
   drain: { ic: "⊕", w: 4, dp: 4, h: 0, z: 0, floor: 1 },
   glass: { ic: "🔲", w: 60, dp: 0.375, h: 76, z: 4.5, floor: 1, glass: 1 },
   register: { ic: "▤", w: 10, dp: 4, h: 0, z: 0, floor: 1 },
@@ -293,7 +324,12 @@ const PL_ORDER = Object.keys(PL_KINDS);
 /* ---------- data ---------- */
 function planEnsure() {
   if (!P.plan) {
-    P.plan = { room: { shape: "walk", segs: [], a0: 0 }, walls: [], H: 96, items: [] };
+    P.plan = {
+      room: { shape: "walk", segs: [], a0: 0 },
+      walls: [],
+      H: 96,
+      items: [],
+    };
     const f = P.surfaces.find((s) => s.type === "floor" && !isShaped(s));
     if (f) planFromFloor(f);
     else ptsToWalk(P.plan.room, rectPoly(0, 0, 96, 60));
@@ -303,22 +339,45 @@ function planEnsure() {
   pl.items = pl.items || [];
   pl.H = +pl.H || 96;
   pl.walls = pl.walls || [];
-  while (pl.walls.length < pl.room.segs.length) pl.walls.push({ th: 4.5, tile: false, tileH: null });
+  while (pl.walls.length < pl.room.segs.length)
+    pl.walls.push({ th: 4.5, tile: false, tileH: null });
   pl.walls.length = pl.room.segs.length;
-  pl.items = pl.items.filter((it) => PL_KINDS[it.k] && (PL_KINDS[it.k].floor || it.wall < pl.room.segs.length));
+  pl.items = pl.items.filter(
+    (it) =>
+      PL_KINDS[it.k] && (PL_KINDS[it.k].floor || it.wall < pl.room.segs.length),
+  );
   pl.items.forEach((it) => {
     const K = PL_KINDS[it.k];
-    if (K.tzh != null && it.tz == null) Object.assign(it, { tz: !!K.tz, tzh: K.tzh, tzo: 0, tzs: !!K.side });
-    if (K.tzh != null && it.tzl == null) Object.assign(it, { tzl: +it.tzo || 0, tzr: +it.tzo || 0, tzf: false, tzsf: false });
-    if (it.k === "cab" && it.ctt == null) Object.assign(it, { ctt: 1.5, ctf: 1, ctl: 0, ctr: 0 });
-    if (it.k === "shower" && !it.drn) Object.assign(it, { drn: "center", dl: +it.w / 2, db: +it.dp / 2, lside: "back", loff: 1, llen: Math.max(12, +it.w - 6) });
+    if (K.tzh != null && it.tz == null)
+      Object.assign(it, { tz: !!K.tz, tzh: K.tzh, tzo: 0, tzs: !!K.side });
+    if (K.tzh != null && it.tzl == null)
+      Object.assign(it, {
+        tzl: +it.tzo || 0,
+        tzr: +it.tzo || 0,
+        tzf: false,
+        tzsf: false,
+      });
+    if (it.k === "cab" && it.ctt == null)
+      Object.assign(it, { ctt: 1.5, ctf: 1, ctl: 0, ctr: 0 });
+    if (it.k === "shower" && !it.drn)
+      Object.assign(it, {
+        drn: "center",
+        dl: +it.w / 2,
+        db: +it.dp / 2,
+        lside: "back",
+        loff: 1,
+        llen: Math.max(12, +it.w - 6),
+      });
   });
   return pl;
 }
 function planFromFloor(f) {
   const pl = P.plan,
     O = outerPoly(f);
-  ptsToWalk(pl.room, O.map((q) => q.slice()));
+  ptsToWalk(
+    pl.room,
+    O.map((q) => q.slice()),
+  );
   pl.walls = pl.room.segs.map(() => ({ th: 4.5, tile: false, tileH: null }));
   pl.items = pl.items.filter((it) => it.k !== "door" && it.k !== "toilet");
   pl.src = f.id;
@@ -338,18 +397,50 @@ function planFromFloor(f) {
     .forEach((o) => {
       o.pl = 1;
       const w = planNearWall(O, [o.x, o.y]);
-      if (w) pl.items.push(planNew("toilet", w.i, w.s, { ri: Math.round(w.d * 8) / 8 }));
+      if (w)
+        pl.items.push(
+          planNew("toilet", w.i, w.s, { ri: Math.round(w.d * 8) / 8 }),
+        );
     });
 }
 function planNew(k, wall, c, extra) {
   const K = PL_KINDS[k];
-  const it = { id: uid(), k, wall: K.floor ? null : wall, c, w: K.w, dp: K.dp, h: K.h, z: K.z };
+  const it = {
+    id: uid(),
+    k,
+    wall: K.floor ? null : wall,
+    c,
+    w: K.w,
+    dp: K.dp,
+    h: K.h,
+    z: K.z,
+  };
   if (k === "toilet") it.ri = K.ri;
-  if (K.tzh != null) Object.assign(it, { tz: !!K.tz, tzh: K.tzh, tzo: 0, tzs: !!K.side, tzl: 0, tzr: 0, tzf: false, tzsf: false });
+  if (K.tzh != null)
+    Object.assign(it, {
+      tz: !!K.tz,
+      tzh: K.tzh,
+      tzo: 0,
+      tzs: !!K.side,
+      tzl: 0,
+      tzr: 0,
+      tzf: false,
+      tzsf: false,
+    });
   if (k === "cab") Object.assign(it, { ctt: 1.5, ctf: 1, ctl: 0, ctr: 0 });
   if (k === "glass") Object.assign(it, { ang: 0, door: "a", dw: 24, dsn: 1 });
-  if (k === "shower") Object.assign(it, { drn: "center", dl: K.w / 2, db: K.dp / 2, lside: "back", loff: 1, llen: K.w - 6 });
-  if (k === "door") Object.assign(it, { dtype: "swing", swing: "in", hinge: "a", dt: 1.375 });
+  if (k === "outlet") it.gfci = true;
+  if (k === "shower")
+    Object.assign(it, {
+      drn: "center",
+      dl: K.w / 2,
+      db: K.dp / 2,
+      lside: "back",
+      loff: 1,
+      llen: K.w - 6,
+    });
+  if (k === "door")
+    Object.assign(it, { dtype: "swing", swing: "in", hinge: "a", dt: 1.375 });
   return Object.assign(it, extra || {});
 }
 
@@ -371,9 +462,24 @@ function planWall(i, pts) {
   // elevation: seen from inside the room, x grows to the viewer's right
   const r = [nout[1], -nout[0]],
     flip = u[0] * r[0] + u[1] * r[1] < 0;
-  return { i, a, b, L, u, nout, nin, th, flip, ex: (c) => (flip ? L - c : c), cx: (x) => (flip ? L - x : x) };
+  return {
+    i,
+    a,
+    b,
+    L,
+    u,
+    nout,
+    nin,
+    th,
+    flip,
+    ex: (c) => (flip ? L - c : c),
+    cx: (x) => (flip ? L - x : x),
+  };
 }
-const plAt = (W, s, d) => [W.a[0] + W.u[0] * s + W.nin[0] * d, W.a[1] + W.u[1] * s + W.nin[1] * d];
+const plAt = (W, s, d) => [
+  W.a[0] + W.u[0] * s + W.nin[0] * d,
+  W.a[1] + W.u[1] * s + W.nin[1] * d,
+];
 function planNearWall(pts, p) {
   let best = null;
   for (let i = 0; i < pts.length; i++) {
@@ -382,7 +488,8 @@ function planNearWall(pts, p) {
       d = (p[0] - W.a[0]) * W.nin[0] + (p[1] - W.a[1]) * W.nin[1];
     if (s < -1 || s > W.L + 1) continue;
     const ad = Math.abs(d);
-    if (!best || ad < best.ad) best = { i, s: Math.max(0, Math.min(W.L, s)), d, ad };
+    if (!best || ad < best.ad)
+      best = { i, s: Math.max(0, Math.min(W.L, s)), d, ad };
   }
   return best;
 }
@@ -391,7 +498,12 @@ function planGlassEnds(it) {
   const a = ((+it.ang || 0) * Math.PI) / 180,
     u = [Math.cos(a), Math.sin(a)],
     h = +it.w / 2;
-  return { A: [+it.x - u[0] * h, +it.y - u[1] * h], B: [+it.x + u[0] * h, +it.y + u[1] * h], u, n: [-u[1], u[0]] };
+  return {
+    A: [+it.x - u[0] * h, +it.y - u[1] * h],
+    B: [+it.x + u[0] * h, +it.y + u[1] * h],
+    u,
+    n: [-u[1], u[0]],
+  };
 }
 function planFoot(it, pts) {
   const K = PL_KINDS[it.k];
@@ -415,15 +527,29 @@ function planFoot(it, pts) {
     w = +it.w / 2,
     d0 = K.inwall ? -W.th : 0,
     d1 = K.inwall ? 0 : it.k === "niche" ? -(+it.dp || 0) : +it.dp || 0;
-  if (it.k === "niche") return [plAt(W, c - w, 0), plAt(W, c + w, 0), plAt(W, c + w, d1), plAt(W, c - w, d1)];
-  return [plAt(W, c - w, d0), plAt(W, c + w, d0), plAt(W, c + w, d1), plAt(W, c - w, d1)];
+  if (it.k === "niche")
+    return [
+      plAt(W, c - w, 0),
+      plAt(W, c + w, 0),
+      plAt(W, c + w, d1),
+      plAt(W, c - w, d1),
+    ];
+  return [
+    plAt(W, c - w, d0),
+    plAt(W, c + w, d0),
+    plAt(W, c + w, d1),
+    plAt(W, c - w, d1),
+  ];
 }
 /* the outer face of the walls: each wall line pushed out by its thickness, neighbours intersected */
 function planOuter(pts) {
   const n = pts.length,
     L = pts.map((_, i) => {
       const W = planWall(i, pts);
-      return { p: [W.a[0] + W.nout[0] * W.th, W.a[1] + W.nout[1] * W.th], u: W.u };
+      return {
+        p: [W.a[0] + W.nout[0] * W.th, W.a[1] + W.nout[1] * W.th],
+        u: W.u,
+      };
     });
   return L.map((l, i) => {
     const m = L[(i - 1 + n) % n],
@@ -441,7 +567,11 @@ function planOuter(pts) {
 function planZoneBottom(it) {
   const z = +it.z || 0,
     h = +it.h || 0;
-  return it.k === "shower" ? 0 : it.k === "cab" ? z + h + (it.ctt != null ? +it.ctt : 1.5) : z + h;
+  return it.k === "shower"
+    ? 0
+    : it.k === "cab"
+      ? z + h + (it.ctt != null ? +it.ctt : 1.5)
+      : z + h;
 }
 /* item extent on its own wall in elevation x (incl. countertop overhang for cabinets) */
 function planItemX(it, W) {
@@ -465,12 +595,41 @@ function planDrain(it) {
       off = Math.max(0, +it.loff || 0),
       vert = side === "left" || side === "right",
       len = Math.max(6, Math.min(vert ? d : w, +it.llen || (vert ? d : w) - 6));
-    if (side === "back") return { type: "linear", x: (w - len) / 2, y: d - off - wid, len, wid, vert: false };
-    if (side === "front") return { type: "linear", x: (w - len) / 2, y: off, len, wid, vert: false };
-    if (side === "left") return { type: "linear", x: off, y: (d - len) / 2, len, wid, vert: true };
-    return { type: "linear", x: w - off - wid, y: (d - len) / 2, len, wid, vert: true };
+    if (side === "back")
+      return {
+        type: "linear",
+        x: (w - len) / 2,
+        y: d - off - wid,
+        len,
+        wid,
+        vert: false,
+      };
+    if (side === "front")
+      return {
+        type: "linear",
+        x: (w - len) / 2,
+        y: off,
+        len,
+        wid,
+        vert: false,
+      };
+    if (side === "left")
+      return { type: "linear", x: off, y: (d - len) / 2, len, wid, vert: true };
+    return {
+      type: "linear",
+      x: w - off - wid,
+      y: (d - len) / 2,
+      len,
+      wid,
+      vert: true,
+    };
   }
-  if (it.drn === "point") return { type: "center", x: Math.max(2, Math.min(w - 2, +it.dl)), y: Math.max(2, Math.min(d - 2, d - +it.db)) };
+  if (it.drn === "point")
+    return {
+      type: "center",
+      x: Math.max(2, Math.min(w - 2, +it.dl)),
+      y: Math.max(2, Math.min(d - 2, d - +it.db)),
+    };
   return { type: "center", x: w / 2, y: d / 2 };
 }
 function planZones(pts) {
@@ -492,7 +651,17 @@ function planZones(pts) {
       if (s1 - s0 < 0.5) return;
       const xa = W.cx(s0),
         xb = W.cx(s1);
-      raw.push({ wall: j, s0, s1, x0: Math.min(xa, xb), x1: Math.max(xa, xb), z0: bot, z1: top, ids: [it.id], k: it.k });
+      raw.push({
+        wall: j,
+        s0,
+        s1,
+        x0: Math.min(xa, xb),
+        x1: Math.max(xa, xb),
+        z0: bot,
+        z1: top,
+        ids: [it.id],
+        k: it.k,
+      });
     };
     {
       const W = planWall(it.wall, pts),
@@ -511,9 +680,19 @@ function planZones(pts) {
       for (let j = 0; j < n; j++) {
         if (j === it.wall) continue;
         const W = planWall(j, pts),
-          ss = Fp.map((q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1]),
-          dd = Fp.map((q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1]);
-        if (Math.min(...dd) > 1 || Math.min(...dd) < -1 || Math.max(...ss) < 0 || Math.min(...ss) > W.L) continue;
+          ss = Fp.map(
+            (q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1],
+          ),
+          dd = Fp.map(
+            (q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1],
+          );
+        if (
+          Math.min(...dd) > 1 ||
+          Math.min(...dd) < -1 ||
+          Math.max(...ss) < 0 ||
+          Math.min(...ss) > W.L
+        )
+          continue;
         if (it.tzsf) add(j, 0, W.L);
         else add(j, Math.min(...ss) - over, Math.max(...ss) + over);
       }
@@ -525,7 +704,12 @@ function planZones(pts) {
     .sort((a, b) => a.wall - b.wall || a.x0 - b.x0)
     .forEach((z) => {
       const p = out[out.length - 1];
-      if (p && p.wall === z.wall && z.x0 <= p.x1 + 0.5 && Math.abs(z.z0 - p.z0) <= 2) {
+      if (
+        p &&
+        p.wall === z.wall &&
+        z.x0 <= p.x1 + 0.5 &&
+        Math.abs(z.z0 - p.z0) <= 2
+      ) {
         p.x1 = Math.max(p.x1, z.x1);
         p.s0 = Math.min(p.s0, z.s0);
         p.s1 = Math.max(p.s1, z.s1);
@@ -574,8 +758,13 @@ function renderPlan() {
   if (V.wsel != null && V.wsel >= n) V.wsel = null;
   let h = `<div class="plhead"><button data-act="plClose">‹ ${pt("plBack")}</button><b>${pt("plT")}</b><button data-act="plUndo" title="Undo">↶</button></div>`;
   h += `<div class="plviews"><button data-act="plView:top" class="${V.v === "top" ? "on" : ""}">▦ ${pt("plTop")}</button>${pl.room.segs
-    .map((g, i) => `<button data-act="plView:${i}" class="${V.v === i ? "on" : ""}">▥ ${i + 1} · ${fmt(+g.l)}</button>`)
-    .join("")}</div>`;
+    .map(
+      (g, i) =>
+        `<button data-act="plView:${i}" class="${V.v === i ? "on" : ""}">▥ ${i + 1} · ${fmt(+g.l)}</button>`,
+    )
+    .join(
+      "",
+    )}<span class="plsep"></span><button data-act="plLayerE" class="lay ${V.hideE ? "" : "on2"}">⚡ ${pt("plElec")}</button>${V.v !== "top" ? `<button data-act="plTiles" class="lay ${V.noTiles ? "" : "on2"}">▦ ${pt("plTilesL")}</button>` : ""}<button data-act="plPdf" class="lay">📄 PDF</button></div>`;
   h += `<div class="plsvg" id="plsvg"></div><div class="plsheet" id="plsheet">${planSheet()}</div>`;
   el.innerHTML = h;
   planDraw();
@@ -584,7 +773,8 @@ function planSheet() {
   const pl = P.plan,
     V = S.plan,
     idx = pl.items.findIndex((x) => x.id === V.sel);
-  const B = (act, label, cls = "") => `<button class="btn sm ${cls}" data-act="${act}">${label}</button>`;
+  const B = (act, label, cls = "") =>
+    `<button class="btn sm ${cls}" data-act="${act}">${label}</button>`;
   if (idx >= 0) {
     const it = pl.items[idx],
       K = PL_KINDS[it.k],
@@ -592,48 +782,75 @@ function planSheet() {
     let h = `<h4>${K.ic} ${pt("k_" + it.k)}</h4><div class="grid2">`;
     if (!K.floor) {
       h += `<label class="f"><span>${pt("plWall")}</span><select data-k="${p}wall" data-sc="p" data-t="sel" data-rb="1">${pl.room.segs
-        .map((_, i) => `<option value="${i}" ${i === +it.wall ? "selected" : ""}>${pt("plWall")} ${i + 1}</option>`)
+        .map(
+          (_, i) =>
+            `<option value="${i}" ${i === +it.wall ? "selected" : ""}>${pt("plWall")} ${i + 1}</option>`,
+        )
         .join("")}</select></label>`;
       h += F(pt("plC"), p + "c", "len", "p");
     } else {
-      h += F(pt("plX"), p + "x", "len", "p") + F(pt("plY"), p + "y", "len", "p");
+      h +=
+        F(pt("plX"), p + "x", "len", "p") + F(pt("plY"), p + "y", "len", "p");
     }
     if (!K.pt) h += F(K.glass ? pt("plGl") : pt("plW"), p + "w", "len", "p");
     if (K.glass) {
-      h += F(pt("plAng"), p + "ang", "num", "p") + F(pt("plHh"), p + "h", "len", "p") + F(pt("plGz"), p + "z", "len", "p");
-      h += SEL(pt("plGdoor"), p + "door", ["none", "a", "b"], 1, "p", "", (o) => pt("gd_" + o));
+      h +=
+        F(pt("plAng"), p + "ang", "num", "p") +
+        F(pt("plHh"), p + "h", "len", "p") +
+        F(pt("plGz"), p + "z", "len", "p");
+      h += SEL(pt("plGdoor"), p + "door", ["none", "a", "b"], 1, "p", "", (o) =>
+        pt("gd_" + o),
+      );
       if (it.door !== "none") h += F(pt("plDw"), p + "dw", "len", "p");
     }
-    if (!K.inwall && !K.pt && !K.floor) h += F(pt("plDp"), p + "dp", "len", "p");
+    if (!K.inwall && !K.pt && !K.floor)
+      h += F(pt("plDp"), p + "dp", "len", "p");
     if (it.k === "register") h += F(pt("plDp"), p + "dp", "len", "p");
     if (it.k === "niche") h += F(pt("plDp"), p + "dp", "len", "p");
     if (!K.floor && it.k !== "shower") h += F(pt("plHh"), p + "h", "len", "p");
-    if (["window", "ucab", "mirror", "niche", "shelf"].includes(it.k)) h += F(pt("plZ"), p + "z", "len", "p");
+    if (["window", "ucab", "mirror", "niche", "shelf"].includes(it.k))
+      h += F(pt("plZ"), p + "z", "len", "p");
     if (K.pt) h += F(pt("plZc"), p + "z", "len", "p");
     if (it.k === "toilet") h += F(pt("plRi"), p + "ri", "len", "p");
     if (it.k === "cab")
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
       h += `</div><p class="hsec">${pt("plDrain")}</p><div class="grid2">${SEL(pt("plDrain"), p + "drn", ["center", "point", "linear"], 1, "p", "", (o) => pt("drn_" + o))}`;
-      if (it.drn === "point") h += F(pt("plDl"), p + "dl", "len", "p") + F(pt("plDb"), p + "db", "len", "p");
+      if (it.drn === "point")
+        h +=
+          F(pt("plDl"), p + "dl", "len", "p") +
+          F(pt("plDb"), p + "db", "len", "p");
       if (it.drn === "linear")
         h +=
-          SEL(pt("plLside"), p + "lside", ["back", "left", "right", "front"], 1, "p", "", (o) => pt("ls_" + o)) +
+          SEL(
+            pt("plLside"),
+            p + "lside",
+            ["back", "left", "right", "front"],
+            1,
+            "p",
+            "",
+            (o) => pt("ls_" + o),
+          ) +
           F(pt("plLoff"), p + "loff", "len", "p") +
           F(pt("plLlen"), p + "llen", "len", "p");
-      if (it.drn === "point") h += `<p class="hint" style="grid-column:1/-1">${pt("plDhint").replace("{r}", fmt(+it.w - +it.dl)).replace("{f}", fmt(+it.dp - +it.db))}</p>`;
+      if (it.drn === "point")
+        h += `<p class="hint" style="grid-column:1/-1">${pt("plDhint")
+          .replace("{r}", fmt(+it.w - +it.dl))
+          .replace("{f}", fmt(+it.dp - +it.db))}</p>`;
     }
     if (K.tzh != null) {
       h += `</div>${CHK(pt("plTz"), p + "tz", 1, "p")}`;
       if (it.tz) {
         h += `<div class="grid2">${F(pt("plTzh"), p + "tzh", "len", "p")}</div>`;
         h += CHK(pt("plTzf"), p + "tzf", 1, "p");
-        if (!it.tzf) h += `<div class="grid2">${F(pt("plTzl"), p + "tzl", "len", "p")}${F(pt("plTzr"), p + "tzr", "len", "p")}</div>`;
+        if (!it.tzf)
+          h += `<div class="grid2">${F(pt("plTzl"), p + "tzl", "len", "p")}${F(pt("plTzr"), p + "tzr", "len", "p")}</div>`;
         if (K.side) {
           h += CHK(pt("plTzs"), p + "tzs", 1, "p");
           if (it.tzs) {
             h += CHK(pt("plTzsf"), p + "tzsf", 1, "p");
-            if (!it.tzsf) h += `<div class="grid2">${F(pt("plTzo"), p + "tzo", "len", "p")}</div>`;
+            if (!it.tzsf)
+              h += `<div class="grid2">${F(pt("plTzo"), p + "tzo", "len", "p")}</div>`;
           }
         }
         const zs = planZones(planPts()).filter((z) => z.ids.includes(it.id));
@@ -643,10 +860,22 @@ function planSheet() {
       h += `<div class="grid2">`;
     }
     if (it.k === "door") {
-      h += SEL(pt("plDtype"), p + "dtype", ["swing", "pocket", "slide", "opening"], 1, "p", "", (o) => pt(o));
+      h += SEL(
+        pt("plDtype"),
+        p + "dtype",
+        ["swing", "pocket", "slide", "opening"],
+        1,
+        "p",
+        "",
+        (o) => pt(o),
+      );
       if (it.dtype === "swing") {
-        h += SEL(pt("plSwing"), p + "swing", ["in", "out"], 1, "p", "", (o) => pt("sw_" + o));
-        h += SEL(pt("plHinge"), p + "hinge", ["a", "b"], 1, "p", "", (o) => pt("hg_" + o));
+        h += SEL(pt("plSwing"), p + "swing", ["in", "out"], 1, "p", "", (o) =>
+          pt("sw_" + o),
+        );
+        h += SEL(pt("plHinge"), p + "hinge", ["a", "b"], 1, "p", "", (o) =>
+          pt("hg_" + o),
+        );
         h += F(pt("plDt"), p + "dt", "len", "p");
       }
     }
@@ -655,9 +884,12 @@ function planSheet() {
       const W = planWall(it.wall);
       h += `<p class="hint">${pt("plEdges")}: ${fmt(+it.c - it.w / 2)} · ${fmt(W.L - +it.c - it.w / 2)} ${pt("plCs")}</p>`;
     }
-    if (K.glass) h += `<div class="btns">${B("plGlassPan", "⤓ " + pt("plGpan"))}${B("plGlassFlip", "⇅ " + pt("plGflip"))}${B("plGlassRot", "↻ 90°")}</div>`;
+    if (it.k === "outlet") h += CHK("GFCI", p + "gfci", 1, "p");
+    if (K.glass)
+      h += `<div class="btns">${B("plGlassPan", "⤓ " + pt("plGpan"))}${B("plGlassFlip", "⇅ " + pt("plGflip"))}${B("plGlassRot", "↻ 90°")}</div>`;
     const warn = planChecks().filter((w) => w.id === it.id);
-    if (warn.length) h += `<div class="note">${warn.map((w) => "⚠ " + w.msg).join("<br>")}</div>`;
+    if (warn.length)
+      h += `<div class="note">${warn.map((w) => "⚠ " + w.msg).join("<br>")}</div>`;
     h += `<div class="btns plnudge">${B("plNudge:-1:0", "←")}${B("plNudge:1:0", "→")}${B("plNudge:0:1", "↑")}${B("plNudge:0:-1", "↓")}${B("plDup", pt("plDup"))}${B("plDel", pt("plDel"), "danger")}</div>`;
     return h;
   }
@@ -666,12 +898,19 @@ function planSheet() {
       w = pl.walls[i];
     let h = `<h4>▥ ${pt("plWall")} ${i + 1}</h4><div class="grid2">${F(pt("plLen"), `plan.room.segs.${i}.l`, "len", "p")}${F(pt("plTurn"), `plan.room.segs.${i}.a`, "num", "p")}${F(pt("plTh"), `plan.walls.${i}.th`, "len", "p")}</div>`;
     h += CHK(pt("plTile"), `plan.walls.${i}.tile`, 1, "p");
-    if (w.tile) h += `<div class="grid2">${F(pt("plTileH"), `plan.walls.${i}.tileH`, "len", "p")}</div>`;
-    h += `<p class="hsec">${pt("plAddHere")}</p><div class="pllib">${PL_ORDER.filter((k) => !PL_KINDS[k].floor)
-      .map((k) => `<button data-act="plAdd:${k}:${i}"><span>${PL_KINDS[k].ic}</span>${pt("k_" + k)}</button>`)
+    if (w.tile)
+      h += `<div class="grid2">${F(pt("plTileH"), `plan.walls.${i}.tileH`, "len", "p")}</div>`;
+    h += `<p class="hsec">${pt("plAddHere")}</p><div class="pllib">${PL_ORDER.filter(
+      (k) => !PL_KINDS[k].floor,
+    )
+      .map(
+        (k) =>
+          `<button data-act="plAdd:${k}:${i}"><span>${PL_KINDS[k].ic}</span>${pt("k_" + k)}</button>`,
+      )
       .join("")}</div>`;
     const sf = P.surfaces.findIndex((s) => s.fromPlan === "w" + i);
-    if (sf >= 0) h += `<div class="btns">${B("plGo:" + sf, "▦ " + pt("plOpen"))}</div>`;
+    if (sf >= 0)
+      h += `<div class="btns">${B("plGo:" + sf, "▦ " + pt("plOpen"))}</div>`;
     return h;
   }
   // room
@@ -679,7 +918,8 @@ function planSheet() {
   let h = `<div class="btns">${B("plAdd:door", pt("plAddDoor"))}${B("plAdd:window", pt("plAddWin"))}${B("plLib", pt("plAddItem"), "p")}</div>`;
   h += `<p class="hint">${pt("plNone")}</p>`;
   const W2 = planChecks();
-  if (W2.length) h += `<div class="note"><b>${pt("plChk")}</b><br>${W2.map((w) => "⚠ " + w.msg).join("<br>")}</div>`;
+  if (W2.length)
+    h += `<div class="note"><b>${pt("plChk")}</b><br>${W2.map((w) => "⚠ " + w.msg).join("<br>")}</div>`;
   else if (pl.items.length) h += `<p class="hint">✓ ${pt("plChkOk")}</p>`;
   if (wk.gap > 0.1)
     h += `<div class="note">⚠ ${pt("plGap")}: ${fmt(wk.gap)} <button class="btn sm" data-act="plFit">${pt("plFit")}</button></div>`;
@@ -689,16 +929,27 @@ function planSheet() {
       (g, i) =>
         `<div class="plwrow"><b data-act="plWsel:${i}">${i + 1}</b>${F(pt("plLen"), `plan.room.segs.${i}.l`, "len", "p")}${F(pt("plTurn"), `plan.room.segs.${i}.a`, "num", "p")}${F(pt("plTh"), `plan.walls.${i}.th`, "len", "p")}<button class="btn sm" data-act="plWdel:${i}" ${pl.room.segs.length <= 3 ? "disabled" : ""}>✕</button></div>`,
     )
-    .join("")}</div><div class="btns">${B("plWadd", "+ " + pt("plWall"))}</div>`;
+    .join(
+      "",
+    )}</div><div class="btns">${B("plWadd", "+ " + pt("plWall"))}</div>`;
   h += `<p class="hsec">${pt("plTpl")}</p><div class="btns">${["bath58", "walkin", "kitchen"].map((k2) => B("plTpl:" + k2, pt("tpl_" + k2))).join("")}</div>`;
   h += `<div class="btns">${B("plBuild", "⇄ " + pt("plBuild"), "p")}${P.surfaces.some((s) => s.type === "floor") ? B("plFromFloor", pt("plFromFloor")) : ""}</div><p class="hint">${pt("plBuildHint")}</p>`;
   return h;
 }
 
 /* ---------- drawing ---------- */
-const PLC = { wall: "#4a4743", cut: "#d0342c", sel: "#e07a1f", dim: "#1d5fa8", item: "#141414", fill: "#f6f3ec" };
+const PLC = {
+  wall: "#4a4743",
+  cut: "#d0342c",
+  sel: "#e07a1f",
+  dim: "#1d5fa8",
+  item: "#141414",
+  fill: "#f6f3ec",
+};
 function plText(x, y, s, size, o = {}) {
-  const rot = o.rot ? ` transform="rotate(${o.rot.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)})"` : "";
+  const rot = o.rot
+    ? ` transform="rotate(${o.rot.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)})"`
+    : "";
   return `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${size.toFixed(2)}" text-anchor="middle" dominant-baseline="central" fill="${o.fill || PLC.dim}" font-weight="${o.fw || 700}" font-family="${FONT}" paint-order="stroke" stroke="${o.bg || "#fff"}" stroke-width="${(size * 0.28).toFixed(2)}"${rot}>${esc(s)}</text>`;
 }
 /* dimension line from p to q (screen coords), text above */
@@ -716,12 +967,20 @@ function plDim(p, q, label, k, off) {
   let ang = (Math.atan2(uy, ux) * 180) / Math.PI;
   if (ang > 90) ang -= 180;
   if (ang <= -90) ang += 180;
-  const sl = (c) => `M${(c[0] - (ux - nx) * tk * 0.7).toFixed(2)} ${(c[1] - (uy - ny) * tk * 0.7).toFixed(2)}L${(c[0] + (ux - nx) * tk * 0.7).toFixed(2)} ${(c[1] + (uy - ny) * tk * 0.7).toFixed(2)}`;
+  const sl = (c) =>
+    `M${(c[0] - (ux - nx) * tk * 0.7).toFixed(2)} ${(c[1] - (uy - ny) * tk * 0.7).toFixed(2)}L${(c[0] + (ux - nx) * tk * 0.7).toFixed(2)} ${(c[1] + (uy - ny) * tk * 0.7).toFixed(2)}`;
   let h = `<path d="M${p[0].toFixed(2)} ${p[1].toFixed(2)}L${(a[0] + nx * 3 * k).toFixed(2)} ${(a[1] + ny * 3 * k).toFixed(2)}M${q[0].toFixed(2)} ${q[1].toFixed(2)}L${(b[0] + nx * 3 * k).toFixed(2)} ${(b[1] + ny * 3 * k).toFixed(2)}" stroke="${PLC.dim}" stroke-width="${(0.6 * k).toFixed(2)}" opacity=".55"/>`;
   h += `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}${sl(a)}${sl(b)}" stroke="${PLC.dim}" stroke-width="${(1 * k).toFixed(2)}" fill="none"/>`;
   if (label && L > 9 * k) {
     const fs = Math.min(11 * k, (L / Math.max(3, label.length * 0.62)) * 1.05);
-    if (fs > 6.5 * k) h += plText((a[0] + b[0]) / 2 + nx * 7 * k, (a[1] + b[1]) / 2 + ny * 7 * k, label, fs, { rot: ang });
+    if (fs > 6.5 * k)
+      h += plText(
+        (a[0] + b[0]) / 2 + nx * 7 * k,
+        (a[1] + b[1]) / 2 + ny * 7 * k,
+        label,
+        fs,
+        { rot: ang },
+      );
   }
   return h;
 }
@@ -730,17 +989,43 @@ function planDraw() {
   if (!box || !S.plan) return;
   const W0 = box.clientWidth || 360,
     H0 = box.clientHeight || 360;
-  box.innerHTML = S.plan.v === "top" ? planTopSVG(W0, H0) : planElevSVG(+S.plan.v, W0, H0);
+  box.innerHTML =
+    S.plan.v === "top" ? planTopSVG(W0, H0) : planElevSVG(+S.plan.v, W0, H0);
+  plZoomApply();
 }
+/* pinch zoom: S.plan.z = scale, zx/zy = offset of the visible window from the fitted one (plan units) */
+function plZoomApply() {
+  const V = S.plan,
+    svg = $("#plsvg svg");
+  if (!svg) return;
+  const b = svg.getAttribute("viewBox").split(" ").map(Number);
+  svg.dataset.vb0 = b.join(" ");
+  if (!(V.z > 1.01)) return;
+  svg.setAttribute(
+    "viewBox",
+    `${b[0] + (V.zx || 0)} ${b[1] + (V.zy || 0)} ${b[2] / V.z} ${b[3] / V.z}`,
+  );
+  svg.dataset.k = String((+svg.dataset.k || 1) / V.z);
+}
+let PLPRINT = null; // {k} while rendering sheets for the PDF
 function plFit(bb, W0, H0, pad) {
   const w = bb.x1 - bb.x0 || 1,
     h = bb.y1 - bb.y0 || 1,
-    k = Math.max(w / Math.max(40, W0 - 2 * pad), h / Math.max(40, H0 - 2 * pad));
+    k =
+      PLPRINT && PLPRINT.k
+        ? PLPRINT.k
+        : Math.max(
+            w / Math.max(40, W0 - 2 * pad),
+            h / Math.max(40, H0 - 2 * pad),
+          );
   const vw = W0 * k,
     vh = H0 * k,
     x0 = (bb.x0 + bb.x1) / 2 - vw / 2,
     y0 = (bb.y0 + bb.y1) / 2 - vh / 2;
-  return { k, vb: `${x0.toFixed(2)} ${y0.toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}` };
+  return {
+    k,
+    vb: `${x0.toFixed(2)} ${y0.toFixed(2)} ${vw.toFixed(2)} ${vh.toFixed(2)}`,
+  };
 }
 function planTopSVG(W0, H0) {
   const pl = P.plan,
@@ -750,7 +1035,14 @@ function planTopSVG(W0, H0) {
     out = planOuter(pts),
     // screen coords: y down
     sp = (p) => [p[0], -p[1]],
-    pd = (A) => "M" + A.map((q) => sp(q).map((v) => v.toFixed(2)).join(" ")).join("L") + "Z";
+    pd = (A) =>
+      "M" +
+      A.map((q) =>
+        sp(q)
+          .map((v) => v.toFixed(2))
+          .join(" "),
+      ).join("L") +
+      "Z";
   const ob = bboxOf(out),
     m = 34,
     bb = { x0: ob.x0 - m, x1: ob.x1 + m, y0: -ob.y1 - m, y1: -ob.y0 + m },
@@ -790,7 +1082,11 @@ function planTopSVG(W0, H0) {
     h += `<path d="M${a[0]} ${a[1]}L${b[0]} ${b[1]}" stroke="#2f7fd0" stroke-width="${2.6 * k}" opacity=".75"/>`;
   });
   // items
-  pl.items.forEach((it) => (h += planItemTop(it, pts, k, it.id === V.sel)));
+  pl.items
+    .filter((it) => !(V.hideE && PL_KINDS[it.k].el))
+    .forEach(
+      (it) => (h += planItemTop(it, pts, k, !PLPRINT && it.id === V.sel)),
+    );
   // dimensions outside each wall: chain of item edges + overall
   for (let i = 0; i < n; i++) {
     const W = planWall(i, pts),
@@ -801,7 +1097,11 @@ function planTopSVG(W0, H0) {
         if (PL_KINDS[it.k].pt || it.k === "toilet") br.push(+it.c);
         else br.push(+it.c - it.w / 2, +it.c + it.w / 2);
       });
-    const S2 = [...new Set(br.map((v) => Math.round(Math.max(0, Math.min(W.L, v)) * 16) / 16))].sort((x, y) => x - y);
+    const S2 = [
+      ...new Set(
+        br.map((v) => Math.round(Math.max(0, Math.min(W.L, v)) * 16) / 16),
+      ),
+    ].sort((x, y) => x - y);
     const base = (s) => sp(plAt(W, s, -W.th)),
       // offsets are to the left of the a->b direction in screen space; flip sign so it points outward
       sideSign = (() => {
@@ -816,20 +1116,34 @@ function planTopSVG(W0, H0) {
       })();
     if (S2.length > 2)
       for (let j = 0; j < S2.length - 1; j++)
-        if (S2[j + 1] - S2[j] > 0.05) h += plDim(base(S2[j]), base(S2[j + 1]), fmt(S2[j + 1] - S2[j]), k, sideSign * 12 * k);
-    h += plDim(base(0), base(W.L), fmt(W.L), k, sideSign * (S2.length > 2 ? 26 : 12) * k);
+        if (S2[j + 1] - S2[j] > 0.05)
+          h += plDim(
+            base(S2[j]),
+            base(S2[j + 1]),
+            fmt(S2[j + 1] - S2[j]),
+            k,
+            sideSign * 12 * k,
+          );
+    h += plDim(
+      base(0),
+      base(W.L),
+      fmt(W.L),
+      k,
+      sideSign * (S2.length > 2 ? 26 : 12) * k,
+    );
   }
   // code checks
-  planChecks().forEach((w) => {
+  (PLPRINT ? [] : planChecks()).forEach((w) => {
     if (!w.p) return;
     const q = sp(w.p);
     h += `<g><circle cx="${q[0]}" cy="${q[1]}" r="${6.5 * k}" fill="#d0342c"/>${plText(q[0], q[1], "!", 9 * k, { fill: "#fff", bg: "none", fw: 800 })}</g>`;
   });
   // corner handles
-  pts.forEach((q, i) => {
-    const c = sp(q);
-    h += `<g data-pc="${i}"><circle cx="${c[0]}" cy="${c[1]}" r="${14 * k}" fill="transparent"/><circle cx="${c[0]}" cy="${c[1]}" r="${4.5 * k}" fill="#fff" stroke="${PLC.dim}" stroke-width="${1.6 * k}"/></g>`;
-  });
+  if (!PLPRINT)
+    pts.forEach((q, i) => {
+      const c = sp(q);
+      h += `<g data-pc="${i}"><circle cx="${c[0]}" cy="${c[1]}" r="${14 * k}" fill="transparent"/><circle cx="${c[0]}" cy="${c[1]}" r="${4.5 * k}" fill="#fff" stroke="${PLC.dim}" stroke-width="${1.6 * k}"/></g>`;
+    });
   // odd angles
   const A = cornerAngles(pts);
   pts.forEach((q, i) => {
@@ -839,14 +1153,21 @@ function planTopSVG(W0, H0) {
       d = [W.nin[0] + Wp.nin[0], W.nin[1] + Wp.nin[1]],
       dl = Math.hypot(d[0], d[1]) || 1,
       p = sp([q[0] + (d[0] / dl) * 16 * k, q[1] + (d[1] / dl) * 16 * k]);
-    h += plText(p[0], p[1], Math.round(A[i] * 10) / 10 + "°", 9 * k, { fill: "#b4441b" });
+    h += plText(p[0], p[1], Math.round(A[i] * 10) / 10 + "°", 9 * k, {
+      fill: "#b4441b",
+    });
   });
   return h + `</svg>`;
 }
 function planItemTop(it, pts, k, sel) {
   const K = PL_KINDS[it.k],
     sp = (p) => [p[0], -p[1]],
-    P2 = (A) => A.map((q) => sp(q).map((v) => v.toFixed(2)).join(",")).join(" "),
+    P2 = (A) =>
+      A.map((q) =>
+        sp(q)
+          .map((v) => v.toFixed(2))
+          .join(","),
+      ).join(" "),
     stc = sel ? PLC.sel : PLC.item,
     sw = (sel ? 2 : 1.1) * k;
   const g = (inner) => `<g data-pi="${it.id}" style="cursor:move">${inner}</g>`;
@@ -857,7 +1178,8 @@ function planItemTop(it, pts, k, sel) {
       at2 = (s2) => sp([G.A[0] + G.u[0] * s2, G.A[1] + G.u[1] * s2]),
       dS = it.door === "b" ? L - dw : 0,
       dE = dS + dw,
-      gl = (s0, s1) => `<path d="M${at2(s0).join(" ")}L${at2(s1).join(" ")}" stroke="#5aa0d8" stroke-width="${2.6 * k}"/><path d="M${at2(s0).join(" ")}L${at2(s1).join(" ")}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
+      gl = (s0, s1) =>
+        `<path d="M${at2(s0).join(" ")}L${at2(s1).join(" ")}" stroke="#5aa0d8" stroke-width="${2.6 * k}"/><path d="M${at2(s0).join(" ")}L${at2(s1).join(" ")}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
     let h = `<path d="M${at2(0).join(" ")}L${at2(L).join(" ")}" stroke="transparent" stroke-width="${16 * k}"/>`;
     if (dw < L) h += dS > 0 ? gl(0, dS) : gl(dE, L);
     if (dw > 0) {
@@ -868,12 +1190,27 @@ function planItemTop(it, pts, k, sel) {
         tip = sp([hp[0] + G.n[0] * dw * sn, hp[1] + G.n[1] * dw * sn]),
         fp = at2(freeS),
         hq = sp(hp),
-        ctl = sp([hp[0] + (G.u[0] * (freeS - hingeS)) / 2 + G.n[0] * dw * sn * 0.6, hp[1] + (G.u[1] * (freeS - hingeS)) / 2 + G.n[1] * dw * sn * 0.6]),
-        cr = (A2, B2, C2) => (B2[0] - A2[0]) * (C2[1] - A2[1]) - (B2[1] - A2[1]) * (C2[0] - A2[0]);
+        ctl = sp([
+          hp[0] + (G.u[0] * (freeS - hingeS)) / 2 + G.n[0] * dw * sn * 0.6,
+          hp[1] + (G.u[1] * (freeS - hingeS)) / 2 + G.n[1] * dw * sn * 0.6,
+        ]),
+        cr = (A2, B2, C2) =>
+          (B2[0] - A2[0]) * (C2[1] - A2[1]) - (B2[1] - A2[1]) * (C2[0] - A2[0]);
       h += `<path d="M${hq.join(" ")}L${tip.join(" ")}" stroke="#5aa0d8" stroke-width="${2.2 * k}"/>`;
       h += `<path d="M${tip.join(" ")}A${dw} ${dw} 0 0 ${cr(tip, fp, ctl) > 0 ? 0 : 1} ${fp.join(" ")}" fill="none" stroke="${stc}" stroke-width="${0.8 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
     }
     return g(h);
+  }
+  if (K.ceil) {
+    const c = sp([+it.x, +it.y]),
+      r = Math.max(+it.w / 2, 4 * k);
+    if (it.k === "fan")
+      return g(
+        `<rect x="${c[0] - r}" y="${c[1] - r}" width="${2 * r}" height="${2 * r}" fill="#fff" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${2 * k} ${1.5 * k}"/><path d="M${c[0] - r} ${c[1] - r}L${c[0] + r} ${c[1] + r}M${c[0] + r} ${c[1] - r}L${c[0] - r} ${c[1] + r}" stroke="${stc}" stroke-width="${0.6 * k}"/>${plText(c[0], c[1] + r + 5 * k, "FAN", 6 * k, { fill: stc, fw: 600 })}`,
+      );
+    return g(
+      `<circle cx="${c[0]}" cy="${c[1]}" r="${r}" fill="#fff" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${2 * k} ${1.5 * k}"/><path d="M${c[0] - r * 0.7} ${c[1] - r * 0.7}L${c[0] + r * 0.7} ${c[1] + r * 0.7}M${c[0] + r * 0.7} ${c[1] - r * 0.7}L${c[0] - r * 0.7} ${c[1] + r * 0.7}" stroke="${stc}" stroke-width="${0.6 * k}"/>`,
+    );
   }
   if (K.floor) {
     const c = sp([+it.x, +it.y]);
@@ -890,7 +1227,8 @@ function planItemTop(it, pts, k, sel) {
     c = +it.c,
     w = +it.w,
     at = (s, d) => sp(plAt(W, s, d)),
-    poly = (A) => `<polygon points="${A.map((q) => q.map((v) => v.toFixed(2)).join(",")).join(" ")}"`,
+    poly = (A) =>
+      `<polygon points="${A.map((q) => q.map((v) => v.toFixed(2)).join(",")).join(" ")}"`,
     rect = (s0, s1, d0, d1) => [at(s0, d0), at(s1, d0), at(s1, d1), at(s0, d1)],
     ang = (Math.atan2(-W.u[1], W.u[0]) * 180) / Math.PI;
   const ell = (sc, dc, rs, rd) => {
@@ -902,7 +1240,11 @@ function planItemTop(it, pts, k, sel) {
     let a2 = ang;
     if (a2 > 90) a2 -= 180;
     if (a2 <= -90) a2 += 180;
-    return plText(q[0], q[1], txt, fs || 8 * k, { fill: "#6b665c", fw: 600, rot: a2 });
+    return plText(q[0], q[1], txt, fs || 8 * k, {
+      fill: "#6b665c",
+      fw: 600,
+      rot: a2,
+    });
   };
   let h = "";
   const s0 = c - w / 2,
@@ -910,7 +1252,8 @@ function planItemTop(it, pts, k, sel) {
     dp = +it.dp || 0;
   switch (it.k) {
     case "door": {
-      h += poly(rect(s0, s1, -W.th - 0.5, 0.5)) + ` fill="#fff" stroke="none"/>`;
+      h +=
+        poly(rect(s0, s1, -W.th - 0.5, 0.5)) + ` fill="#fff" stroke="none"/>`;
       h += `<path d="M${at(s0, -W.th).join(" ")}L${at(s0, 0).join(" ")}M${at(s1, -W.th).join(" ")}L${at(s1, 0).join(" ")}" stroke="${PLC.wall}" stroke-width="${1.4 * k}"/>`;
       const hs = it.hinge === "b" ? s1 : s0,
         fs = it.hinge === "b" ? s0 : s1;
@@ -923,43 +1266,77 @@ function planItemTop(it, pts, k, sel) {
           fp = at(fs, d0);
         // the arc's sweep flag depends on the wall direction; pick the one that bulges into the swing side
         const ctl = at((hs + fs) / 2, d0 + dir * w * 0.6),
-          cr = (A, B, C) => (B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0]);
+          cr = (A, B, C) =>
+            (B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0]);
         const sweep = cr(tip, fp, ctl) > 0 ? 0 : 1;
         h += `<path d="M${hp.join(" ")}L${tip.join(" ")}" stroke="${stc}" stroke-width="${sw * 1.4}"/>`;
         h += `<path d="M${tip.join(" ")}A${w} ${w} 0 0 ${sweep} ${fp.join(" ")}" fill="none" stroke="${stc}" stroke-width="${0.8 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
       } else if (it.dtype === "pocket") {
-        h += poly(rect(fs > hs ? s0 - w : s1, fs > hs ? s0 : s1 + w, -W.th / 2 - 0.9, -W.th / 2 + 0.9)) + ` fill="none" stroke="${stc}" stroke-width="${0.9 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
-        h += poly(rect(s0, s0 + w * 0.15, -W.th / 2 - 0.9, -W.th / 2 + 0.9)) + ` fill="${stc}"/>`;
+        h +=
+          poly(
+            rect(
+              fs > hs ? s0 - w : s1,
+              fs > hs ? s0 : s1 + w,
+              -W.th / 2 - 0.9,
+              -W.th / 2 + 0.9,
+            ),
+          ) +
+          ` fill="none" stroke="${stc}" stroke-width="${0.9 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
+        h +=
+          poly(rect(s0, s0 + w * 0.15, -W.th / 2 - 0.9, -W.th / 2 + 0.9)) +
+          ` fill="${stc}"/>`;
       } else if (it.dtype === "slide") {
-        h += poly(rect(s0 - 2, s1 + 2, 1.5, 3.2)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+        h +=
+          poly(rect(s0 - 2, s1 + 2, 1.5, 3.2)) +
+          ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
       }
       h += poly(rect(s0, s1, -W.th, 0)) + ` fill="transparent"/>`;
       h += lbl(c, -W.th / 2, `${fmtIn(w)}`, 7 * k);
       break;
     }
     case "window":
-      h += poly(rect(s0, s1, -W.th, 0)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(s0, s1, -W.th, 0)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
       h += `<path d="M${at(s0, -W.th / 2).join(" ")}L${at(s1, -W.th / 2).join(" ")}M${at(s0, -W.th / 2 - 1).join(" ")}L${at(s1, -W.th / 2 - 1).join(" ")}" stroke="${PLC.dim}" stroke-width="${0.8 * k}"/>`;
       break;
     case "toilet": {
-      h += poly(rect(c - 9.5, c + 9.5, 0, 8)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
-      h += ell(c, 8 + (Math.max(dp, 20) - 8) / 2, Math.min(w, 20) * 0.38, (Math.max(dp, 20) - 8) / 2) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(c - 9.5, c + 9.5, 0, 8)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        ell(
+          c,
+          8 + (Math.max(dp, 20) - 8) / 2,
+          Math.min(w, 20) * 0.38,
+          (Math.max(dp, 20) - 8) / 2,
+        ) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
       const f = at(c, +it.ri || 12);
       h += `<path d="M${f[0] - 2} ${f[1]}h4M${f[0]} ${f[1] - 2}v4" stroke="${PLC.cut}" stroke-width="${0.8 * k}"/>`;
       break;
     }
     case "vanity":
-      h += poly(rect(s0, s1, 0, dp)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
-      h += ell(c, dp * 0.52, Math.min(w * 0.3, 9), dp * 0.27) + ` fill="none" stroke="${stc}" stroke-width="${0.8 * k}"/>`;
+      h +=
+        poly(rect(s0, s1, 0, dp)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        ell(c, dp * 0.52, Math.min(w * 0.3, 9), dp * 0.27) +
+        ` fill="none" stroke="${stc}" stroke-width="${0.8 * k}"/>`;
       h += lbl(c, dp - 3, pt("k_vanity"));
       break;
     case "tub":
-      h += poly(rect(s0, s1, 0, dp)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
-      h += poly(rect(s0 + 3, s1 - 3, 3, dp - 3)) + ` fill="none" stroke="${stc}" stroke-width="${0.8 * k}" rx="4"/>`;
+      h +=
+        poly(rect(s0, s1, 0, dp)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(s0 + 3, s1 - 3, 3, dp - 3)) +
+        ` fill="none" stroke="${stc}" stroke-width="${0.8 * k}" rx="4"/>`;
       h += lbl(c, dp / 2, pt("k_tub"));
       break;
     case "shower": {
-      h += poly(rect(s0, s1, 0, dp)) + ` fill="#eef3f8" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(s0, s1, 0, dp)) +
+        ` fill="#eef3f8" stroke="${stc}" stroke-width="${sw}"/>`;
       const D = planDrain(it),
         // pan x (as seen facing the back wall) -> distance along the wall
         sx = (x) => (W.flip ? s1 - x : s0 + x),
@@ -969,7 +1346,13 @@ function planItemTop(it, pts, k, sel) {
           xb = D.vert ? D.x + D.wid : D.x + D.len,
           ya = D.y,
           yb = D.vert ? D.y + D.len : D.y + D.wid;
-        h += poly([at(sx(xa), ty(ya)), at(sx(xb), ty(ya)), at(sx(xb), ty(yb)), at(sx(xa), ty(yb))]) + ` fill="#555" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
+        h +=
+          poly([
+            at(sx(xa), ty(ya)),
+            at(sx(xb), ty(ya)),
+            at(sx(xb), ty(yb)),
+            at(sx(xa), ty(yb)),
+          ]) + ` fill="#555" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
       } else {
         const q = at(sx(D.x), ty(D.y));
         h += `<path d="M${at(s0, 0).join(" ")}L${q.join(" ")}L${at(s1, 0).join(" ")}M${at(s0, dp).join(" ")}L${q.join(" ")}L${at(s1, dp).join(" ")}" fill="none" stroke="${stc}" stroke-width="${0.5 * k}" opacity=".35"/>`;
@@ -980,12 +1363,23 @@ function planItemTop(it, pts, k, sel) {
     case "cab":
     case "fridge":
     case "range":
-      h += poly(rect(s0, s1, 0, dp)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(s0, s1, 0, dp)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
       if (it.k === "cab") {
         const e = planItemX(it, W),
           sa = W.cx(e[0]),
           sb = W.cx(e[1]);
-        h += poly(rect(Math.min(sa, sb), Math.max(sa, sb), 0, dp + Math.max(0, +it.ctf || 0))) + ` fill="none" stroke="${stc}" stroke-width="${0.7 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
+        h +=
+          poly(
+            rect(
+              Math.min(sa, sb),
+              Math.max(sa, sb),
+              0,
+              dp + Math.max(0, +it.ctf || 0),
+            ),
+          ) +
+          ` fill="none" stroke="${stc}" stroke-width="${0.7 * k}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
       }
       if (it.k === "range")
         [
@@ -1001,23 +1395,48 @@ function planItemTop(it, pts, k, sel) {
       break;
     case "ucab":
     case "shelf":
-      h += poly(rect(s0, s1, 0, dp)) + ` fill="none" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${4 * k} ${3 * k}"/>`;
+      h +=
+        poly(rect(s0, s1, 0, dp)) +
+        ` fill="none" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${4 * k} ${3 * k}"/>`;
       break;
     case "mirror":
-      h += poly(rect(s0, s1, 0, 1)) + ` fill="#cfe3f2" stroke="${stc}" stroke-width="${sw}"/>`;
+      h +=
+        poly(rect(s0, s1, 0, 1)) +
+        ` fill="#cfe3f2" stroke="${stc}" stroke-width="${sw}"/>`;
       break;
     case "niche":
-      h += poly(rect(s0, s1, -dp, 0)) + ` fill="#fff" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
+      h +=
+        poly(rect(s0, s1, -dp, 0)) +
+        ` fill="#fff" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${3 * k} ${2 * k}"/>`;
       break;
     default: {
       // point items on the wall face
       const q = at(c, 2.2),
         r = 2.4;
       h += `<circle cx="${q[0]}" cy="${q[1]}" r="${Math.max(r, 3.2 * k)}" fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
-      h += plText(q[0], q[1], it.k === "outlet" ? "⏚" : it.k === "switch" ? "S" : it.k === "valve" ? "V" : "H", 5 * k, { fill: stc, bg: "none" });
+      h += plText(
+        q[0],
+        q[1],
+        it.k === "outlet"
+          ? "⏚"
+          : it.k === "switch"
+            ? "S"
+            : it.k === "valve"
+              ? "V"
+              : "H",
+        5 * k,
+        { fill: stc, bg: "none" },
+      );
+      if (it.k === "outlet" && it.gfci) {
+        const q2 = at(c, 7.5);
+        h += plText(q2[0], q2[1], "GFCI", 4.5 * k, { fill: stc, fw: 600 });
+      }
     }
   }
-  if (sel && !K.pt) h += poly(planFoot(it, pts).map(sp)) + ` fill="none" stroke="${PLC.sel}" stroke-width="${1 * k}" stroke-dasharray="${2 * k} ${2 * k}"/>`;
+  if (sel && !K.pt)
+    h +=
+      poly(planFoot(it, pts).map(sp)) +
+      ` fill="none" stroke="${PLC.sel}" stroke-width="${1 * k}" stroke-dasharray="${2 * k} ${2 * k}"/>`;
   return g(h);
 }
 
@@ -1043,7 +1462,11 @@ function planElevSVG(i, W0, H0) {
   if (ws.tile) {
     const th2 = Math.min(H, +ws.tileH || H);
     h += `<rect x="0" y="${Y(th2)}" width="${L}" height="${th2}" fill="#e6eef5" stroke="${PLC.dim}" stroke-width="${0.8 * k}" stroke-dasharray="${4 * k} ${3 * k}"/>`;
-    h += plText(L / 2, Y(th2) + 8 * k, `${t("tile")} ↑ ${fmt(th2)}`, 8 * k, { fill: PLC.dim, fw: 600, bg: "#e6eef5" });
+    h += plText(L / 2, Y(th2) + 8 * k, `${t("tile")} ↑ ${fmt(th2)}`, 8 * k, {
+      fill: PLC.dim,
+      fw: 600,
+      bg: "#e6eef5",
+    });
   }
   h += `<rect x="${-thL}" y="${Y(H)}" width="${thL}" height="${H}" fill="url(#plh2)" stroke="${PLC.wall}" stroke-width="${k}"/><rect x="${L}" y="${Y(H)}" width="${thR}" height="${H}" fill="url(#plh2)" stroke="${PLC.wall}" stroke-width="${k}"/>`;
   h += `<path d="M${-thL - 8} 0H${L + thR + 8}" stroke="${PLC.wall}" stroke-width="${2.2 * k}"/>`;
@@ -1054,26 +1477,70 @@ function planElevSVG(i, W0, H0) {
     .filter((z) => z.wall === i)
     .forEach((z) => {
       h += `<rect x="${z.x0}" y="${Y(z.z1)}" width="${z.x1 - z.x0}" height="${z.z1 - z.z0}" fill="#e6eef5" stroke="${PLC.dim}" stroke-width="${0.8 * k}" stroke-dasharray="${4 * k} ${3 * k}"/>`;
-      h += plText((z.x0 + z.x1) / 2, Y(z.z1) + 8 * k, `${t("tile")} ${fmt(z.x1 - z.x0)} × ${fmt(z.z1 - z.z0)}`, Math.min(8 * k, (z.x1 - z.x0) / 9), { fill: PLC.dim, fw: 600, bg: "#e6eef5" });
+      h += plText(
+        (z.x0 + z.x1) / 2,
+        Y(z.z1) + 8 * k,
+        `${t("tile")} ${fmt(z.x1 - z.x0)} × ${fmt(z.z1 - z.z0)}`,
+        Math.min(8 * k, (z.x1 - z.x0) / 9),
+        { fill: PLC.dim, fw: 600, bg: "#e6eef5" },
+      );
       xs.push(z.x0, z.x1);
       zs.push(z.z0, z.z1);
     });
+  // the real tile layout of the surfaces built from this wall
+  if (!V.noTiles)
+    P.surfaces
+      .filter(
+        (s2) =>
+          s2.plOrg &&
+          (s2.fromPlan === "w" + i || (s2.fromPlan || "").startsWith(`z${i}:`)),
+      )
+      .forEach((s2, j) => {
+        try {
+          const R2 = compute(s2),
+            body = surfBody(s2, R2, {
+              id: `pe${i}_${j}`,
+              fs: 0.7,
+              upp: k,
+              m: 0,
+              noDims: 1,
+            });
+          h += `<g transform="translate(${s2.plOrg[0]} ${-s2.plOrg[1]})" opacity=".9">${body}</g>`;
+        } catch (e) {}
+      });
   // items on this wall, then side views of items standing against it from other walls
-  const own = pl.items.filter((it) => it.wall === i && !PL_KINDS[it.k].floor);
+  const own = pl.items.filter(
+    (it) =>
+      it.wall === i && !PL_KINDS[it.k].floor && !(V.hideE && PL_KINDS[it.k].el),
+  );
   const side = [];
   pl.items.forEach((it) => {
-    if (it.wall === i || PL_KINDS[it.k].floor || PL_KINDS[it.k].inwall || PL_KINDS[it.k].pt || !(+it.h > 0)) return;
+    if (
+      it.wall === i ||
+      PL_KINDS[it.k].floor ||
+      PL_KINDS[it.k].inwall ||
+      PL_KINDS[it.k].pt ||
+      !(+it.h > 0)
+    )
+      return;
     const Fp = planFoot(it, pts),
       ss = Fp.map((q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1]),
-      dd = Fp.map((q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1]);
-    if (Math.min(...dd) > 1 || Math.max(...ss) < 0 || Math.min(...ss) > L) return;
+      dd = Fp.map(
+        (q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1],
+      );
+    if (Math.min(...dd) > 1 || Math.max(...ss) < 0 || Math.min(...ss) > L)
+      return;
     const x0 = W.cx(Math.max(0, Math.min(...ss))),
       x1 = W.cx(Math.min(L, Math.max(...ss)));
     side.push({ it, x0: Math.min(x0, x1), x1: Math.max(x0, x1) });
   });
   side.forEach(({ it, x0, x1 }) => {
     h += `<rect x="${x0}" y="${Y(+it.z + +it.h)}" width="${x1 - x0}" height="${+it.h}" fill="#efebe3" stroke="#8d877b" stroke-width="${k}" stroke-dasharray="${3 * k} ${2 * k}" data-pi="${it.id}"/>`;
-    h += plText((x0 + x1) / 2, Y(+it.z + +it.h / 2), pt("k_" + it.k), 7.5 * k, { fill: "#8d877b", fw: 600, bg: "#efebe3" });
+    h += plText((x0 + x1) / 2, Y(+it.z + +it.h / 2), pt("k_" + it.k), 7.5 * k, {
+      fill: "#8d877b",
+      fw: 600,
+      bg: "#efebe3",
+    });
     xs.push(x0, x1);
     zs.push(+it.z + +it.h);
   });
@@ -1088,12 +1555,17 @@ function planElevSVG(i, W0, H0) {
         par = Math.abs(G.u[0] * W.u[0] + G.u[1] * W.u[1]),
         z0 = +it.z || 0,
         gh = +it.h || 76;
-      if (Math.max(sA, sB) < 0 || Math.min(sA, sB) > L || Math.min(dA, dB) < -1) return;
+      if (Math.max(sA, sB) < 0 || Math.min(sA, sB) > L || Math.min(dA, dB) < -1)
+        return;
       if (par > 0.9) {
         const x0 = W.cx(Math.max(0, Math.min(sA, sB))),
           x1 = W.cx(Math.min(L, Math.max(sA, sB)));
         h += `<rect x="${Math.min(x0, x1)}" y="${Y(z0 + gh)}" width="${Math.abs(x1 - x0)}" height="${gh}" fill="#5aa0d8" fill-opacity=".12" stroke="#5aa0d8" stroke-width="${1.2 * k}" data-pi="${it.id}"/>`;
-        h += plText((x0 + x1) / 2, Y(z0) - 6 * k, pt("k_glass"), 7 * k, { fill: "#3d7fb5", fw: 600, bg: "none" });
+        h += plText((x0 + x1) / 2, Y(z0) - 6 * k, pt("k_glass"), 7 * k, {
+          fill: "#3d7fb5",
+          fw: 600,
+          bg: "none",
+        });
       } else if (par < 0.3 && Math.min(dA, dB) < 2) {
         const sx = W.cx(dA < dB ? sA : sB);
         h += `<rect x="${sx - 0.5}" y="${Y(z0 + gh)}" width="1" height="${gh}" fill="#5aa0d8" stroke="#3d7fb5" stroke-width="${0.6 * k}" data-pi="${it.id}"/>`;
@@ -1111,11 +1583,24 @@ function planElevSVG(i, W0, H0) {
       z0 = +it.z || 0,
       hh = +it.h || 0;
     let g = "";
-    const R = (x, z, ww, hhh, extra) => `<rect x="${x.toFixed(2)}" y="${Y(z + hhh).toFixed(2)}" width="${ww.toFixed(2)}" height="${hhh.toFixed(2)}" ${extra}/>`;
+    const R = (x, z, ww, hhh, extra) =>
+      `<rect x="${x.toFixed(2)}" y="${Y(z + hhh).toFixed(2)}" width="${ww.toFixed(2)}" height="${hhh.toFixed(2)}" ${extra}/>`;
     switch (it.k) {
       case "door": {
-        g += R(x0, 0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
-        g += R(x0 + 1.5, 0, w - 3, hh - 1.5, `fill="none" stroke="${stc}" stroke-width="${0.7 * k}"`);
+        g += R(
+          x0,
+          0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
+        g += R(
+          x0 + 1.5,
+          0,
+          w - 3,
+          hh - 1.5,
+          `fill="none" stroke="${stc}" stroke-width="${0.7 * k}"`,
+        );
         if (it.dtype === "swing") {
           // hinge side: dashed triangle pointing to the hinges
           const hingeLeft = W.flip ? it.hinge === "b" : it.hinge !== "b";
@@ -1126,57 +1611,160 @@ function planElevSVG(i, W0, H0) {
         break;
       }
       case "window":
-        g += R(x0, z0, w, hh, `fill="#dfeaf3" stroke="${stc}" stroke-width="${sw}"`);
-        g += R(x0 + 1.5, z0 + 1.5, w - 3, hh - 3, `fill="none" stroke="${stc}" stroke-width="${0.7 * k}"`);
+        g += R(
+          x0,
+          z0,
+          w,
+          hh,
+          `fill="#dfeaf3" stroke="${stc}" stroke-width="${sw}"`,
+        );
+        g += R(
+          x0 + 1.5,
+          z0 + 1.5,
+          w - 3,
+          hh - 3,
+          `fill="none" stroke="${stc}" stroke-width="${0.7 * k}"`,
+        );
         g += `<path d="M${xc} ${Y(z0 + 1.5)}V${Y(z0 + hh - 1.5)}" stroke="${stc}" stroke-width="${0.7 * k}"/>`;
         break;
       case "toilet":
-        g += R(xc - 9.5, 15, 19, Math.max(1, hh - 15), `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          xc - 9.5,
+          15,
+          19,
+          Math.max(1, hh - 15),
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
         g += `<path d="M${xc - 8} ${Y(15)}Q${xc - 9} ${Y(6)} ${xc - 5} ${Y(0)}H${xc + 5}Q${xc + 9} ${Y(6)} ${xc + 8} ${Y(15)}Z" fill="#fff" stroke="${stc}" stroke-width="${sw}"/>`;
         break;
       case "vanity":
       case "cab":
-        g += R(x0, z0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          x0,
+          z0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
         if (it.k === "cab") {
           const e = planItemX(it, W),
             ct = Math.max(0.5, +it.ctt || 1.5);
-          g += R(e[0], z0 + hh, e[1] - e[0], ct, `fill="#d6d0c4" stroke="${stc}" stroke-width="${0.8 * k}"`);
-        } else g += R(x0 - 0.5, z0 + hh - 1.5, w + 1, 1.5, `fill="#d6d0c4" stroke="${stc}" stroke-width="${0.6 * k}"`);
-        g += R(x0 + 1, z0 + 4, w - 2, hh - 6.5, `fill="none" stroke="${stc}" stroke-width="${0.6 * k}"`);
-        if (w > 20) g += `<path d="M${xc} ${Y(z0 + 4)}V${Y(z0 + hh - 2.5)}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
-        if (it.k === "vanity") g += `<path d="M${xc} ${Y(z0 + hh)}v${-6}h3" fill="none" stroke="${stc}" stroke-width="${1.2 * k}"/>`;
+          g += R(
+            e[0],
+            z0 + hh,
+            e[1] - e[0],
+            ct,
+            `fill="#d6d0c4" stroke="${stc}" stroke-width="${0.8 * k}"`,
+          );
+        } else
+          g += R(
+            x0 - 0.5,
+            z0 + hh - 1.5,
+            w + 1,
+            1.5,
+            `fill="#d6d0c4" stroke="${stc}" stroke-width="${0.6 * k}"`,
+          );
+        g += R(
+          x0 + 1,
+          z0 + 4,
+          w - 2,
+          hh - 6.5,
+          `fill="none" stroke="${stc}" stroke-width="${0.6 * k}"`,
+        );
+        if (w > 20)
+          g += `<path d="M${xc} ${Y(z0 + 4)}V${Y(z0 + hh - 2.5)}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
+        if (it.k === "vanity")
+          g += `<path d="M${xc} ${Y(z0 + hh)}v${-6}h3" fill="none" stroke="${stc}" stroke-width="${1.2 * k}"/>`;
         break;
       case "ucab":
-        g += R(x0, z0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
-        if (w > 20) g += `<path d="M${xc} ${Y(z0 + 1)}V${Y(z0 + hh - 1)}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
+        g += R(
+          x0,
+          z0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
+        if (w > 20)
+          g += `<path d="M${xc} ${Y(z0 + 1)}V${Y(z0 + hh - 1)}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
         break;
       case "tub":
-        g += R(x0, 0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          x0,
+          0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
         g += `<path d="M${x0} ${Y(hh - 2)}H${x0 + w}" stroke="${stc}" stroke-width="${0.6 * k}"/>`;
         break;
       case "shower":
         g += R(x0, 0, w, 4, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
-        g += R(x0, 0, w, Math.min(H, 80), `fill="none" stroke="${stc}" stroke-width="${0.6 * k}" stroke-dasharray="${4 * k} ${3 * k}"`);
+        g += R(
+          x0,
+          0,
+          w,
+          Math.min(H, 80),
+          `fill="none" stroke="${stc}" stroke-width="${0.6 * k}" stroke-dasharray="${4 * k} ${3 * k}"`,
+        );
         break;
       case "fridge":
       case "range":
-        g += R(x0, 0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          x0,
+          0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
         break;
       case "mirror":
-        g += R(x0, z0, w, hh, `fill="#cfe3f2" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          x0,
+          z0,
+          w,
+          hh,
+          `fill="#cfe3f2" stroke="${stc}" stroke-width="${sw}"`,
+        );
         break;
       case "niche":
-        g += R(x0, z0, w, hh, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
-        g += R(x0 + 1.2, z0 + 1.2, w - 2.4, hh - 2.4, `fill="none" stroke="${stc}" stroke-width="${0.6 * k}" stroke-dasharray="${2 * k} ${1.5 * k}"`);
+        g += R(
+          x0,
+          z0,
+          w,
+          hh,
+          `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+        );
+        g += R(
+          x0 + 1.2,
+          z0 + 1.2,
+          w - 2.4,
+          hh - 2.4,
+          `fill="none" stroke="${stc}" stroke-width="${0.6 * k}" stroke-dasharray="${2 * k} ${1.5 * k}"`,
+        );
         break;
       case "shelf":
-        g += R(x0, z0, w, Math.max(hh, 1), `fill="#d6d0c4" stroke="${stc}" stroke-width="${sw}"`);
+        g += R(
+          x0,
+          z0,
+          w,
+          Math.max(hh, 1),
+          `fill="#d6d0c4" stroke="${stc}" stroke-width="${sw}"`,
+        );
         break;
       default: {
         const zc = z0;
         if (it.k === "outlet" || it.k === "switch") {
-          g += R(xc - 1.4, zc - 2.25, 2.8, 4.5, `fill="#fff" stroke="${stc}" stroke-width="${sw}"`);
-          g += it.k === "outlet" ? `<path d="M${xc - 0.4} ${Y(zc + 1.2)}v0.9M${xc + 0.4} ${Y(zc + 1.2)}v0.9M${xc - 0.4} ${Y(zc - 1.2)}v0.9M${xc + 0.4} ${Y(zc - 1.2)}v0.9" stroke="${stc}" stroke-width="${0.6 * k}"/>` : "";
+          g += R(
+            xc - 1.4,
+            zc - 2.25,
+            2.8,
+            4.5,
+            `fill="#fff" stroke="${stc}" stroke-width="${sw}"`,
+          );
+          g +=
+            it.k === "outlet"
+              ? `<path d="M${xc - 0.4} ${Y(zc + 1.2)}v0.9M${xc + 0.4} ${Y(zc + 1.2)}v0.9M${xc - 0.4} ${Y(zc - 1.2)}v0.9M${xc + 0.4} ${Y(zc - 1.2)}v0.9" stroke="${stc}" stroke-width="${0.6 * k}"/>`
+              : "";
         } else if (it.k === "valve") {
           g += `<circle cx="${xc}" cy="${Y(zc)}" r="3.5" fill="#fff" stroke="${stc}" stroke-width="${sw}"/><path d="M${xc} ${Y(zc)}l2.5 -2.5" stroke="${stc}" stroke-width="${1.2 * k}"/>`;
         } else {
@@ -1185,7 +1773,13 @@ function planElevSVG(i, W0, H0) {
       }
     }
     if (!K.pt && hh > 6 && w > 10 && it.k !== "door")
-      g += plText(xc, Y(z0 + (it.k === "shower" ? 10 : hh / 2)), `${pt("k_" + it.k)}`, Math.min(8 * k, w / 7), { fill: "#6b665c", fw: 600 });
+      g += plText(
+        xc,
+        Y(z0 + (it.k === "shower" ? 10 : hh / 2)),
+        `${pt("k_" + it.k)}`,
+        Math.min(8 * k, w / 7),
+        { fill: "#6b665c", fw: 600 },
+      );
     h += `<g data-pi="${it.id}" style="cursor:move">${g}</g>`;
     if (K.pt) xs.push(xc);
     else xs.push(x0, x0 + w);
@@ -1195,18 +1789,45 @@ function planElevSVG(i, W0, H0) {
     }
   });
   // horizontal chain under the floor, overall below it
-  const X = [...new Set(xs.map((v) => Math.round(Math.max(0, Math.min(L, v)) * 16) / 16))].sort((a, b) => a - b);
-  if (X.length > 2) for (let j = 0; j < X.length - 1; j++) if (X[j + 1] - X[j] > 0.05) h += plDim([X[j], 0], [X[j + 1], 0], fmt(X[j + 1] - X[j]), k, 12 * k);
+  const X = [
+    ...new Set(
+      xs.map((v) => Math.round(Math.max(0, Math.min(L, v)) * 16) / 16),
+    ),
+  ].sort((a, b) => a - b);
+  if (X.length > 2)
+    for (let j = 0; j < X.length - 1; j++)
+      if (X[j + 1] - X[j] > 0.05)
+        h += plDim([X[j], 0], [X[j + 1], 0], fmt(X[j + 1] - X[j]), k, 12 * k);
   h += plDim([0, 0], [L, 0], fmt(L), k, (X.length > 2 ? 26 : 12) * k);
   // vertical chain of heights at the right
-  const Z = [...new Set(zs.map((v) => Math.round(Math.max(0, Math.min(H, v)) * 16) / 16))].sort((a, b) => a - b),
+  const Z = [
+      ...new Set(
+        zs.map((v) => Math.round(Math.max(0, Math.min(H, v)) * 16) / 16),
+      ),
+    ].sort((a, b) => a - b),
     xr = L + thR;
-  for (let j = 0; j < Z.length - 1; j++) if (Z[j + 1] - Z[j] > 0.05) h += plDim([xr, Y(Z[j])], [xr, Y(Z[j + 1])], fmt(Z[j + 1] - Z[j]), k, 12 * k);
+  for (let j = 0; j < Z.length - 1; j++)
+    if (Z[j + 1] - Z[j] > 0.05)
+      h += plDim(
+        [xr, Y(Z[j])],
+        [xr, Y(Z[j + 1])],
+        fmt(Z[j + 1] - Z[j]),
+        k,
+        12 * k,
+      );
   if (Z.length > 2) h += plDim([xr, Y(0)], [xr, Y(H)], fmt(H), k, 28 * k);
   // which corner is which
   const lc = W.flip ? (i + 1) % n : i,
     rc = W.flip ? i : (i + 1) % n;
-  h += plText(-thL / 2, Y(H) - 6 * k, `∟${lc + 1}`, 7 * k, { fill: "#8d877b", fw: 600 }) + plText(L + thR / 2, Y(H) - 6 * k, `∟${rc + 1}`, 7 * k, { fill: "#8d877b", fw: 600 });
+  h +=
+    plText(-thL / 2, Y(H) - 6 * k, `∟${lc + 1}`, 7 * k, {
+      fill: "#8d877b",
+      fw: 600,
+    }) +
+    plText(L + thR / 2, Y(H) - 6 * k, `∟${rc + 1}`, 7 * k, {
+      fill: "#8d877b",
+      fw: 600,
+    });
   return h + `</svg>`;
 }
 
@@ -1218,9 +1839,82 @@ function plPoint(svg, e) {
   const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse());
   return [p.x, p.y];
 }
+const PLP = new Map();
+function plPinchStart() {
+  const V = S.plan,
+    svg = $("#plsvg svg");
+  if (!svg) return;
+  const [a, b] = [...PLP.values()],
+    r = svg.getBoundingClientRect();
+  plDrag = {
+    kind: "pinch",
+    d0: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+    z0: V.z || 1,
+    zx0: V.zx || 0,
+    zy0: V.zy || 0,
+    m0: [(a.x + b.x) / 2, (a.y + b.y) / 2],
+    r,
+    vb0: svg.dataset.vb0.split(" ").map(Number),
+    moved: true,
+  };
+}
+function plPinchMove() {
+  const d = plDrag,
+    V = S.plan;
+  if (!d || d.kind !== "pinch" || PLP.size < 2) return;
+  const [a, b] = [...PLP.values()],
+    z = Math.max(
+      1,
+      Math.min(10, (d.z0 * Math.hypot(a.x - b.x, a.y - b.y)) / d.d0),
+    ),
+    m = [(a.x + b.x) / 2, (a.y + b.y) / 2],
+    [bx, by, bw, bh] = d.vb0,
+    fx0 = (d.m0[0] - d.r.left) / d.r.width,
+    fy0 = (d.m0[1] - d.r.top) / d.r.height,
+    fx = (m[0] - d.r.left) / d.r.width,
+    fy = (m[1] - d.r.top) / d.r.height,
+    px = d.zx0 + (fx0 * bw) / d.z0,
+    py = d.zy0 + (fy0 * bh) / d.z0;
+  V.z = z;
+  V.zx = z > 1.01 ? px - (fx * bw) / z : 0;
+  V.zy = z > 1.01 ? py - (fy * bh) / z : 0;
+  planDraw();
+}
 function planDown(e) {
   const svg = e.target.closest && e.target.closest("#plsvg svg");
   if (!svg) return;
+  PLP.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const clr = (ev) => {
+    PLP.delete(ev.pointerId);
+    window.removeEventListener("pointerup", clr);
+    window.removeEventListener("pointercancel", clr);
+  };
+  window.addEventListener("pointerup", clr);
+  window.addEventListener("pointercancel", clr);
+  if (PLP.size === 2) {
+    e.preventDefault();
+    if (plDrag && plDrag.kind === "item" && plDrag.moved) saveSoon();
+    plPinchStart();
+    const mv = (ev) => {
+        if (!PLP.has(ev.pointerId)) return;
+        ev.preventDefault();
+        PLP.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+        plPinchMove();
+      },
+      up = () => {
+        if (PLP.size >= 2) return;
+        window.removeEventListener("pointermove", mv);
+        window.removeEventListener("pointerup", up);
+        window.removeEventListener("pointercancel", up);
+        plDrag = null;
+        renderPlan();
+      };
+    window.addEventListener("pointermove", mv, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return;
+  }
+  if (PLP.size > 2) return;
   const V = S.plan,
     pl = P.plan,
     pi = e.target.closest("[data-pi]"),
@@ -1228,13 +1922,32 @@ function planDown(e) {
     pw = e.target.closest("[data-pw]");
   const p0 = plPoint(svg, e);
   if (pc && V.v === "top") {
-    plDrag = { kind: "corner", i: +pc.dataset.pc, p0, pts: planPts().map((q) => q.slice()), svg, vb: svg.getAttribute("viewBox"), moved: false };
+    plDrag = {
+      kind: "corner",
+      i: +pc.dataset.pc,
+      p0,
+      pts: planPts().map((q) => q.slice()),
+      svg,
+      vb: svg.getAttribute("viewBox"),
+      moved: false,
+    };
   } else if (pi) {
     const it = pl.items.find((x) => x.id === pi.dataset.pi);
     if (!it) return;
     V.sel = it.id;
     V.wsel = null;
-    plDrag = { kind: "item", it, p0, c0: +it.c, z0: +it.z, x0: +it.x, y0: +it.y, svg, vb: svg.getAttribute("viewBox"), moved: false };
+    plDrag = {
+      kind: "item",
+      it,
+      p0,
+      c0: +it.c,
+      z0: +it.z,
+      x0: +it.x,
+      y0: +it.y,
+      svg,
+      vb: svg.getAttribute("viewBox"),
+      moved: false,
+    };
   } else if (pw && V.v === "top") {
     V.sel = null;
     V.wsel = +pw.dataset.pw;
@@ -1242,12 +1955,53 @@ function planDown(e) {
     planDraw();
     return;
   } else {
+    const now = Date.now();
+    if (V.lastTap && now - V.lastTap < 350 && V.z > 1.01) {
+      V.z = 1;
+      V.zx = V.zy = 0;
+      V.lastTap = 0;
+      planDraw();
+      return;
+    }
+    V.lastTap = now;
     if (V.sel || V.wsel != null) {
       V.sel = null;
       V.wsel = null;
       $("#plsheet").innerHTML = planSheet();
       planDraw();
     }
+    if (!(V.z > 1.01)) return;
+    const r = svg.getBoundingClientRect(),
+      vb0 = svg.dataset.vb0.split(" ").map(Number);
+    plDrag = {
+      kind: "pan",
+      x: e.clientX,
+      y: e.clientY,
+      zx0: V.zx || 0,
+      zy0: V.zy || 0,
+      r,
+      vb0,
+      moved: false,
+    };
+    e.preventDefault();
+    const mv = (ev) => {
+        if (!plDrag || plDrag.kind !== "pan") return;
+        ev.preventDefault();
+        const d = plDrag;
+        d.moved = true;
+        V.zx = d.zx0 - ((ev.clientX - d.x) / d.r.width) * (d.vb0[2] / V.z);
+        V.zy = d.zy0 - ((ev.clientY - d.y) / d.r.height) * (d.vb0[3] / V.z);
+        plZoomApplyOnly();
+      },
+      up = () => {
+        window.removeEventListener("pointermove", mv);
+        window.removeEventListener("pointerup", up);
+        window.removeEventListener("pointercancel", up);
+        plDrag = null;
+      };
+    window.addEventListener("pointermove", mv, { passive: false });
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
     return;
   }
   e.preventDefault();
@@ -1271,12 +2025,23 @@ function planDown(e) {
   const s2 = $("#plsvg svg");
   if (s2) s2.setAttribute("viewBox", plDrag.vb);
 }
+function plZoomApplyOnly() {
+  const V = S.plan,
+    svg = $("#plsvg svg");
+  if (!svg || !svg.dataset.vb0) return;
+  const b = svg.dataset.vb0.split(" ").map(Number);
+  svg.setAttribute(
+    "viewBox",
+    `${b[0] + (V.zx || 0)} ${b[1] + (V.zy || 0)} ${b[2] / V.z} ${b[3] / V.z}`,
+  );
+}
 /* inputs on the plan page: keep numbers numeric, keep items inside their wall */
 function planInp(k) {
   const pl = P.plan,
     m = k.match(/^plan\.items\.(\d+)\.(\w+)$/),
     mw = k.match(/^plan\.walls\.(\d+)\.tile$/);
-  if (mw && pl.walls[+mw[1]].tile && !(+pl.walls[+mw[1]].tileH > 0)) pl.walls[+mw[1]].tileH = +pl.H || 96;
+  if (mw && pl.walls[+mw[1]].tile && !(+pl.walls[+mw[1]].tileH > 0))
+    pl.walls[+mw[1]].tileH = +pl.H || 96;
   if (m) {
     const it = pl.items[+m[1]];
     if (it && m[2] === "wall") {
@@ -1289,7 +2054,7 @@ function planInp(k) {
 }
 function planMove(e) {
   const d = plDrag;
-  if (!d) return;
+  if (!d || d.kind === "pinch" || d.kind === "pan" || PLP.size > 1) return;
   const svg = $("#plsvg svg");
   if (!svg) return;
   svg.setAttribute("viewBox", d.vb); // keep the view still while dragging
@@ -1315,9 +2080,18 @@ function planMove(e) {
     pts[i] = [x, y];
     if (polyArea(pts) < 10) return;
     // shift floor items so they stay put when the outline re-bases at its min corner
-    const m0 = [Math.min(...d.pts.map((q) => q[0])), Math.min(...d.pts.map((q) => q[1]))],
-      m1 = [Math.min(...pts.map((q) => q[0])), Math.min(...pts.map((q) => q[1]))];
-    if (!d.fl) d.fl = pl.items.filter((it) => PL_KINDS[it.k].floor).map((it) => [it, +it.x, +it.y]);
+    const m0 = [
+        Math.min(...d.pts.map((q) => q[0])),
+        Math.min(...d.pts.map((q) => q[1])),
+      ],
+      m1 = [
+        Math.min(...pts.map((q) => q[0])),
+        Math.min(...pts.map((q) => q[1])),
+      ];
+    if (!d.fl)
+      d.fl = pl.items
+        .filter((it) => PL_KINDS[it.k].floor)
+        .map((it) => [it, +it.x, +it.y]);
     d.fl.forEach(([it, x0, y0]) => {
       it.x = x0 - (m1[0] - m0[0]);
       it.y = y0 - (m1[1] - m0[1]);
@@ -1332,7 +2106,10 @@ function planMove(e) {
     const sh = m1[0] - m0[0],
       shy = m1[1] - m0[1];
     const vb = d.vb.split(" ").map(Number);
-    s2.setAttribute("viewBox", `${vb[0] - sh} ${vb[1] + shy} ${vb[2]} ${vb[3]}`);
+    s2.setAttribute(
+      "viewBox",
+      `${vb[0] - sh} ${vb[1] + shy} ${vb[2]} ${vb[3]}`,
+    );
     s2.setAttribute("data-k", svg.dataset.k);
     return;
   }
@@ -1360,12 +2137,30 @@ function planMove(e) {
     const W = planWall(it.wall),
       half = K.pt ? 0 : +it.w / 2;
     if (it.wall === +V.v) {
-      it.c = Math.max(half, Math.min(W.L - half, r2(d.c0 + (W.flip ? -dx : dx))));
-      if (!["door", "toilet", "vanity", "tub", "shower", "cab", "fridge", "range"].includes(it.k)) it.z = Math.max(0, r2(d.z0 - dy));
+      it.c = Math.max(
+        half,
+        Math.min(W.L - half, r2(d.c0 + (W.flip ? -dx : dx))),
+      );
+      if (
+        ![
+          "door",
+          "toilet",
+          "vanity",
+          "tub",
+          "shower",
+          "cab",
+          "fridge",
+          "range",
+        ].includes(it.k)
+      )
+        it.z = Math.max(0, r2(d.z0 - dy));
     }
   }
   const box = $("#plsvg");
-  box.innerHTML = V.v === "top" ? planTopSVG(box.clientWidth, box.clientHeight) : planElevSVG(+V.v, box.clientWidth, box.clientHeight);
+  box.innerHTML =
+    V.v === "top"
+      ? planTopSVG(box.clientWidth, box.clientHeight)
+      : planElevSVG(+V.v, box.clientWidth, box.clientHeight);
   $("#plsvg svg").setAttribute("viewBox", d.vb);
 }
 
@@ -1385,8 +2180,19 @@ function planAct(a, arg) {
       return;
     case "plView":
       V.v = arg === "top" ? "top" : +arg;
+      V.z = 1;
+      V.zx = V.zy = 0;
       if (V.v !== "top") V.wsel = V.v;
       break;
+    case "plLayerE":
+      V.hideE = !V.hideE;
+      break;
+    case "plTiles":
+      V.noTiles = !V.noTiles;
+      break;
+    case "plPdf":
+      planPdf();
+      return;
     case "plWsel":
       V.wsel = +arg;
       V.sel = null;
@@ -1403,7 +2209,10 @@ function planAct(a, arg) {
       let it;
       if (K.floor) {
         const bb = bboxOf(pts);
-        it = planNew(k, null, 0, { x: Math.round((bb.x0 + bb.x1) / 2), y: Math.round((bb.y0 + bb.y1) / 2) });
+        it = planNew(k, null, 0, {
+          x: Math.round((bb.x0 + bb.x1) / 2),
+          y: Math.round((bb.y0 + bb.y1) / 2),
+        });
         if (k === "glass" && pl.items.some((x) => x.k === "shower")) {
           pl.items.push(it);
           V.sel = it.id;
@@ -1411,11 +2220,19 @@ function planAct(a, arg) {
           return;
         }
       } else {
-        const w = wi != null && wi !== "" ? +wi : V.wsel != null ? V.wsel : typeof V.v === "number" ? V.v : planLongest(pts),
+        const w =
+            wi != null && wi !== ""
+              ? +wi
+              : V.wsel != null
+                ? V.wsel
+                : typeof V.v === "number"
+                  ? V.v
+                  : planLongest(pts),
           W = planWall(w, pts);
         it = planNew(k, w, W.L / 2);
         if (!K.pt) it.w = Math.min(+it.w, W.L);
-        if (k === "tub" || k === "shower") it.w = Math.min(W.L, k === "tub" ? 60 : it.w);
+        if (k === "tub" || k === "shower")
+          it.w = Math.min(W.L, k === "tub" ? 60 : it.w);
         if (k === "tub" && W.L < 66) {
           it.w = W.L;
         }
@@ -1432,7 +2249,11 @@ function planAct(a, arg) {
       const c = JSON.parse(JSON.stringify(it));
       c.id = uid();
       if (PL_KINDS[it.k].floor) c.x = +c.x + 6;
-      else c.c = Math.min(planWall(c.wall).L - (PL_KINDS[c.k].pt ? 0 : c.w / 2), +c.c + (PL_KINDS[c.k].pt ? 6 : +c.w));
+      else
+        c.c = Math.min(
+          planWall(c.wall).L - (PL_KINDS[c.k].pt ? 0 : c.w / 2),
+          +c.c + (PL_KINDS[c.k].pt ? 6 : +c.w),
+        );
       pl.items.push(c);
       V.sel = c.id;
       saveSoon();
@@ -1474,7 +2295,13 @@ function planAct(a, arg) {
       if (pl.room.segs.length <= 3) break;
       pl.room.segs.splice(i, 1);
       pl.walls.splice(i, 1);
-      pl.items = pl.items.filter((x) => x.wall !== i).map((x) => (x.wall != null && x.wall > i ? Object.assign(x, { wall: x.wall - 1 }) : x));
+      pl.items = pl.items
+        .filter((x) => x.wall !== i)
+        .map((x) =>
+          x.wall != null && x.wall > i
+            ? Object.assign(x, { wall: x.wall - 1 })
+            : x,
+        );
       saveSoon();
       break;
     }
@@ -1490,7 +2317,10 @@ function planAct(a, arg) {
         b1 = plAt(W, +sh.c + sh.w / 2, +sh.dp);
       it.x = (a1[0] + b1[0]) / 2;
       it.y = (a1[1] + b1[1]) / 2;
-      it.ang = Math.round(((Math.atan2(b1[1] - a1[1], b1[0] - a1[0]) * 180) / Math.PI) * 100) / 100;
+      it.ang =
+        Math.round(
+          ((Math.atan2(b1[1] - a1[1], b1[0] - a1[0]) * 180) / Math.PI) * 100,
+        ) / 100;
       it.w = +sh.w;
       // door swings out of the shower
       const G = planGlassEnds(it);
@@ -1536,7 +2366,10 @@ function planAct(a, arg) {
     case "plBuild": {
       const r = planBuild();
       saveSoon();
-      toast("✓ " + pt("plBuilt").replace("{a}", r.a).replace("{b}", r.b), false);
+      toast(
+        "✓ " + pt("plBuilt").replace("{a}", r.a).replace("{b}", r.b),
+        false,
+      );
       break;
     }
   }
@@ -1564,7 +2397,8 @@ function planBuild() {
     b = 0;
   const get = (key, mk) => {
     let s = P.surfaces.find((x) => x.fromPlan === key);
-    if (!s && key === "floor" && pl.src) s = P.surfaces.find((x) => x.id === pl.src && x.type === "floor");
+    if (!s && key === "floor" && pl.src)
+      s = P.surfaces.find((x) => x.id === pl.src && x.type === "floor");
     if (s) {
       b++;
       s.fromPlan = key;
@@ -1599,10 +2433,29 @@ function planBuild() {
     f.trans = (f.trans || []).filter((tr) => !tr.pl);
     pl.items.forEach((it) => {
       const K = PL_KINDS[it.k];
-      if (K.glass) return;
+      if (K.glass || K.ceil) return;
       if (K.floor) {
-        if (it.k === "drain") f.openings.push({ id: uid(), pl: 1, type: "round", shape: "circle", x: +it.x, y: +it.y, dia: +it.w || 4 });
-        else f.openings.push({ id: uid(), pl: 1, type: "duct", shape: "rect", x: +it.x - it.w / 2, y: +it.y - (it.dp || 4) / 2, w: +it.w, h: +it.dp || 4 });
+        if (it.k === "drain")
+          f.openings.push({
+            id: uid(),
+            pl: 1,
+            type: "round",
+            shape: "circle",
+            x: +it.x,
+            y: +it.y,
+            dia: +it.w || 4,
+          });
+        else
+          f.openings.push({
+            id: uid(),
+            pl: 1,
+            type: "duct",
+            shape: "rect",
+            x: +it.x - it.w / 2,
+            y: +it.y - (it.dp || 4) / 2,
+            w: +it.w,
+            h: +it.dp || 4,
+          });
         return;
       }
       const W = planWall(it.wall, pts);
@@ -1617,18 +2470,47 @@ function planBuild() {
           at: ADJ.hardwood,
           sub: 0,
           prof: "auto",
-          stop: it.dtype === "pocket" || it.dtype === "opening" ? "pocket" : it.dtype === "slide" ? "in" : it.swing === "out" ? "out" : "in",
+          stop:
+            it.dtype === "pocket" || it.dtype === "opening"
+              ? "pocket"
+              : it.dtype === "slide"
+                ? "in"
+                : it.swing === "out"
+                  ? "out"
+                  : "in",
           wt: W.th,
           dt: +it.dt || 1.375,
           ext: 0,
         });
       } else if (it.k === "toilet") {
         const q = plAt(W, +it.c, +it.ri || 12);
-        f.openings.push({ id: uid(), pl: 1, type: "toilet", shape: "circle", x: q[0], y: q[1], dia: 5, face: "auto" });
+        f.openings.push({
+          id: uid(),
+          pl: 1,
+          type: "toilet",
+          shape: "circle",
+          x: q[0],
+          y: q[1],
+          dia: 5,
+          face: "auto",
+        });
       } else if ((it.k === "tub" || it.k === "shower") && axis(W)) {
-        f.openings.push(Object.assign({ id: uid(), pl: 1, type: "cutout", shape: "rect", trim: false }, bbo(planFoot(it, pts))));
-      } else if (["vanity", "cab", "fridge", "range"].includes(it.k) && axis(W)) {
-        f.openings.push(Object.assign({ id: uid(), pl: 1, type: "noheat", shape: "rect", nohole: true }, bbo(planFoot(it, pts))));
+        f.openings.push(
+          Object.assign(
+            { id: uid(), pl: 1, type: "cutout", shape: "rect", trim: false },
+            bbo(planFoot(it, pts)),
+          ),
+        );
+      } else if (
+        ["vanity", "cab", "fridge", "range"].includes(it.k) &&
+        axis(W)
+      ) {
+        f.openings.push(
+          Object.assign(
+            { id: uid(), pl: 1, type: "noheat", shape: "rect", nohole: true },
+            bbo(planFoot(it, pts)),
+          ),
+        );
       }
     });
   }
@@ -1650,6 +2532,7 @@ function planBuild() {
     s.h = H;
     s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
     s.openings = s.openings.filter((o) => !o.pl);
+    s.plOrg = [0, 0];
     planWallOps(i, pts, 0, 0, s);
   }
   // tile zones over tubs, shower pans, cabinet runs
@@ -1661,7 +2544,10 @@ function planBuild() {
       const key = `z${z.wall}:${z.ids.slice().sort().join("+")}`;
       let s = P.surfaces.find((x) => x.fromPlan === key);
       // a zone that merged/split keeps the surface (and its tile settings) of an old zone on that wall
-      if (!s) s = old.find((x) => !used.has(x) && x.fromPlan.startsWith(`z${z.wall}:`));
+      if (!s)
+        s = old.find(
+          (x) => !used.has(x) && x.fromPlan.startsWith(`z${z.wall}:`),
+        );
       let isNew = false;
       if (s) b++;
       else {
@@ -1674,12 +2560,14 @@ function planBuild() {
       }
       used.add(s);
       s.fromPlan = key;
-      if (isNew || s.name === s.plName) s.name = s.plName = `${pt("k_" + z.k)} · ${pt("plWall")} ${z.wall + 1}`;
+      if (isNew || s.name === s.plName)
+        s.name = s.plName = `${pt("k_" + z.k)} · ${pt("plWall")} ${z.wall + 1}`;
       s.shape = "rect";
       s.w = Math.round((z.x1 - z.x0) * 16) / 16;
       s.h = Math.round((z.z1 - z.z0) * 16) / 16;
       s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
       s.openings = s.openings.filter((o) => !o.pl);
+      s.plOrg = [z.x0, z.z0];
       planWallOps(z.wall, pts, z.x0, z.z0, s);
     });
     const gone = old.filter((x) => !used.has(x));
@@ -1734,70 +2622,139 @@ function planBuild() {
 function planWallOps(i, pts, ox, oy, s) {
   const pl = P.plan,
     W = planWall(i, pts);
-    const clip = (o) => {
-      if (o.shape === "circle") return o.x >= 0 && o.x <= s.w && o.y >= 0 && o.y <= s.h ? o : null;
-      const x0 = Math.max(0, o.x),
-        y0 = Math.max(0, o.y),
-        x1 = Math.min(s.w, o.x + o.w),
-        y1 = Math.min(s.h, o.y + o.h);
-      if (x1 - x0 < 0.25 || y1 - y0 < 0.25) return null;
-      return Object.assign(o, { x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
-    };
-    const push = (o) => {
-      const c = clip(Object.assign({ id: uid(), pl: 1 }, o, { x: o.x - ox, y: o.y - oy }));
-      if (c) s.openings.push(c);
-    };
-    pl.items.forEach((it) => {
-      const K = PL_KINDS[it.k];
-      if (K.floor) return;
-      if (it.wall === i) {
-        const xc = W.ex(+it.c),
-          x0 = xc - it.w / 2,
-          z = +it.z || 0;
-        switch (it.k) {
-          case "door":
-            push({ type: "cutout", shape: "rect", trim: false, x: x0, y: 0, w: +it.w, h: +it.h });
-            break;
-          case "window":
-            push({ type: "window", shape: "rect", trim: true, x: x0, y: z, w: +it.w, h: +it.h });
-            break;
-          case "niche":
-            push({ type: "niche", shape: "rect", trim: true, x: x0, y: z, w: +it.w, h: +it.h, d: +it.dp || 3.5 });
-            break;
-          case "outlet":
-          case "switch":
-            push({ type: "outlet", shape: "rect", x: xc - 1.125, y: z - 1.875, w: 2.25, h: 3.75 });
-            break;
-          case "valve":
-            push({ type: "valve", shape: "circle", x: xc, y: z, dia: 3 });
-            break;
-          case "head":
-            push({ type: "pipe", shape: "circle", x: xc, y: z, dia: 1.125 });
-            break;
-          case "shelf":
-            push({ type: "shelf", shape: "rect", nohole: true, x: x0, y: z, w: +it.w, h: 2 });
-            break;
-          case "vanity":
-          case "cab":
-          case "tub":
-          case "fridge":
-          case "range":
-          case "ucab":
-            push({ type: "cutout", shape: "rect", trim: false, x: x0, y: z, w: +it.w, h: +it.h });
-            break;
-        }
-        return;
+  const clip = (o) => {
+    if (o.shape === "circle")
+      return o.x >= 0 && o.x <= s.w && o.y >= 0 && o.y <= s.h ? o : null;
+    const x0 = Math.max(0, o.x),
+      y0 = Math.max(0, o.y),
+      x1 = Math.min(s.w, o.x + o.w),
+      y1 = Math.min(s.h, o.y + o.h);
+    if (x1 - x0 < 0.25 || y1 - y0 < 0.25) return null;
+    return Object.assign(o, { x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
+  };
+  const push = (o) => {
+    const c = clip(
+      Object.assign({ id: uid(), pl: 1 }, o, { x: o.x - ox, y: o.y - oy }),
+    );
+    if (c) s.openings.push(c);
+  };
+  pl.items.forEach((it) => {
+    const K = PL_KINDS[it.k];
+    if (K.floor) return;
+    if (it.wall === i) {
+      const xc = W.ex(+it.c),
+        x0 = xc - it.w / 2,
+        z = +it.z || 0;
+      switch (it.k) {
+        case "door":
+          push({
+            type: "cutout",
+            shape: "rect",
+            trim: false,
+            x: x0,
+            y: 0,
+            w: +it.w,
+            h: +it.h,
+          });
+          break;
+        case "window":
+          push({
+            type: "window",
+            shape: "rect",
+            trim: true,
+            x: x0,
+            y: z,
+            w: +it.w,
+            h: +it.h,
+          });
+          break;
+        case "niche":
+          push({
+            type: "niche",
+            shape: "rect",
+            trim: true,
+            x: x0,
+            y: z,
+            w: +it.w,
+            h: +it.h,
+            d: +it.dp || 3.5,
+          });
+          break;
+        case "outlet":
+        case "switch":
+          push({
+            type: "outlet",
+            shape: "rect",
+            x: xc - 1.125,
+            y: z - 1.875,
+            w: 2.25,
+            h: 3.75,
+          });
+          break;
+        case "valve":
+          push({ type: "valve", shape: "circle", x: xc, y: z, dia: 3 });
+          break;
+        case "head":
+          push({ type: "pipe", shape: "circle", x: xc, y: z, dia: 1.125 });
+          break;
+        case "shelf":
+          push({
+            type: "shelf",
+            shape: "rect",
+            nohole: true,
+            x: x0,
+            y: z,
+            w: +it.w,
+            h: 2,
+          });
+          break;
+        case "vanity":
+        case "cab":
+        case "tub":
+        case "fridge":
+        case "range":
+        case "ucab":
+          push({
+            type: "cutout",
+            shape: "rect",
+            trim: false,
+            x: x0,
+            y: z,
+            w: +it.w,
+            h: +it.h,
+          });
+          break;
       }
-      // items from other walls standing against this one (tub end, vanity side)
-      if (K.inwall || K.pt || !(+it.h > 0) || it.k === "toilet" || it.k === "shower" || it.k === "mirror") return;
-      const Fp = planFoot(it, pts),
-        ss = Fp.map((q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1]),
-        dd = Fp.map((q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1]);
-      if (Math.min(...dd) > 1) return;
-      const x0 = W.cx(Math.max(0, Math.min(...ss))),
-        x1 = W.cx(Math.min(W.L, Math.max(...ss)));
-      push({ type: "cutout", shape: "rect", trim: false, x: Math.min(x0, x1), y: +it.z || 0, w: Math.abs(x1 - x0), h: +it.h });
+      return;
+    }
+    // items from other walls standing against this one (tub end, vanity side)
+    if (
+      K.inwall ||
+      K.pt ||
+      !(+it.h > 0) ||
+      it.k === "toilet" ||
+      it.k === "shower" ||
+      it.k === "mirror"
+    )
+      return;
+    const Fp = planFoot(it, pts),
+      ss = Fp.map((q) => (q[0] - W.a[0]) * W.u[0] + (q[1] - W.a[1]) * W.u[1]),
+      dd = Fp.map(
+        (q) => (q[0] - W.a[0]) * W.nin[0] + (q[1] - W.a[1]) * W.nin[1],
+      );
+    if (Math.min(...dd) > 1) return;
+    const x0 = W.cx(Math.max(0, Math.min(...ss))),
+      x1 = W.cx(Math.min(W.L, Math.max(...ss)));
+    push({
+      type: "cutout",
+      shape: "rect",
+      trim: false,
+      x: Math.min(x0, x1),
+      y: +it.z || 0,
+      w: Math.abs(x1 - x0),
+      h: +it.h,
     });
+  });
 }
 
 /* ---------- code checks (IRC / NEC basics) ---------- */
@@ -1806,16 +2763,41 @@ function planChecks() {
   if (!pl) return [];
   const pts = planPts(),
     out = [],
-    OBST = ["toilet", "vanity", "tub", "shower", "cab", "fridge", "range", "glass"],
-    obs = pl.items.filter((x) => OBST.includes(x.k)).map((x) => ({ it: x, F: planFoot(x, pts) })),
+    OBST = [
+      "toilet",
+      "vanity",
+      "tub",
+      "shower",
+      "cab",
+      "fridge",
+      "range",
+      "glass",
+    ],
+    obs = pl.items
+      .filter((x) => OBST.includes(x.k))
+      .map((x) => ({ it: x, F: planFoot(x, pts) })),
     inRoom = (q) => pip(pts, q[0], q[1]),
-    hit = (q, self) => !inRoom(q) || obs.some((o) => o.it !== self && pip(o.F, q[0], q[1])),
+    hit = (q, self) =>
+      !inRoom(q) || obs.some((o) => o.it !== self && pip(o.F, q[0], q[1])),
     area = (A) => Math.abs(sArea(A)),
-    overl = (A, self) => obs.some((o) => o.it !== self && area(clipConvex(A, o.F)) > 1);
+    overl = (A, self) =>
+      obs.some((o) => o.it !== self && area(clipConvex(A, o.F)) > 1);
   const ray = (W, s0, t0, dir, self, max) => {
-    for (let d = 0.25; d <= max - 0.125; d += 0.25) if (hit(plAt(W, s0 + dir * d, t0), self)) return d;
+    for (let d = 0.25; d <= max - 0.125; d += 0.25)
+      if (hit(plAt(W, s0 + dir * d, t0), self)) return d;
     return max + 1;
   };
+  const wet = pl.items.some((x) =>
+    ["toilet", "tub", "shower", "vanity"].includes(x.k),
+  );
+  if (wet && !pl.items.some((x) => x.k === "fan" || x.k === "window"))
+    out.push({ id: null, p: null, msg: pt("ckFan") });
+  pl.items.forEach((it) => {
+    if (it.k === "outlet" && wet && !it.gfci) {
+      const W = planWall(it.wall, pts);
+      out.push({ id: it.id, p: plAt(W, +it.c, 4), msg: pt("ckGfci") });
+    }
+  });
   pl.items.forEach((it) => {
     if (PL_KINDS[it.k].floor) return;
     const W = planWall(it.wall, pts),
@@ -1824,26 +2806,68 @@ function planChecks() {
     if (it.k === "toilet") {
       let side = 99;
       [6, Math.max(8, dp - 6)].forEach((t0) => {
-        side = Math.min(side, ray(W, c, t0, 1, it, 15), ray(W, c, t0, -1, it, 15));
+        side = Math.min(
+          side,
+          ray(W, c, t0, 1, it, 15),
+          ray(W, c, t0, -1, it, 15),
+        );
       });
-      if (side < 15) out.push({ id: it.id, p: plAt(W, c, dp / 2), msg: pt("ckToiletSide").replace("{d}", fmt(side)) });
-      const fr = [plAt(W, c - 15, dp + 0.5), plAt(W, c + 15, dp + 0.5), plAt(W, c + 15, dp + 21), plAt(W, c - 15, dp + 21)];
-      if (fr.some((q) => !inRoom(q)) || overl(fr, it)) out.push({ id: it.id, p: plAt(W, c, dp + 10), msg: pt("ckToiletFront") });
+      if (side < 15)
+        out.push({
+          id: it.id,
+          p: plAt(W, c, dp / 2),
+          msg: pt("ckToiletSide").replace("{d}", fmt(side)),
+        });
+      const fr = [
+        plAt(W, c - 15, dp + 0.5),
+        plAt(W, c + 15, dp + 0.5),
+        plAt(W, c + 15, dp + 21),
+        plAt(W, c - 15, dp + 21),
+      ];
+      if (fr.some((q) => !inRoom(q)) || overl(fr, it))
+        out.push({
+          id: it.id,
+          p: plAt(W, c, dp + 10),
+          msg: pt("ckToiletFront"),
+        });
     }
     if (it.k === "vanity") {
-      const fr = [plAt(W, c - it.w / 2, dp + 0.5), plAt(W, c + it.w / 2, dp + 0.5), plAt(W, c + it.w / 2, dp + 21), plAt(W, c - it.w / 2, dp + 21)];
-      if (fr.some((q) => !inRoom(q)) || overl(fr, it)) out.push({ id: it.id, p: plAt(W, c, dp + 10), msg: pt("ckVanityFront") });
-      const near = pl.items.some((o) => (o.k === "outlet" || o.k === "switch") && o.k === "outlet" && o.wall === it.wall && Math.abs(+o.c - c) <= it.w / 2 + 36);
+      const fr = [
+        plAt(W, c - it.w / 2, dp + 0.5),
+        plAt(W, c + it.w / 2, dp + 0.5),
+        plAt(W, c + it.w / 2, dp + 21),
+        plAt(W, c - it.w / 2, dp + 21),
+      ];
+      if (fr.some((q) => !inRoom(q)) || overl(fr, it))
+        out.push({
+          id: it.id,
+          p: plAt(W, c, dp + 10),
+          msg: pt("ckVanityFront"),
+        });
+      const near = pl.items.some(
+        (o) =>
+          (o.k === "outlet" || o.k === "switch") &&
+          o.k === "outlet" &&
+          o.wall === it.wall &&
+          Math.abs(+o.c - c) <= it.w / 2 + 36,
+      );
       if (!near) out.push({ id: it.id, p: plAt(W, c, 3), msg: pt("ckOutlet") });
     }
     if (it.k === "shower") {
-      if (Math.min(+it.w, dp) < 30 || +it.w * dp < 900) out.push({ id: it.id, p: plAt(W, c, dp / 2), msg: pt("ckShower") });
+      if (Math.min(+it.w, dp) < 30 || +it.w * dp < 900)
+        out.push({ id: it.id, p: plAt(W, c, dp / 2), msg: pt("ckShower") });
     }
     if (it.k === "door" && it.dtype === "swing" && it.swing !== "out") {
       const hs = it.hinge === "b" ? c + it.w / 2 : c - it.w / 2,
         fs = it.hinge === "b" ? c - it.w / 2 : c + it.w / 2,
-        sq = [plAt(W, hs, 0.5), plAt(W, fs, 0.5), plAt(W, fs, +it.w), plAt(W, hs, +it.w)];
-      if (overl(sq, null)) out.push({ id: it.id, p: plAt(W, c, it.w / 2), msg: pt("ckDoor") });
+        sq = [
+          plAt(W, hs, 0.5),
+          plAt(W, fs, 0.5),
+          plAt(W, fs, +it.w),
+          plAt(W, hs, +it.w),
+        ];
+      if (overl(sq, null))
+        out.push({ id: it.id, p: plAt(W, c, it.w / 2), msg: pt("ckDoor") });
     }
   });
   return out;
@@ -1887,7 +2911,14 @@ function planTemplate(k) {
       N("head", 3, 18, { z: 80 }),
       N("niche", 2, 30, { z: 48, w: 12, h: 24 }),
     );
-    const g = N("glass", null, 0, { x: 30, y: 96 - 36, w: 60, ang: 180, door: "a", dw: 24 });
+    const g = N("glass", null, 0, {
+      x: 30,
+      y: 96 - 36,
+      w: 60,
+      ang: 180,
+      door: "a",
+      dw: 24,
+    });
     pl.items.push(g);
   } else {
     pl.items.push(
@@ -1917,4 +2948,192 @@ function planTemplate(k) {
     S.plan.sel = null;
     void sh;
   }
+}
+
+/* ---------- client sheets (PDF, letter, true scale) ---------- */
+const PL_SCALES = [
+  ["1″ = 1′-0″", 150 / 12],
+  ["3/4″ = 1′-0″", (150 * 0.75) / 12],
+  ["1/2″ = 1′-0″", (150 * 0.5) / 12],
+  ["3/8″ = 1′-0″", (150 * 0.375) / 12],
+  ["1/4″ = 1′-0″", (150 * 0.25) / 12],
+  ["1/8″ = 1′-0″", (150 * 0.125) / 12],
+];
+function plSvgImage(str, W, H) {
+  return new Promise((res) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => res(null);
+    img.src =
+      "data:image/svg+xml;charset=utf-8," +
+      encodeURIComponent(
+        str
+          .replace("<svg ", `<svg xmlns="http://www.w3.org/2000/svg" `)
+          .replace('width="100%" height="100%"', `width="${W}" height="${H}"`),
+      );
+  });
+}
+async function planPdf() {
+  const pl = planEnsure(),
+    V = S.plan,
+    keep = { sel: V.sel, wsel: V.wsel, z: V.z, hideE: V.hideE };
+  modal(`<h3>${t("building")}</h3><p class="hint">…</p>`);
+  await new Promise((r) => setTimeout(r, 40));
+  const PW = 1275,
+    PH = 1650,
+    M = 60,
+    TB = 170; // title block height
+  const pages = [];
+  const date = new Date().toLocaleDateString(lang === "ru" ? "ru-RU" : "en-US");
+  // content of each sheet: the plan, then walls that have something on them
+  const pts = planPts(),
+    zones = planZones(pts),
+    sheets = [{ kind: "top" }];
+  pl.room.segs.forEach((g, i) => {
+    if (
+      (pl.walls[i] || {}).tile ||
+      zones.some((z) => z.wall === i) ||
+      pl.items.some((it) => it.wall === i)
+    )
+      sheets.push({ kind: "wall", i });
+  });
+  try {
+    V.sel = null;
+    V.wsel = null;
+    V.z = 1;
+    V.hideE = false;
+    const pal = PAL;
+    PAL = PAL_L;
+    const total = sheets.length;
+    for (let n = 0; n < total; n++) {
+      const sh = sheets[n],
+        c = document.createElement("canvas");
+      c.width = PW;
+      c.height = PH;
+      const x = c.getContext("2d");
+      x.fillStyle = "#fff";
+      x.fillRect(0, 0, PW, PH);
+      const aw = PW - 2 * M,
+        ah = PH - 2 * M - TB - (sh.kind === "top" ? 230 : 0);
+      // pick the largest standard scale that fits
+      let bbw, bbh;
+      if (sh.kind === "top") {
+        const ob = bboxOf(planOuter(pts));
+        bbw = ob.x1 - ob.x0 + 90;
+        bbh = ob.y1 - ob.y0 + 90;
+      } else {
+        const W = planWall(sh.i, pts);
+        bbw = W.L + 80;
+        bbh = (+pl.H || 96) + 70;
+      }
+      const sc =
+        PL_SCALES.find((q) => bbw * q[1] <= aw && bbh * q[1] <= ah) ||
+        PL_SCALES[PL_SCALES.length - 1];
+      // draw at 2x for crisp lines; plan units per output px = 1/scale
+      PLPRINT = { k: 1 / sc[1] };
+      const svgStr =
+        sh.kind === "top" ? planTopSVG(aw, ah) : planElevSVG(sh.i, aw, ah);
+      const img = await plSvgImage(svgStr, aw * 2, ah * 2);
+      PLPRINT = null;
+      if (img) x.drawImage(img, M, M, aw, ah);
+      let y = M + ah + 10;
+      // materials on the plan sheet
+      if (sh.kind === "top") {
+        x.fillStyle = "#111";
+        x.font = "700 24px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+        x.fillText(pt("pdfMat"), M, y + 24);
+        y += 40;
+        x.font = "18px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+        const rows = P.surfaces.filter((s2) => s2.fromPlan);
+        (rows.length ? rows : P.surfaces).slice(0, 8).forEach((s2) => {
+          try {
+            const R2 = compute(s2);
+            x.fillStyle = "#111";
+            x.fillText(`${s2.name}`, M, y + 18);
+            x.fillStyle = "#555";
+            x.fillText(
+              `${tileDesc(R2.T)} · ${patName(R2.T)} · ${sq(R2.area)} sf`,
+              M + 360,
+              y + 18,
+            );
+          } catch (e) {}
+          y += 24;
+        });
+      }
+      // title block
+      const ty = PH - M - TB;
+      x.strokeStyle = "#111";
+      x.lineWidth = 2;
+      x.strokeRect(M, ty, PW - 2 * M, TB);
+      x.beginPath();
+      x.moveTo(M + 200, ty);
+      x.lineTo(M + 200, ty + TB);
+      x.moveTo(PW - M - 300, ty);
+      x.lineTo(PW - M - 300, ty + TB);
+      x.stroke();
+      if (typeof LOGOIMG !== "undefined" && LOGOIMG)
+        x.drawImage(LOGOIMG, M + 30, ty + 15, 140, 140);
+      x.fillStyle = "#111";
+      x.font = "700 26px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+      x.fillText("PrusArt Inc", M + 220, ty + 40);
+      x.font = "20px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+      [P.name, P.client, P.addr, date]
+        .filter(Boolean)
+        .forEach((l, j) =>
+          x.fillText(String(l).slice(0, 48), M + 220, ty + 72 + j * 26),
+        );
+      x.font = "700 22px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+      x.fillText(
+        sh.kind === "top"
+          ? pt("pdfPlan")
+          : pt("pdfElev").replace("{n}", sh.i + 1),
+        PW - M - 285,
+        ty + 40,
+      );
+      x.font = "19px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+      x.fillText(`${pt("pdfScale")}: ${sc[0]}`, PW - M - 285, ty + 76);
+      x.fillText(
+        `${pt("pdfSheet")} ${n + 1} / ${total}`,
+        PW - M - 285,
+        ty + 104,
+      );
+      x.fillStyle = "#666";
+      x.font = "14px -apple-system,Segoe UI,Roboto,Arial,sans-serif";
+      const nw = pt("pdfNote").split(". ");
+      nw.forEach((l, j) =>
+        x.fillText(
+          l + (j < nw.length - 1 ? "." : ""),
+          PW - M - 285,
+          ty + 132 + j * 18,
+        ),
+      );
+      pages.push(c);
+    }
+    PAL = pal;
+    PDF = {
+      bytes: pdfFromCanvases(pages),
+      name: `${
+        (P.name || "project")
+          .replace(/[^\wЀ-ӿ -]+/g, "")
+          .trim()
+          .replace(/\s+/g, "_") || "project"
+      }_plan.pdf`,
+      n: pages.length,
+    };
+  } catch (e) {
+    PLPRINT = null;
+    console.error(e);
+    modal(
+      `<h3>Error</h3><p>${esc(e.message)}</p><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
+    );
+    return;
+  } finally {
+    Object.assign(V, keep);
+  }
+  const url = URL.createObjectURL(
+    new Blob([PDF.bytes], { type: "application/pdf" }),
+  );
+  modal(
+    `<h3>${t("pdfReady")}</h3><p class="hint">${esc(PDF.name)} · ${PDF.n} ${t("pagesN")}</p><div class="btns" style="flex-direction:column"><button class="btn p w" data-act="sharePdf">${t("sharePdf")}</button><a class="btn w" style="text-align:center;text-decoration:none" href="${url}" download="${esc(PDF.name)}" target="_blank">${t("dlPdf")}</a><button class="btn w" data-act="closeModal">${t("close")}</button></div>`,
+  );
 }

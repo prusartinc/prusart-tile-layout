@@ -32,8 +32,12 @@ const sizeCode = (v) => {
 function edgeProf(s) {
   const p = s.prof || {},
     type = p.type && p.type !== "inherit" ? p.type : P.sch.type || "JOLLY";
-  const size = p.size && p.size !== "auto" ? +p.size : autoSize(+s.tile.thick || 0.375);
-  const vis = p.vis != null && p.vis !== "" && isFinite(+p.vis) ? +p.vis : (PROF[type] || {}).vis || 0.125;
+  const size =
+    p.size && p.size !== "auto" ? +p.size : autoSize(+s.tile.thick || 0.375);
+  const vis =
+    p.vis != null && p.vis !== "" && isFinite(+p.vis)
+      ? +p.vis
+      : (PROF[type] || {}).vis || 0.125;
   return {
     type,
     size,
@@ -53,7 +57,13 @@ const UNDER = [
       [8.4, "sheet 8.4 sf"],
     ],
   },
-  { id: "ditraheatduo", n: "Schluter DITRA-HEAT-DUO", t: 0.315, k: "heat", u: [[8.4, "sheet 8.4 sf"]] },
+  {
+    id: "ditraheatduo",
+    n: "Schluter DITRA-HEAT-DUO",
+    t: 0.315,
+    k: "heat",
+    u: [[8.4, "sheet 8.4 sf"]],
+  },
   {
     id: "ditra",
     n: "Schluter DITRA",
@@ -65,8 +75,20 @@ const UNDER = [
       [323, "roll 323 sf"],
     ],
   },
-  { id: "ditraxl", n: "Schluter DITRA-XL", t: 0.276, k: "mem", u: [[175, "roll 175 sf"]] },
-  { id: "flexbone", n: "Ardex FLEXBONE UI 740", t: 0.118, k: "mem", u: [[200, "roll 200 sf"]] },
+  {
+    id: "ditraxl",
+    n: "Schluter DITRA-XL",
+    t: 0.276,
+    k: "mem",
+    u: [[175, "roll 175 sf"]],
+  },
+  {
+    id: "flexbone",
+    n: "Ardex FLEXBONE UI 740",
+    t: 0.118,
+    k: "mem",
+    u: [[200, "roll 200 sf"]],
+  },
   {
     id: "flexboneheat",
     n: "Ardex FLEXBONE HEAT",
@@ -88,14 +110,62 @@ const UNDER = [
     ],
     chk: true,
   },
-  { id: "kerdi", n: "Schluter KERDI", t: 0.008, k: "mem", u: [[54, "roll 54 sf"]] },
-  { id: "fiberock14", n: "USG Fiberock 1/4″", t: 0.25, k: "board", u: [[15, "3×5"]] },
-  { id: "fiberock38", n: "USG Fiberock 3/8″", t: 0.375, k: "board", u: [[15, "3×5"]] },
-  { id: "fiberock12", n: "USG Fiberock 1/2″", t: 0.5, k: "board", u: [[15, "3×5"]] },
-  { id: "hardie14", n: "HardieBacker 1/4″", t: 0.25, k: "board", u: [[15, "3×5"]] },
-  { id: "hardie12", n: "HardieBacker 1/2″", t: 0.5, k: "board", u: [[15, "3×5"]] },
-  { id: "durock14", n: "USG Durock 1/4″", t: 0.25, k: "board", u: [[15, "3×5"]] },
-  { id: "durock12", n: "USG Durock 1/2″", t: 0.5, k: "board", u: [[15, "3×5"]] },
+  {
+    id: "kerdi",
+    n: "Schluter KERDI",
+    t: 0.008,
+    k: "mem",
+    u: [[54, "roll 54 sf"]],
+  },
+  {
+    id: "fiberock14",
+    n: "USG Fiberock 1/4″",
+    t: 0.25,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "fiberock38",
+    n: "USG Fiberock 3/8″",
+    t: 0.375,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "fiberock12",
+    n: "USG Fiberock 1/2″",
+    t: 0.5,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "hardie14",
+    n: "HardieBacker 1/4″",
+    t: 0.25,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "hardie12",
+    n: "HardieBacker 1/2″",
+    t: 0.5,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "durock14",
+    n: "USG Durock 1/4″",
+    t: 0.25,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
+  {
+    id: "durock12",
+    n: "USG Durock 1/2″",
+    t: 0.5,
+    k: "board",
+    u: [[15, "3×5"]],
+  },
   {
     id: "foam12",
     n: "Foam board 1/2″ (Hydroblok, Wedi, Kerdi-Board)",
@@ -123,8 +193,16 @@ function underList() {
 }
 const underOf = (id) => underList().find((u) => u.id === id) || UNDER[0];
 const HEATSYS = {
-  ditraheat: { under: "ditraheat", sp: { 3: 3.5, 32: 2.95 }, wsf: { 3: 12.7, 32: 15.2 } },
-  ditraheatduo: { under: "ditraheatduo", sp: { 3: 3.5, 32: 2.95 }, wsf: { 3: 12.7, 32: 15.2 } },
+  ditraheat: {
+    under: "ditraheat",
+    sp: { 3: 3.5, 32: 2.95 },
+    wsf: { 3: 12.7, 32: 15.2 },
+  },
+  ditraheatduo: {
+    under: "ditraheatduo",
+    sp: { 3: 3.5, 32: 2.95 },
+    wsf: { 3: 12.7, 32: 15.2 },
+  },
   flexboneheat: { under: "flexboneheat" },
   strataheat: { under: "strataheat" },
   cable: {},
@@ -168,7 +246,13 @@ const DH_CABLES = {
 function cableCatalog(sys, volt) {
   if (sys !== "ditraheat" && sys !== "ditraheatduo") return [];
   const v = +volt === 240 ? 240 : 120;
-  return DH_CABLES[v].map(([ft, sf]) => ({ id: v + "-" + ft, ft, sf, sf32: Math.round(sf * 8.32) / 10, v }));
+  return DH_CABLES[v].map(([ft, sf]) => ({
+    id: v + "-" + ft,
+    ft,
+    sf,
+    sf32: Math.round(sf * 8.32) / 10,
+    v,
+  }));
 }
 function tileBondAuto(T) {
   return { s: 0.125, m: 0.1875, l: 0.25 }[trowelOf(T)];
@@ -190,10 +274,20 @@ function stackOf(s) {
           : 0.094;
   if (ub > 0) L.push({ n: t("bondUnder"), t: ub, c: "#bdb7ad", k: "bond" });
   if (u.t > 0)
-    L.push({ n: u.n, t: u.t, c: u.k === "heat" ? "#f08a24" : u.k === "mem" ? "#f6b24a" : "#c8c8c8", k: u.k });
+    L.push({
+      n: u.n,
+      t: u.t,
+      c: u.k === "heat" ? "#f08a24" : u.k === "mem" ? "#f6b24a" : "#c8c8c8",
+      k: u.k,
+    });
   const tb = st.tb != null && st.tb !== "" ? +st.tb : tileBondAuto(T);
   L.push({ n: t("bondTile"), t: tb, c: "#bdb7ad", k: "bond" });
-  L.push({ n: t("tile") + " " + tileDesc(T), t: +T.thick || 0.375, c: "#ece5d7", k: "tile" });
+  L.push({
+    n: t("tile") + " " + tileDesc(T),
+    t: +T.thick || 0.375,
+    c: "#ece5d7",
+    k: "tile",
+  });
   return { L, total: L.reduce((a, x) => a + x.t, 0), u, u2, ub, tb };
 }
 const ADJ = {
@@ -230,10 +324,22 @@ function transCalc(s, tr) {
   const alts = [];
   if (Math.abs(diff) > 1 / 16) {
     underList()
-      .filter((u) => u.id !== st.u.id && u.k !== "none" && (s.type !== "floor" || u.k !== "board" || true))
+      .filter(
+        (u) =>
+          u.id !== st.u.id &&
+          u.k !== "none" &&
+          (s.type !== "floor" || u.k !== "board" || true),
+      )
       .forEach((u) => {
         const nd =
-          diff - st.u.t + u.t + (st.u.k === "none" ? (u.k === "board" || u.k === "ply" ? 0.125 : 0.094) : 0);
+          diff -
+          st.u.t +
+          u.t +
+          (st.u.k === "none"
+            ? u.k === "board" || u.k === "ply"
+              ? 0.125
+              : 0.094
+            : 0);
         alts.push({ u, nd });
       });
     alts.sort((a, b) => Math.abs(a.nd) - Math.abs(b.nd));

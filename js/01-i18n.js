@@ -22,7 +22,8 @@ const I18N = {
     recSame: "Высоты равны — ставь RENO-T (переход между полами одной высоты).",
     recHigher:
       "Плитка выше соседнего пола — нужен профиль со скатом (RENO-U для твёрдых полов, RENO-TK для ковра; RENO-V с регулируемым плечом, RENO-RAMP для тележек). Проверь по таблице производителя, что профиль перекрывает перепад.",
-    recLower: "Плитка ниже соседнего пола — подними основание (варианты ниже) или выровняй чёрный пол.",
+    recLower:
+      "Плитка ниже соседнего пола — подними основание (варианты ниже) или выровняй чёрный пол.",
     section: "Срез",
     diffTxt: "Перепад",
     tileTop: "плитка",
@@ -39,9 +40,12 @@ const I18N = {
     runs: "Рядов кабеля",
     cableLen: "Кабель ≈",
     cablePick: "Бери кабель ближайшего размера, но не больше чем",
-    cableNoCut: "Кабель резать нельзя — лишний уходит в зоны с шагом 3-2 у входа/душа.",
-    heat120warn: "Больше 15 А на один термостат — нужна цепь 240 В, второй термостат или силовой модуль.",
-    matIrregular: "Комната сложной формы / много сантехники — кабель удобнее мата.",
+    cableNoCut:
+      "Кабель резать нельзя — лишний уходит в зоны с шагом 3-2 у входа/душа.",
+    heat120warn:
+      "Больше 15 А на один термостат — нужна цепь 240 В, второй термостат или силовой модуль.",
+    matIrregular:
+      "Комната сложной формы / много сантехники — кабель удобнее мата.",
     heatNotes:
       "Схема ориентировочная: кабель не под тумбами, ванной, шкафами; не касается и не пересекается; датчик между двумя петлями + запасной; проверь сопротивление кабеля до, во время и после укладки.",
     hs_ditraheat: "Schluter DITRA-HEAT",
@@ -69,7 +73,8 @@ const I18N = {
     profType: "Профиль",
     profDefault: "как в проекте",
     profSize: "Размер (высота)",
-    profHint: "Размер подбирается по толщине плитки — профиль не выше плитки (до ~1/32″ ниже).",
+    profHint:
+      "Размер подбирается по толщине плитки — профиль не выше плитки (до ~1/32″ ниже).",
     sideN: "Сторона",
     edgeOf: "На какой стороне",
     fromStart: "От начала стороны",
@@ -78,7 +83,8 @@ const I18N = {
     adjT: "Толщина соседнего (с подложкой)",
     adjSub: "Черновой пол соседа выше(+)/ниже(−)",
     transProf: "Профиль перехода",
-    transHint: "Проём, где плитка встречается с другим полом. Покажет перепад высот и подходящий профиль.",
+    transHint:
+      "Проём, где плитка встречается с другим полом. Покажет перепад высот и подходящий профиль.",
     addTrans: "+ Переход",
     transT: "Переходы (порог)",
     heatOn: "Будет подогрев пола",
@@ -99,7 +105,8 @@ const I18N = {
     cableEndMark: "кабель закончится в точке ✕ на плане, дальше без подогрева.",
     cableExtra: "Кабель длиннее раскладки на",
     cableExtraHow: "уложи лишнее шагом 3-2 (тёплая зона) примерно на",
-    cableTooSmall: "Площадь слишком маленькая даже для самого короткого кабеля.",
+    cableTooSmall:
+      "Площадь слишком маленькая даже для самого короткого кабеля.",
     sensorDrag:
       "Датчик S тоже можно тянуть пальцем: он встанет посередине между двумя витками, его провод (синий пунктир) идёт от точки T по краю и заходит в промежуток с открытой стороны.",
     tapPlan: "Нажми на чертёж…",
@@ -119,7 +126,8 @@ const I18N = {
     bd_auto: "авто (меньше листов)",
     bd_h: "горизонтально",
     bd_v: "вертикально",
-    warmOff: "Тёплая полоса не учтена: ряды идут поперёк неё. Поставь «Ряды кабеля» вдоль полосы.",
+    warmOff:
+      "Тёплая полоса не учтена: ряды идут поперёк неё. Поставь «Ряды кабеля» вдоль полосы.",
     warm: "Тёплая полоса 3-2",
     runDir: "Ряды кабеля",
     dir_auto: "авто",
@@ -153,8 +161,10 @@ const I18N = {
     autoN: "авто",
     maxSf: "Макс. sf на 1 кабель",
     cableN: "Кабель",
-    connDrag: "Переключи слой «Кабель» внизу чертежа — там T тянется пальцем вдоль стены.",
-    leadFar: "От T до начала кабеля больше 7 ft — штатного холодного конца может не хватить.",
+    connDrag:
+      "Переключи слой «Кабель» внизу чертежа — там T тянется пальцем вдоль стены.",
+    leadFar:
+      "От T до начала кабеля больше 7 ft — штатного холодного конца может не хватить.",
     overMax: "Кабель больше максимального размера — поставь больше кабелей.",
     showHeat: "Схема кабеля в PDF / картинке",
     heatHint:
@@ -391,10 +401,12 @@ const I18N = {
     syDone: "Синхронизировано",
     syOffline: "Нет интернета — синхронизирую, когда появится",
     syErr_token: "Токен не подходит (неверный или истёк). Создай новый.",
-    syErr_access: "Нет доступа к Gist — у токена должна быть отмечена галочка gist.",
+    syErr_access:
+      "Нет доступа к Gist — у токена должна быть отмечена галочка gist.",
     syErr_net: "Не получилось связаться с GitHub. Попробую позже.",
     texT: "Фото плитки",
-    texHint: "Показывается на чертеже в режиме «Клиенту», в PDF для клиента и когда включено ниже.",
+    texHint:
+      "Показывается на чертеже в режиме «Клиенту», в PDF для клиента и когда включено ниже.",
     texNone:
       "Сфотографируй одну плитку сверху или возьми картинку с сайта магазина — фото обрежется по размеру плитки.",
     texPick: "Фото / файл",
@@ -403,7 +415,8 @@ const I18N = {
     texShow: "Показывать фото на чертеже",
     texOk: "Фото плитки добавлено",
     texErr: "Не получилось открыть картинку",
-    texNoClip: "В буфере нет картинки. На сайте: долгое нажатие на фото → «Скопировать», потом «Вставить».",
+    texNoClip:
+      "В буфере нет картинки. На сайте: долгое нажатие на фото → «Скопировать», потом «Вставить».",
     texUrlHint:
       "Ссылка на картинку плитки (на сайте: долгое нажатие на фото → «Скопировать ссылку на изображение»).",
     texLoad: "Загрузить",
@@ -412,7 +425,8 @@ const I18N = {
       "Многие магазины запрещают брать картинки напрямую. Сделай так: долгое нажатие на фото → «Скопировать» и нажми «Вставить», или сохрани фото / сделай скриншот и выбери его через «Фото / файл».",
     mTex: "Фото плитки",
     zonesB: "Зоны",
-    zonesOn: "Тяни зону пальцем — углы и края липнут к соседним. Стрелки двигают выбранную.",
+    zonesOn:
+      "Тяни зону пальцем — углы и края липнут к соседним. Стрелки двигают выбранную.",
     zonesOff: "Зоны закреплены",
     saveErr:
       "Не получилось сохранить на устройстве (память браузера заполнена). Сделай экспорт проектов через ☰ и удали старые.",
@@ -583,13 +597,15 @@ const I18N = {
     trExt: "Заходит в проём на",
     trStart: "Начать раскладку от порога",
     trStartOk: "Целая плитка у порога, по центру двери",
-    trStartNo: "Только для прямой раскладки и стороны по горизонтали или вертикали",
+    trStartNo:
+      "Только для прямой раскладки и стороны по горизонтали или вертикали",
     walkFix: "Исправить…",
     walkFixT: "Контур не замыкается",
     walkFixX: "По ширине расхождение",
     walkFixY: "По высоте расхождение",
     walkFixQ: "Какая сторона измерена неверно? Нажми — подгоню её длину.",
-    walkFixA: "Проверь углы: при таких поворотах контур не сойдётся подгонкой одной стороны.",
+    walkFixA:
+      "Проверь углы: при таких поворотах контур не сойдётся подгонкой одной стороны.",
     walkFixOk: "Контур замкнут",
     walkGapS: "не сходится",
     manual: "Исправлю сам",
@@ -646,7 +662,8 @@ const I18N = {
     silLf: "Силикон: футов на тюбик",
     boardOn: "Считать бэкерборд на стены",
     clipsOn: "Считать клипсы СВП",
-    matNoteAll: "Это оценка по типичному расходу. Сверь с паспортом своего клея, затирки и мембраны.",
+    matNoteAll:
+      "Это оценка по типичному расходу. Сверь с паспортом своего клея, затирки и мембраны.",
     lb: "lb",
     bags: "меш.",
     app: "Раскладка плитки",
@@ -719,7 +736,8 @@ const I18N = {
     sheetW: "Лист — ширина",
     sheetH: "Лист — высота",
     sheets: "Листов",
-    basketWarn: "Для плетёнки длина должна быть кратна ширине с учётом шва (например 3×6, 4×8, 2×4).",
+    basketWarn:
+      "Для плетёнки длина должна быть кратна ширине с учётом шва (например 3×6, 4×8, 2×4).",
     layout: "Разметка",
     dragHint:
       "Двигай пальцем по чертежу — сдвигается сетка плитки. Режим «Вид» — двигать сам чертёж. Два пальца — масштаб.",
@@ -768,7 +786,8 @@ const I18N = {
     edgeR: "Правый край",
     edgeT: "Верх",
     edgeB: "Низ",
-    edgeHint: "Отметь края, где стоит профиль — плитка будет до профиля, длина профиля посчитается.",
+    edgeHint:
+      "Отметь края, где стоит профиль — плитка будет до профиля, длина профиля посчитается.",
     edgeNonRect: "Для непрямоугольной формы впиши длину профиля вручную.",
     extraLF: "Доп. профиль (дюймы)",
     panSec: "Поддон, бордюр, трап",
@@ -846,7 +865,8 @@ const I18N = {
     importBtn: "Загрузить",
     close: "Закрыть",
     copy: "Копировать",
-    saveImg: "Зажми картинку (на компьютере — правый клик), чтобы сохранить или отправить клиенту.",
+    saveImg:
+      "Зажми картинку (на компьютере — правый клик), чтобы сохранить или отправить клиенту.",
     addWhat: "Что добавить?",
     tooMany: "Слишком много плиток — проверь размеры",
     sliverWarn: "узких подрезок — подвинь сетку или нажми «Авто»",
@@ -858,7 +878,8 @@ const I18N = {
     bathFloor: "Пол ванной",
     horiz: "горизонтально",
     vert: "вертикально",
-    storeNote: "Проекты хранятся на этом устройстве. Для переноса на другое устройство — экспорт / импорт.",
+    storeNote:
+      "Проекты хранятся на этом устройстве. Для переноса на другое устройство — экспорт / импорт.",
     importErr: "Не получилось прочитать JSON",
     link: "Связка швов",
     linkMode: "Режим",
@@ -892,7 +913,8 @@ const I18N = {
     pr_hex: "Соты (hex)",
     pr_penny: "Пенни",
     pr_mosaic: "Мозаика",
-    galHint: "Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.",
+    galHint:
+      "Размеры плитки сохраняются. Потом можно поменять угол, смещение и сдвиг.",
     unevenOn: "Низ не в уровне (ванна / акриловый поддон)",
     unevenHint:
       "Положи уровень или лазер на борт ванны/поддона, найди самую низкую точку (= 0) и измерь, на сколько выше края. Высота стены — от самой низкой точки. Для связанных стен углы должны совпадать.",
@@ -924,10 +946,12 @@ const I18N = {
     adj_tile: "Tile",
     adj_concrete: "Concrete",
     adj_custom: "Other",
-    recSame: "Same height — use RENO-T (transition between same-height floors).",
+    recSame:
+      "Same height — use RENO-T (transition between same-height floors).",
     recHigher:
       "Tile is higher — use a sloped profile (RENO-U for hard floors, RENO-TK for carpet; RENO-V with adjustable arm, RENO-RAMP for carts). Check the manufacturer table that it covers the height difference.",
-    recLower: "Tile is lower than the next floor — build up the base (options below) or fix the subfloor.",
+    recLower:
+      "Tile is lower than the next floor — build up the base (options below) or fix the subfloor.",
     section: "Section",
     diffTxt: "Height difference",
     tileTop: "tile",
@@ -944,9 +968,12 @@ const I18N = {
     runs: "Cable runs",
     cableLen: "Cable ≈",
     cablePick: "Pick the cable closest to, but not over",
-    cableNoCut: "Never cut the cable — use extra with 3-2 spacing near the entry/shower.",
-    heat120warn: "Over 15 A on one thermostat — use 240 V, a second thermostat or a power module.",
-    matIrregular: "Irregular room / many fixtures — loose cable fits better than a mat.",
+    cableNoCut:
+      "Never cut the cable — use extra with 3-2 spacing near the entry/shower.",
+    heat120warn:
+      "Over 15 A on one thermostat — use 240 V, a second thermostat or a power module.",
+    matIrregular:
+      "Irregular room / many fixtures — loose cable fits better than a mat.",
     heatNotes:
       "Schematic: no cable under vanities, tubs, cabinets; runs never touch or cross; sensor between two loops + a spare; test cable resistance before, during and after install.",
     hs_ditraheat: "Schluter DITRA-HEAT",
@@ -968,7 +995,8 @@ const I18N = {
     noUnder: "no underlayment",
     underTop: "Underlayment under tile",
     underLow: "Lower layer (if any)",
-    stackHint: "“≈” thinset is estimated from the trowel; you can enter your own.",
+    stackHint:
+      "“≈” thinset is estimated from the trowel; you can enter your own.",
     addUnder: "+ Custom underlayment",
     stackT: "Base (build-up)",
     profType: "Profile",
@@ -984,7 +1012,8 @@ const I18N = {
     adjT: "Adjacent thickness (incl. underlay)",
     adjSub: "Adjacent subfloor higher(+)/lower(−)",
     transProf: "Transition profile",
-    transHint: "Doorway where tile meets another floor. Shows the height difference and a matching profile.",
+    transHint:
+      "Doorway where tile meets another floor. Shows the height difference and a matching profile.",
     addTrans: "+ Transition",
     transT: "Transitions (threshold)",
     heatOn: "Heated floor",
@@ -1004,7 +1033,8 @@ const I18N = {
     cableShort: "Cable is shorter than the layout by",
     cableEndMark: "it ends at the ✕ on the plan; past that, no heat.",
     cableExtra: "Cable is longer than the layout by",
-    cableExtraHow: "lay the extra at alternating 3-2 spacing (warm zone) over about",
+    cableExtraHow:
+      "lay the extra at alternating 3-2 spacing (warm zone) over about",
     cableTooSmall: "Area is too small even for the shortest cable.",
     sensorDrag:
       "Drag the sensor S too: it snaps midway between two runs; its wire (blue dashes) runs from T along the edge and enters the gap from the open end.",
@@ -1025,7 +1055,8 @@ const I18N = {
     bd_auto: "auto (fewer sheets)",
     bd_h: "horizontal",
     bd_v: "vertical",
-    warmOff: "Warm band ignored: runs go across it. Set “Cable runs” along the band.",
+    warmOff:
+      "Warm band ignored: runs go across it. Set “Cable runs” along the band.",
     warm: "Warm band 3-2",
     runDir: "Cable runs",
     dir_auto: "auto",
@@ -1059,8 +1090,10 @@ const I18N = {
     autoN: "auto",
     maxSf: "Max sf per cable",
     cableN: "Cable",
-    connDrag: "Switch to the Wire layer (bottom of the drawing) to drag T along the wall.",
-    leadFar: "T is more than 7 ft from the cable start — the stock cold lead may not reach.",
+    connDrag:
+      "Switch to the Wire layer (bottom of the drawing) to drag T along the wall.",
+    leadFar:
+      "T is more than 7 ft from the cable start — the stock cold lead may not reach.",
     overMax: "Cable is larger than the max size — use more cables.",
     showHeat: "Cable layout in PDF / image",
     heatHint:
@@ -1083,7 +1116,8 @@ const I18N = {
     tubRB: "Rim rise at corner",
     tubRHint:
       "Radius: if the tub outer corner is rounded, hold a square and measure where the curve starts (usually 1–3″). 0 = sharp corner. Rim rise — if the tub is out of level along this wall (0 at the lowest point).",
-    ledgerFromFloor: "above the floor — first full row above the tub starts there.",
+    ledgerFromFloor:
+      "above the floor — first full row above the tub starts there.",
     noteArc: "radius cut",
     drawBtn: "Draw shape",
     helpBtn: "How to enter",
@@ -1135,7 +1169,8 @@ const I18N = {
     done: "Done",
     hContinue: "Continue",
     hClient: "Client",
-    hNewHint: "A few short questions — walls, floor, heating — and the project is ready",
+    hNewHint:
+      "A few short questions — walls, floor, heating — and the project is ready",
     hSearch: "Search: name, client, address",
     hWalls: "walls",
     hFloors: "floors",
@@ -1300,7 +1335,8 @@ const I18N = {
     syErr_access: "No Gist access — the token needs the gist box checked.",
     syErr_net: "Couldn't reach GitHub. Will try again later.",
     texT: "Tile photo",
-    texHint: "Shown on the drawing in client view, in the client PDF, and when turned on below.",
+    texHint:
+      "Shown on the drawing in client view, in the client PDF, and when turned on below.",
     texNone:
       "Take a photo of one tile from above or use a picture from the store's site — it is cropped to the tile size.",
     texPick: "Photo / file",
@@ -1309,15 +1345,18 @@ const I18N = {
     texShow: "Show the photo on the drawing",
     texOk: "Tile photo added",
     texErr: "Couldn't open that picture",
-    texNoClip: "No picture on the clipboard. On the site: long-press the photo → Copy, then Paste.",
-    texUrlHint: "Link to the tile picture (on the site: long-press the photo → Copy image address).",
+    texNoClip:
+      "No picture on the clipboard. On the site: long-press the photo → Copy, then Paste.",
+    texUrlHint:
+      "Link to the tile picture (on the site: long-press the photo → Copy image address).",
     texLoad: "Load",
     texBlockedT: "The site won't let the picture be downloaded",
     texBlocked:
       "Many stores block direct downloads. Instead: long-press the photo → Copy and tap Paste, or save the photo / take a screenshot and pick it with Photo / file.",
     mTex: "Tile photo",
     zonesB: "Zones",
-    zonesOn: "Drag a zone — corners and edges snap to the neighbors. Arrows move the selected one.",
+    zonesOn:
+      "Drag a zone — corners and edges snap to the neighbors. Arrows move the selected one.",
     zonesOff: "Zones locked",
     saveErr:
       "Could not save on this device (browser storage is full). Export your projects from ☰ and delete old ones.",
@@ -1455,7 +1494,8 @@ const I18N = {
     qTile: "Tile",
     qClear: "Reset",
     qDel: "Delete",
-    qTileHint: "Pattern, orientation and the rest are in the Tile section below.",
+    qTileHint:
+      "Pattern, orientation and the rest are in the Tile section below.",
     qClearT: "Reset this surface?",
     qClearMsg:
       "“{n}” goes back to standard size and settings: tile, layout, niches, cutouts, prep and heating are reset. The name stays. Undo with ↶.",
@@ -1493,8 +1533,10 @@ const I18N = {
     walkFixT: "Outline does not close",
     walkFixX: "Width is off by",
     walkFixY: "Height is off by",
-    walkFixQ: "Which side was measured wrong? Tap it and I'll adjust its length.",
-    walkFixA: "Check the angles: with these turns one side alone cannot close the outline.",
+    walkFixQ:
+      "Which side was measured wrong? Tap it and I'll adjust its length.",
+    walkFixA:
+      "Check the angles: with these turns one side alone cannot close the outline.",
     walkFixOk: "Outline closed",
     walkGapS: "gap",
     manual: "I'll fix it myself",
@@ -1551,7 +1593,8 @@ const I18N = {
     silLf: "Silicone: ft per tube",
     boardOn: "Count backer board on walls",
     clipsOn: "Count leveling clips",
-    matNoteAll: "Estimate based on typical coverage. Check your thinset, grout and membrane data sheets.",
+    matNoteAll:
+      "Estimate based on typical coverage. Check your thinset, grout and membrane data sheets.",
     lb: "lb",
     bags: "bags",
     app: "Tile Layout",
@@ -1627,7 +1670,8 @@ const I18N = {
     basketWarn:
       "For basketweave the length must be a multiple of the width incl. grout (e.g. 3×6, 4×8, 2×4).",
     layout: "Layout",
-    dragHint: "Drag on the drawing to move the tile grid. “View” mode pans the drawing. Pinch to zoom.",
+    dragHint:
+      "Drag on the drawing to move the tile grid. “View” mode pans the drawing. Pinch to zoom.",
     cTile: "Center tile",
     cJoint: "Center joint",
     auto: "✦ Auto",
@@ -1673,8 +1717,10 @@ const I18N = {
     edgeR: "Right edge",
     edgeT: "Top",
     edgeB: "Bottom",
-    edgeHint: "Check the edges that get a profile — tile stops at the profile and the length is counted.",
-    edgeNonRect: "For non-rectangular shapes, enter the profile length manually.",
+    edgeHint:
+      "Check the edges that get a profile — tile stops at the profile and the length is counted.",
+    edgeNonRect:
+      "For non-rectangular shapes, enter the profile length manually.",
     extraLF: "Extra profile (inches)",
     panSec: "Pan, curb, drain",
     curbOn: "Has curb",
@@ -1751,7 +1797,8 @@ const I18N = {
     importBtn: "Load",
     close: "Close",
     copy: "Copy",
-    saveImg: "Long-press the image (right-click on a computer) to save or send it to the client.",
+    saveImg:
+      "Long-press the image (right-click on a computer) to save or send it to the client.",
     addWhat: "Add what?",
     tooMany: "Too many tiles — check the sizes",
     sliverWarn: "narrow cuts — move the grid or tap Auto",
@@ -1763,7 +1810,8 @@ const I18N = {
     bathFloor: "Bathroom floor",
     horiz: "horizontal",
     vert: "vertical",
-    storeNote: "Projects are stored on this device. Use export / import to move them to another device.",
+    storeNote:
+      "Projects are stored on this device. Use export / import to move them to another device.",
     importErr: "Could not read JSON",
     link: "Joint alignment",
     linkMode: "Mode",
@@ -1774,7 +1822,8 @@ const I18N = {
       "“Same heights” — horizontal joints of all linked walls line up from the floor. “Continuous” — the pattern also carries from wall to wall (walls in tab order).",
     autoAll: "✦ Auto for all walls",
     tileToAll: "First wall tile → all walls",
-    tapWall: "Tap a wall to open it. Drag to move joints (linked walls move together).",
+    tapWall:
+      "Tap a wall to open it. Drag to move joints (linked walls move together).",
     wallsRes: "By wall",
     combined: "Combined cut list",
     total: "Total",
@@ -1796,7 +1845,8 @@ const I18N = {
     pr_hex: "Hexagon",
     pr_penny: "Penny round",
     pr_mosaic: "Mosaic sheet",
-    galHint: "Tile sizes are kept. You can change angle, offset and position afterwards.",
+    galHint:
+      "Tile sizes are kept. You can change angle, offset and position afterwards.",
     unevenOn: "Bottom out of level (tub / acrylic pan)",
     unevenHint:
       "Put a level or laser on the tub/pan edge, find the lowest point (= 0) and measure how much higher each end is. Wall height is measured from the lowest point. For linked walls the corners must match.",

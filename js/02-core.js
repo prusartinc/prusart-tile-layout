@@ -20,7 +20,9 @@ function parseLen(s) {
     s = m1[2].trim();
     if (!s) return ft;
   }
-  const m = s.match(/^(\d+(?:\.\d+)?)?(?:\s+|\s*-\s*)?(?:(\d+)\s*\/\s*(\d+))?$/);
+  const m = s.match(
+    /^(\d+(?:\.\d+)?)?(?:\s+|\s*-\s*)?(?:(\d+)\s*\/\s*(\d+))?$/,
+  );
   if (!m || (!m[1] && !m[2])) return NaN;
   let v = m[1] ? parseFloat(m[1]) : 0;
   if (m[2]) {
@@ -127,7 +129,11 @@ function pip(p, x, y) {
   for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
     const a = p[i],
       b = p[j];
-    if (a[1] > y !== b[1] > y && x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]) c = !c;
+    if (
+      a[1] > y !== b[1] > y &&
+      x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]
+    )
+      c = !c;
   }
   return c;
 }
@@ -142,10 +148,17 @@ function parsePts(str) {
     })
     .filter((q) => isFinite(q[0]) && isFinite(q[1]));
 }
-const isTub = (s) => s.type === "wall" && s.shape === "rect" && s.tub && s.tub.on;
-const isUneven = (s) => s.type === "wall" && s.shape === "rect" && s.uneven && s.uneven.on && !isTub(s);
+const isTub = (s) =>
+  s.type === "wall" && s.shape === "rect" && s.tub && s.tub.on;
+const isUneven = (s) =>
+  s.type === "wall" &&
+  s.shape === "rect" &&
+  s.uneven &&
+  s.uneven.on &&
+  !isTub(s);
 const isZLinked = (s) => s.type !== "wall" && !!s.zlink;
-const isPlumb = (s) => s.type === "wall" && s.shape === "rect" && s.plumb && s.plumb.on;
+const isPlumb = (s) =>
+  s.type === "wall" && s.shape === "rect" && s.plumb && s.plumb.on;
 const isShaped = (s) => isUneven(s) || isPlumb(s) || isTub(s);
 function tubDims(s) {
   const tb = s.tub,
@@ -153,7 +166,15 @@ function tubDims(s) {
     d = Math.max(0, Math.min(+tb.d || 0, W)),
     h = +tb.h || 0,
     r = Math.max(0, Math.min(+tb.r || 0, d * 0.9, h * 0.9));
-  return { W, d, xs: W - d, h, r, hF: h + (+tb.rF || 0), hB: h + (+tb.rB || 0) };
+  return {
+    W,
+    d,
+    xs: W - d,
+    h,
+    r,
+    hF: h + (+tb.rF || 0),
+    hB: h + (+tb.rB || 0),
+  };
 }
 function tubChain(s) {
   const { W, xs, r, hF, hB } = tubDims(s);
@@ -168,8 +189,12 @@ function tubChain(s) {
     }
   } else pts.push([xs, hF]);
   pts.push([W, hB]);
-  const out = s.tub.side === "l" ? pts.map((q) => [W - q[0], q[1]]).reverse() : pts;
-  return out.filter((q, i) => i === 0 || Math.hypot(q[0] - out[i - 1][0], q[1] - out[i - 1][1]) > 1e-6);
+  const out =
+    s.tub.side === "l" ? pts.map((q) => [W - q[0], q[1]]).reverse() : pts;
+  return out.filter(
+    (q, i) =>
+      i === 0 || Math.hypot(q[0] - out[i - 1][0], q[1] - out[i - 1][1]) > 1e-6,
+  );
 }
 function tubArc(s) {
   if (!isTub(s)) return null;
@@ -220,13 +245,16 @@ function botY(s, x) {
     r = +u.r || 0;
   if (u.mOn) {
     const m = +u.m || 0;
-    return x <= W / 2 ? l + (m - l) * (x / (W / 2)) : m + (r - m) * ((x - W / 2) / (W / 2));
+    return x <= W / 2
+      ? l + (m - l) * (x / (W / 2))
+      : m + (r - m) * ((x - W / 2) / (W / 2));
   }
   return l + (r - l) * (x / W);
 }
 function botPts(s, x0, x1) {
   const pts = [[x0, botY(s, x0)]];
-  if (s.uneven.mOn && x0 < s.w / 2 && x1 > s.w / 2) pts.push([s.w / 2, botY(s, s.w / 2)]);
+  if (s.uneven.mOn && x0 < s.w / 2 && x1 > s.w / 2)
+    pts.push([s.w / 2, botY(s, s.w / 2)]);
   pts.push([x1, botY(s, x1)]);
   return pts;
 }
@@ -252,7 +280,12 @@ function walkPoly(s) {
     mny = Math.min(...pts.map((q) => q[1]));
   const sh = (q) => [q[0] - mnx, q[1] - mny];
   const P2 = pts.map(sh);
-  return { pts: P2, edges: edges.map((e) => [sh(e[0]), sh(e[1])]), gap, ccw: sArea(P2) > 0 };
+  return {
+    pts: P2,
+    edges: edges.map((e) => [sh(e[0]), sh(e[1])]),
+    gap,
+    ccw: sArea(P2) > 0,
+  };
 }
 function polyToSegs(pts) {
   let p = pts.slice();
@@ -268,10 +301,17 @@ function polyToSegs(pts) {
     let d = ((h2 - h1) * 180) / Math.PI;
     while (d > 180) d -= 360;
     while (d < -180) d += 360;
-    out.push({ l: Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 16) / 16, a: Math.round(d * 10) / 10 });
+    out.push({
+      l: Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 16) / 16,
+      a: Math.round(d * 10) / 10,
+    });
   }
   const i0 = p.reduce(
-    (bi, q, i) => (q[1] < p[bi][1] - 1e-6 || (Math.abs(q[1] - p[bi][1]) < 1e-6 && q[0] < p[bi][0]) ? i : bi),
+    (bi, q, i) =>
+      q[1] < p[bi][1] - 1e-6 ||
+      (Math.abs(q[1] - p[bi][1]) < 1e-6 && q[0] < p[bi][0])
+        ? i
+        : bi,
     0,
   );
   return out.slice(i0).concat(out.slice(0, i0));
@@ -287,7 +327,10 @@ function ptsToWalk(s, pts) {
     let d = ((hd(b, c) - hd(a, b)) * 180) / Math.PI;
     while (d > 180) d -= 360;
     while (d < -180) d += 360;
-    return { l: Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 10000) / 10000, a: Math.round(d * 1000) / 1000 };
+    return {
+      l: Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 10000) / 10000,
+      a: Math.round(d * 1000) / 1000,
+    };
   });
   s.shape = "walk";
 }
@@ -298,7 +341,9 @@ function cornerAngles(pts) {
   return pts.map((b, i) => {
     const a = pts[(i - 1 + n) % n],
       c = pts[(i + 1) % n];
-    let d = Math.atan2(c[1] - b[1], c[0] - b[0]) - Math.atan2(b[1] - a[1], b[0] - a[0]);
+    let d =
+      Math.atan2(c[1] - b[1], c[0] - b[0]) -
+      Math.atan2(b[1] - a[1], b[0] - a[0]);
     while (d > Math.PI) d -= 2 * Math.PI;
     while (d < -Math.PI) d += 2 * Math.PI;
     return 180 - ((d * 180) / Math.PI) * sg;
@@ -309,7 +354,16 @@ function transExt(tr) {
   const wt = +tr.wt || 4.5,
     dt = Math.min(wt, +tr.dt || 1.375);
   // the joint hides under the middle of the closed door slab
-  return { mid: wt / 2, pocket: wt / 2, in: dt / 2, out: wt - dt / 2, full: wt, cust: Math.max(0, +tr.ext || 0) }[tr.stop] || 0;
+  return (
+    {
+      mid: wt / 2,
+      pocket: wt / 2,
+      in: dt / 2,
+      out: wt - dt / 2,
+      full: wt,
+      cust: Math.max(0, +tr.ext || 0),
+    }[tr.stop] || 0
+  );
 }
 /* the floor outline with tile tongues into doorways */
 function transTabs(s, outer) {
@@ -334,7 +388,11 @@ function transTabs(s, outer) {
     T.filter((tr) => +tr.edge % n === i)
       .map((tr) => {
         const f0 = Math.max(0, Math.min(L, +tr.from || 0));
-        return [f0, Math.max(f0, Math.min(L, f0 + (+tr.len || 0))), transExt(tr)];
+        return [
+          f0,
+          Math.max(f0, Math.min(L, f0 + (+tr.len || 0))),
+          transExt(tr),
+        ];
       })
       .filter((v) => v[1] - v[0] > 0.1)
       .sort((p, q) => p[0] - q[0])
@@ -390,7 +448,13 @@ const OPT = {
   pipe: { shape: "circle", dia: 1.125, on: ["wall", "floor"] },
   toilet: { shape: "circle", dia: 5, on: ["floor"] },
   duct: { shape: "rect", w: 4, h: 10, on: ["floor", "wall"] },
-  cutout: { shape: "rect", w: 12, h: 12, trim: false, on: ["wall", "floor", "pan"] },
+  cutout: {
+    shape: "rect",
+    w: 12,
+    h: 12,
+    trim: false,
+    on: ["wall", "floor", "pan"],
+  },
   round: { shape: "circle", dia: 4, on: ["wall", "floor", "pan"] },
   noheat: { shape: "rect", w: 36, h: 22, on: ["floor"], nohole: true },
   warm: { shape: "rect", w: 36, h: 24, on: ["floor"], nohole: true },
@@ -408,7 +472,13 @@ function toiletFace(s, o) {
     dx = o.x - w[0],
     dy = o.y - w[1];
   if (Math.hypot(dx, dy) < 0.01) return "u";
-  return Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "u" : "d";
+  return Math.abs(dx) > Math.abs(dy)
+    ? dx > 0
+      ? "r"
+      : "l"
+    : dy > 0
+      ? "u"
+      : "d";
 }
 function toiletZone(s, o) {
   const face = toiletFace(s, o),
@@ -417,8 +487,12 @@ function toiletZone(s, o) {
     front = +o.front || 18,
     half = (+o.tw || 20) / 2;
   let back = 0;
-  while (back < 30 && pip(O, o.x - fx * (back + 0.5), o.y - fy * (back + 0.5))) back += 0.5;
+  while (back < 30 && pip(O, o.x - fx * (back + 0.5), o.y - fy * (back + 0.5)))
+    back += 0.5;
   // local coords: u along the front direction, v across
-  const loc = (x, y) => [(x - o.x) * fx + (y - o.y) * fy, -(x - o.x) * fy + (y - o.y) * fx];
+  const loc = (x, y) => [
+    (x - o.x) * fx + (y - o.y) * fy,
+    -(x - o.x) * fy + (y - o.y) * fx,
+  ];
   return { face, fx, fy, front, half, back, loc };
 }

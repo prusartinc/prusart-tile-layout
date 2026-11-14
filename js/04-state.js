@@ -85,7 +85,12 @@ function newSurface(type, name) {
     pos: { x: 0, y: 0 },
     zlink: false,
     segs: null,
-    stack: { under: type === "floor" ? "ditra" : "none", under2: "none", ub: null, tb: null },
+    stack: {
+      under: type === "floor" ? "ditra" : "none",
+      under2: "none",
+      ub: null,
+      tb: null,
+    },
     prof: { type: "inherit", size: "auto", vis: null },
     trans: [],
     heat: {
@@ -108,14 +113,27 @@ function newSurface(type, name) {
   if (type === "pan") {
     s.w = 60;
     s.h = 36;
-    s.tile = defTile({ w: 2, h: 2, w2: 1, pattern: "grid", rot: false, sheet: { on: true, w: 12, h: 12 } });
+    s.tile = defTile({
+      w: 2,
+      h: 2,
+      w2: 1,
+      pattern: "grid",
+      rot: false,
+      sheet: { on: true, w: 12, h: 12 },
+    });
     s.curb.on = true;
     s.drain.type = "center";
   }
   if (type !== "wall" && P) {
     const fl = P.surfaces.filter((x) => x.type !== "wall");
     if (fl.length) {
-      s.pos = { x: Math.max(...fl.map((x) => (+x.pos.x || 0) + bboxOf(outerPoly(x)).x1)) + 12, y: 0 };
+      s.pos = {
+        x:
+          Math.max(
+            ...fl.map((x) => (+x.pos.x || 0) + bboxOf(outerPoly(x)).x1),
+          ) + 12,
+        y: 0,
+      };
     }
   }
   s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
@@ -149,7 +167,17 @@ function newProject(sample) {
     const b = newSurface("wall", "backWall");
     b.trim.t = true;
     b.openings.push(
-      { id: uid(), type: "niche", shape: "rect", x: 18, y: 42, w: 24, h: 12, d: 3.5, trim: true },
+      {
+        id: uid(),
+        type: "niche",
+        shape: "rect",
+        x: 18,
+        y: 42,
+        w: 24,
+        h: 12,
+        d: 3.5,
+        trim: true,
+      },
       { id: uid(), type: "valve", shape: "circle", x: 30, y: 48 - 20, dia: 3 },
       { id: uid(), type: "pipe", shape: "circle", x: 30, y: 80, dia: 1.125 },
     );
@@ -193,7 +221,9 @@ function migrate(p) {
   p.link = p.link || { mode: "none", ox: 0, oy: 0 };
   p.sch = p.sch || { profile: "JOLLY", size: "3/8″", vis: 0.125 };
   if (!p.sch.type) p.sch.type = "JOLLY";
-  p.surfaces = Array.isArray(p.surfaces) ? p.surfaces.filter((s) => s && typeof s === "object") : [];
+  p.surfaces = Array.isArray(p.surfaces)
+    ? p.surfaces.filter((s) => s && typeof s === "object")
+    : [];
   if (p.waste == null) p.waste = 10;
   if (p.minCut == null) p.minCut = 2;
   if (p.edgeGap == null) p.edgeGap = 0.125;
@@ -212,7 +242,8 @@ function migrate(p) {
   p.flink = p.flink || { ox: 0, oy: 0 };
   p.mat = Object.assign(defMat(), p.mat || {});
   const findKey = (nm, keys) => {
-    for (const k of keys) for (const L of ["ru", "en"]) if (I18N[L][k] === nm) return k;
+    for (const k of keys)
+      for (const L of ["ru", "en"]) if (I18N[L][k] === nm) return k;
     return null;
   };
   if (!p.nk) {
@@ -221,7 +252,15 @@ function migrate(p) {
   }
   p.surfaces.forEach((s) => {
     if (s.nk !== undefined) return;
-    const k = findKey(s.name, ["backWall", "leftWall", "rightWall", "bathFloor", "pan", "floor", "wall"]);
+    const k = findKey(s.name, [
+      "backWall",
+      "leftWall",
+      "rightWall",
+      "bathFloor",
+      "pan",
+      "floor",
+      "wall",
+    ]);
     if (k) {
       s.nk = k;
       s.nn = 0;
@@ -279,9 +318,15 @@ function migrate(p) {
     if (s.zlink == null) s.zlink = false;
     if (!s.segs) s.segs = polyToSegs(outerPoly(s));
     if (!s.plumb) s.plumb = { on: false, l: 0, r: 0 };
-    if (!s.tub) s.tub = { on: false, side: "r", d: 30, h: 15, r: 1.5, rF: 0, rB: 0 };
+    if (!s.tub)
+      s.tub = { on: false, side: "r", d: 30, h: 15, r: 1.5, rF: 0, rB: 0 };
     if (!s.stack)
-      s.stack = { under: s.type === "floor" ? "ditra" : "none", under2: "none", ub: null, tb: null };
+      s.stack = {
+        under: s.type === "floor" ? "ditra" : "none",
+        under2: "none",
+        ub: null,
+        tb: null,
+      };
     if (!s.prof) s.prof = { type: "inherit", size: "auto", vis: null };
     if (!s.trans) s.trans = [];
     s.trans.forEach((tr) => {

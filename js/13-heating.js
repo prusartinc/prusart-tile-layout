@@ -31,7 +31,10 @@ function snapWallE(O, p) {
       be = i;
     }
   }
-  return { p: [Math.round(best[0] * 8) / 8, Math.round(best[1] * 8) / 8], e: be };
+  return {
+    p: [Math.round(best[0] * 8) / 8, Math.round(best[1] * 8) / 8],
+    e: be,
+  };
 }
 const HEATCOL = ["#d6331f", "#e07b00", "#7b3fb3", "#1f8a70"];
 function heatPlan(s, R) {
@@ -44,7 +47,9 @@ function heatPlan(s, R) {
     Hh = bb.y1 - bb.y0,
     res = Math.max(W, Hh) > 160 ? 2 : 1,
     clear = +H.clear || 0;
-  const tz = s.openings.filter((o) => o.type === "toilet").map((o) => toiletZone(s, o));
+  const tz = s.openings
+    .filter((o) => o.type === "toilet")
+    .map((o) => toiletZone(s, o));
   // Minimum cable spacing (Schluter DITRA-HEAT handbook): forced-air vents 4", drain pipes 4" from edge,
   // walls / cabinets 2" (wall clearance is H.clear), other fixed elements 2".
   const clrOf = (o) =>
@@ -72,14 +77,25 @@ function heatPlan(s, R) {
   };
   const ok = (x, y) => {
     if (!pip(O, x, y)) return false;
-    for (let i = 0; i < O.length; i++) if (segDist(x, y, O[i], O[(i + 1) % O.length]) < clear) return false;
+    for (let i = 0; i < O.length; i++)
+      if (segDist(x, y, O[i], O[(i + 1) % O.length]) < clear) return false;
     if (inToilet(x, y)) return false;
     for (const { o, m } of obs) {
       if (o.shape === "circle") {
         if (Math.hypot(x - o.x, y - o.y) < o.dia / 2 + m) return false;
-      } else if (x > o.x - m && x < o.x + o.w + m && y > o.y - m && y < o.y + o.h + m) return false;
+      } else if (
+        x > o.x - m &&
+        x < o.x + o.w + m &&
+        y > o.y - m &&
+        y < o.y + o.h + m
+      )
+        return false;
     }
-    if (s.type === "pan" && s.drain.type === "center" && Math.hypot(x - s.drain.x, y - s.drain.y) < 6)
+    if (
+      s.type === "pan" &&
+      s.drain.type === "center" &&
+      Math.hypot(x - s.drain.x, y - s.drain.y) < 6
+    )
       return false;
     return true;
   };
@@ -102,7 +118,10 @@ function heatPlan(s, R) {
       B1 = horiz ? bb.x1 : bb.y1;
     const sp2 = sys.sp ? 2.35 : sp * 0.67,
       wz = warm.filter((o) => (horiz ? o.w : o.h) >= 0.6 * (B1 - B0)),
-      inW = (v) => wz.some((o) => (horiz ? v >= o.y && v <= o.y + o.h : v >= o.x && v <= o.x + o.w));
+      inW = (v) =>
+        wz.some((o) =>
+          horiz ? v >= o.y && v <= o.y + o.h : v >= o.x && v <= o.x + o.w,
+        );
     let alt = 0;
     const lines = [];
     for (
@@ -124,9 +143,16 @@ function heatPlan(s, R) {
       }
       if (st != null && B1 - st >= 4) iv.push([st, B1 - res / 2]);
       keepLongest(iv);
-      if (iv.length) lines.push({ v, iv, len: iv.reduce((q, r) => q + r[1] - r[0], 0) });
+      if (iv.length)
+        lines.push({ v, iv, len: iv.reduce((q, r) => q + r[1] - r[0], 0) });
     }
-    return { horiz, lines, wz: wz.length, mid: (B0 + B1) / 2, tot: lines.reduce((q, l) => q + l.len, 0) };
+    return {
+      horiz,
+      lines,
+      wz: wz.length,
+      mid: (B0 + B1) / 2,
+      tot: lines.reduce((q, l) => q + l.len, 0),
+    };
   };
   const pt = (o, b, v) => (o.horiz ? [b, v] : [v, b]);
   const grp = (o, a, b, tg) => {
@@ -148,10 +174,15 @@ function heatPlan(s, R) {
     best.gsf = o.tot ? (sf * len) / o.tot : 0;
     return best;
   };
-  const nWant = H.n && H.n !== "auto" ? Math.max(1, +H.n) : Math.max(1, Math.ceil(sf / maxSf - 0.001));
+  const nWant =
+    H.n && H.n !== "auto"
+      ? Math.max(1, +H.n)
+      : Math.max(1, Math.ceil(sf / maxSf - 0.001));
   let plan = null;
   const dirW = H.dir === "h" ? true : H.dir === "v" ? false : null;
-  for (const o of dirW == null ? [build(W >= Hh), build(W < Hh)] : [build(dirW)]) {
+  for (const o of dirW == null
+    ? [build(W >= Hh), build(W < Hh)]
+    : [build(dirW)]) {
     const L = o.lines.length;
     if (!L) continue;
     const n = Math.min(nWant, L);
@@ -171,7 +202,8 @@ function heatPlan(s, R) {
         }
       });
       const c = [];
-      for (let i = 0; i < cut.length; i++) c.push(cut[i], (cut[i + 1] || L) - 1);
+      for (let i = 0; i < cut.length; i++)
+        c.push(cut[i], (cut[i + 1] || L) - 1);
       cands = [c];
     }
     for (const c of cands) {
@@ -180,7 +212,8 @@ function heatPlan(s, R) {
       const over = gs.reduce((q, g) => q + Math.max(0, g.gsf - maxSf), 0),
         mx = Math.max(...gs.map((g) => g.gsf)),
         mn = Math.min(...gs.map((g) => g.gsf));
-      const score = gs.reduce((q, g) => q + g.d, 0) + over * 40 + (mx - mn) * 0.3 + L * 0.5;
+      const score =
+        gs.reduce((q, g) => q + g.d, 0) + over * 40 + (mx - mn) * 0.3 + L * 0.5;
       if (!plan || score < plan.score) plan = { o, gs, score };
     }
   }
@@ -216,7 +249,8 @@ function heatPlan(s, R) {
         const q1 = [q0[0] + u[0] * al, q0[1] + u[1] * al];
         g.lead = [conn, q0, q1];
         g.d = 0;
-        const score = Math.abs(al) * 0.3 + L * 0.5 + Math.max(0, g.gsf - maxSf) * 40;
+        const score =
+          Math.abs(al) * 0.3 + L * 0.5 + Math.max(0, g.gsf - maxSf) * 40;
         if (!plan || score < plan.score) plan = { o, gs: [g], score };
       }
     }
@@ -262,7 +296,13 @@ function heatPlan(s, R) {
           clearRun = (a, b) => {
             const n = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]));
             for (let k = 1; k < n; k++)
-              if (!ok(a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n)) return false;
+              if (
+                !ok(
+                  a[0] + ((b[0] - a[0]) * k) / n,
+                  a[1] + ((b[1] - a[1]) * k) / n,
+                )
+              )
+                return false;
             return true;
           },
           from = pt(o, pv.b, pv.v),
@@ -287,8 +327,12 @@ function heatPlan(s, R) {
     // real cable: fixed lengths, can't be cut — pick the longest that fits, or the one chosen
     const cat = cableCatalog(H.sys, volt),
       pick =
-        (plan.gs.length === 1 && H.model && cat.find((c) => c.id === H.model)) ||
-        (H.sys === "cable" && +H.cableFt ? { id: "custom", ft: +H.cableFt, sf: 0 } : null) ||
+        (plan.gs.length === 1 &&
+          H.model &&
+          cat.find((c) => c.id === H.model)) ||
+        (H.sys === "cable" && +H.cableFt
+          ? { id: "custom", ft: +H.cableFt, sf: 0 }
+          : null) ||
         cat.filter((c) => c.ft * 12 <= len + 0.5).pop() ||
         null;
     let path = P2,
@@ -355,13 +399,22 @@ function heatPlan(s, R) {
       }
     });
     if (pairs.length) {
-      const want = H.sensor ? (o.horiz ? [H.sensor[0], H.sensor[1]] : [H.sensor[1], H.sensor[0]]) : null;
+      const want = H.sensor
+        ? o.horiz
+          ? [H.sensor[0], H.sensor[1]]
+          : [H.sensor[1], H.sensor[0]]
+        : null;
       let P = null;
-      if (want) P = pairs.reduce((p, q) => (Math.abs(q.v - want[1]) < Math.abs(p.v - want[1]) ? q : p));
+      if (want)
+        P = pairs.reduce((p, q) =>
+          Math.abs(q.v - want[1]) < Math.abs(p.v - want[1]) ? q : p,
+        );
       else {
         const big = cables.slice().sort((a, b) => b.sf - a.sf)[0],
           ps = pairs.filter((q) => q.cb === big);
-        P = (ps.length ? ps : pairs)[Math.floor(((ps.length ? ps : pairs).length - 1) / 2)];
+        P = (ps.length ? ps : pairs)[
+          Math.floor(((ps.length ? ps : pairs).length - 1) / 2)
+        ];
       }
       const lo = P.a + Math.min(12, (P.b - P.a) / 2),
         hi = P.b - Math.min(12, (P.b - P.a) / 2),
@@ -383,11 +436,14 @@ function heatPlan(s, R) {
       if (Math.abs(cb - (P.openLow ? B0 : B1)) < 6)
         r.push([bEdge, Math.max(A0 + band, Math.min(A1 - band, cv))]);
       else {
-        const vb = Math.abs(cv - A0) < Math.abs(cv - A1) ? A0 + band : A1 - band;
+        const vb =
+          Math.abs(cv - A0) < Math.abs(cv - A1) ? A0 + band : A1 - band;
         r.push([bEdge, vb], [Math.max(B0 + band, Math.min(B1 - band, cb)), vb]);
       }
       r.push(o.horiz ? [cb, cv] : [cv, cb]);
-      sensorWire = r.map((q, i) => (i === r.length - 1 ? conn : pt(o, q[0], q[1])));
+      sensorWire = r.map((q, i) =>
+        i === r.length - 1 ? conn : pt(o, q[0], q[1]),
+      );
     }
   }
   const fixed = cables.length && cables.every((c) => c.pick && c.pick.sf),
@@ -397,7 +453,8 @@ function heatPlan(s, R) {
         ? cables.reduce((q, c) => q + c.eq * wsf, 0)
         : sf * wsf,
     amps = watts / volt;
-  const irregular = s.shape !== "rect" || s.openings.some((o2) => o2.type !== "duct");
+  const irregular =
+    s.shape !== "rect" || s.openings.some((o2) => o2.type !== "duct");
   return {
     warmOff: warm.length > 0 && !o.wz,
     sf,
@@ -434,7 +491,8 @@ function heatSVG(s, R, px0, fs) {
     const p0 = cb.path[0];
     if (cb.lead > 1)
       h += `<line x1="${c[0]}" y1="${-c[1]}" x2="${p0[0]}" y2="${-p0[1]}" stroke="#1d5fa8" stroke-width="${pz(1.6)}" stroke-dasharray="${pz(5)} ${pz(3)}"/>`;
-    if (cb.lead > 1) h += `<circle cx="${p0[0]}" cy="${-p0[1]}" r="${pz(3)}" fill="${cb.col}"/>`;
+    if (cb.lead > 1)
+      h += `<circle cx="${p0[0]}" cy="${-p0[1]}" r="${pz(3)}" fill="${cb.col}"/>`;
     const p1 = cb.path[1] || p0,
       fr = 0.3 + (0.4 * i) / Math.max(1, hp.cables.length - 1),
       mx = p0[0] + (p1[0] - p0[0]) * fr,
@@ -470,9 +528,12 @@ function heatResHTML(s, R) {
       .join("");
   else h += `<div class="note">${t("cableNoCut")}</div>`;
   hp.cables.forEach((c, i) => {
-    const nm = multi ? `<b style="color:${c.col}">● ${t("cableN")} ${i + 1}</b>: ` : "";
+    const nm = multi
+      ? `<b style="color:${c.col}">● ${t("cableN")} ${i + 1}</b>: `
+      : "";
     if (!c.pick) {
-      if (cableCatalog(H.sys, hp.volt).length) h += `<div class="warnbox">${nm}${t("cableTooSmall")}</div>`;
+      if (cableCatalog(H.sys, hp.volt).length)
+        h += `<div class="warnbox">${nm}${t("cableTooSmall")}</div>`;
       return;
     }
     const lay = `${t("layoutNeeds")} <b>${c.lenFt.toFixed(1)} ft</b>`;
@@ -487,11 +548,14 @@ function heatResHTML(s, R) {
     h += `</div>`;
   });
   if (multi) h += `<div class="note">${t("cableNoCut")}</div>`;
-  if (hp.cables.some((c) => c.sf > hp.maxSf + 0.05)) h += `<div class="warnbox">${t("overMax")}</div>`;
+  if (hp.cables.some((c) => c.sf > hp.maxSf + 0.05))
+    h += `<div class="warnbox">${t("overMax")}</div>`;
   if (hp.amps > 15) h += `<div class="warnbox">${t("heat120warn")}</div>`;
   if (hp.warmOff) h += `<div class="note">${t("warmOff")}</div>`;
-  if (hp.cables.some((c) => c.lead > 84)) h += `<div class="note">${t("leadFar")}</div>`;
-  if (H.sys === "mat" && hp.irregular) h += `<div class="note">${t("matIrregular")}</div>`;
+  if (hp.cables.some((c) => c.lead > 84))
+    h += `<div class="note">${t("leadFar")}</div>`;
+  if (H.sys === "mat" && hp.irregular)
+    h += `<div class="note">${t("matIrregular")}</div>`;
   h += `<p class="hint">${t("heatNotes")}</p>`;
   return h;
 }

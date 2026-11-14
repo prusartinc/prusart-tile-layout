@@ -20,7 +20,8 @@ function Rep() {
     M = 72,
     pages = [];
   let c, x, y;
-  const font = (sz, b) => `${b ? "700 " : ""}${sz}px -apple-system,Segoe UI,Roboto,Arial,sans-serif`;
+  const font = (sz, b) =>
+    `${b ? "700 " : ""}${sz}px -apple-system,Segoe UI,Roboto,Arial,sans-serif`;
   const np = () => {
     c = document.createElement("canvas");
     c.width = W;
@@ -119,11 +120,14 @@ function Rep() {
       rows.forEach((row) => {
         const cellOf = (i) => {
           const v = row[i];
-          return v && typeof v === "object" ? v : { t: v == null ? "" : String(v) };
+          return v && typeof v === "object"
+            ? v
+            : { t: v == null ? "" : String(v) };
         };
         const hs = cols.map((cl, i) => {
           const cv = cellOf(i);
-          return wrap(cv.t, cl.w * tw - 16 - (cv.sw ? sz * 1.2 : 0), sz, cv.b).length;
+          return wrap(cv.t, cl.w * tw - 16 - (cv.sw ? sz * 1.2 : 0), sz, cv.b)
+            .length;
         });
         const hh = Math.max(...hs) * sz * 1.3 + sz * 0.5;
         if (y + hh > H - M - 30) {
@@ -146,7 +150,11 @@ function Rep() {
           x.fillStyle = cv.c || "#1e2226";
           x.textAlign = cl.r ? "right" : "left";
           lines.forEach((ln, k) =>
-            x.fillText(ln, cl.r ? cx + cl.w * tw - 16 : cx + ox, y + sz * 1.15 + k * sz * 1.3),
+            x.fillText(
+              ln,
+              cl.r ? cx + cl.w * tw - 16 : cx + ox,
+              y + sz * 1.15 + k * sz * 1.3,
+            ),
           );
           x.textAlign = "left";
           cx += cl.w * tw;
@@ -191,7 +199,14 @@ async function drawSurfInto(rep, items, maxH, mode, layer) {
 async function drawSurfInto0(rep, items, maxH, mode) {
   if (mode === undefined) mode = items.length > 1 ? "walls" : false;
   const W0 = rep.W - 2 * rep.M;
-  const probe = buildViewItems(1000, 0, { zoom: 1, panX: 0, panY: 0 }, 1.6, items, mode);
+  const probe = buildViewItems(
+    1000,
+    0,
+    { zoom: 1, panX: 0, panY: 0 },
+    1.6,
+    items,
+    mode,
+  );
   if (!probe) return;
   const ratio = probe.Hpx / 1000;
   let w = W0,
@@ -201,7 +216,14 @@ async function drawSurfInto0(rep, items, maxH, mode) {
     h = avail;
     w = h / ratio;
   }
-  const V = buildViewItems(w * 2, h * 2, { zoom: 1, panX: 0, panY: 0 }, 2.6, items, mode);
+  const V = buildViewItems(
+    w * 2,
+    h * 2,
+    { zoom: 1, panX: 0, panY: 0 },
+    2.6,
+    items,
+    mode,
+  );
   const img = await svgImg(V, Math.round(w * 2), Math.round(h * 2));
   if (img) rep.image(img, w, h);
 }
@@ -216,7 +238,9 @@ async function makePdf(kind) {
     rep.cover(
       LOGOIMG,
       P.name,
-      [P.client, date, kind === "cut" ? t("pdfCut") : t("pdfClient")].filter(Boolean).join(" · "),
+      [P.client, date, kind === "cut" ? t("pdfCut") : t("pdfClient")]
+        .filter(Boolean)
+        .join(" · "),
     );
     TEXON = kind !== "cut";
     const all = P.surfaces.map((s) => ({ s, R: compute(s) }));
@@ -259,7 +283,11 @@ async function makePdf(kind) {
           { t: t("matQty"), w: 0.27 },
           { t: t("matNote"), w: 0.33 },
         ],
-        materials().map((r) => [{ t: r[0], b: true }, r[1], { t: r[2], c: "#666" }]),
+        materials().map((r) => [
+          { t: r[0], b: true },
+          r[1],
+          { t: r[2], c: "#666" },
+        ]),
         { size: 18 },
       );
       rep.text(t("matNoteAll"), { size: 16, color: "#777" });
@@ -281,12 +309,22 @@ async function makePdf(kind) {
       if (R.heat && s.heat.on && s.heat.show) {
         const hp = R.heat;
         rep.np();
-        rep.text(`${t("heat")} — ${s.name}`, { size: 30, bold: true, after: 2 });
+        rep.text(`${t("heat")} — ${s.name}`, {
+          size: 30,
+          bold: true,
+          after: 2,
+        });
         rep.text(
           `${t("hs_" + s.heat.sys)} · ${hp.sf.toFixed(1)} sf · ${Math.round(hp.watts)} W · ${hp.amps.toFixed(1)} A (${hp.volt} V) · ${t("nCables")}: ${hp.cables.length}`,
           { size: 19, color: "#555", after: 10 },
         );
-        await drawSurfInto(rep, [{ s, R, dx: 0, dy: 0 }], rep.H * 0.62, false, "wire");
+        await drawSurfInto(
+          rep,
+          [{ s, R, dx: 0, dy: 0 }],
+          rep.H * 0.62,
+          false,
+          "wire",
+        );
         hp.cables.forEach((c, i) =>
           rep.text(
             `${t("cableN")} ${i + 1}: ${c.sf.toFixed(1)} sf · ${c.runs} ${t("runs").toLowerCase()} · ≈${Math.round(c.lenFt)} ft · ${t("cablePick")} ${c.cableSf} sf`,
@@ -300,14 +338,24 @@ async function makePdf(kind) {
         const pp = prepPlan(s, R);
         if (pp) {
           rep.np();
-          rep.text(`${t("lay_prep")} — ${s.name}`, { size: 30, bold: true, after: 2 });
+          rep.text(`${t("lay_prep")} — ${s.name}`, {
+            size: 30,
+            bold: true,
+            after: 2,
+          });
           rep.text(
             prepSummary(s, R)
               .replace(/<\/span><span>/g, " · ")
               .replace(/<[^>]+>/g, ""),
             { size: 19, color: "#555", after: 10 },
           );
-          await drawSurfInto(rep, [{ s, R, dx: 0, dy: 0 }], rep.H * 0.62, false, "prep");
+          await drawSurfInto(
+            rep,
+            [{ s, R, dx: 0, dy: 0 }],
+            rep.H * 0.62,
+            false,
+            "prep",
+          );
           const cr = prepCutRows(pp);
           if (cr.length) {
             rep.text(t("prepCuts"), { size: 21, bold: true, after: 2 });
@@ -317,7 +365,12 @@ async function makePdf(kind) {
                 { t: t("unit"), w: 0.4, r: true },
               ],
               cr.map((c) => [
-                { t: c.full ? `${t("fullSheet")} ${pp.bs ? pp.bs.replace("x", "×") : ""}` : c.k, b: !c.full },
+                {
+                  t: c.full
+                    ? `${t("fullSheet")} ${pp.bs ? pp.bs.replace("x", "×") : ""}`
+                    : c.k,
+                  b: !c.full,
+                },
                 String(c.n),
               ]),
               { size: 18 },
@@ -333,7 +386,11 @@ async function makePdf(kind) {
         `${fmt(R.G.bb.x1 - R.G.bb.x0)} × ${fmt(R.G.bb.y1 - R.G.bb.y0)} · ${tileDesc(R.T)} · ${patName(R.T)} · ${t("grout")} ${fmt(+R.T.g)}${R.lf > 0 ? ` · Schluter ${edgeProf(s).key}` : ""}`,
         { size: 19, color: "#555", after: 10 },
       );
-      await drawSurfInto(rep, [{ s, R, dx: 0, dy: 0 }], kind === "cut" ? rep.H * 0.55 : rep.H * 0.72);
+      await drawSurfInto(
+        rep,
+        [{ s, R, dx: 0, dy: 0 }],
+        kind === "cut" ? rep.H * 0.55 : rep.H * 0.72,
+      );
       if (kind === "client") {
         rep.text(`${t("area")}: ${sq(R.area)}`, { size: 20 });
         await extraPages(s, R);
@@ -383,8 +440,11 @@ async function makePdf(kind) {
         rep.text(t("drill"), { size: 21, bold: true, after: 2 });
         R.drill.forEach((d) =>
           rep.text(
-            (d.p && d.p.no ? "#" + d.p.no + " — " : d.p ? t("fullTile") + " — " : "") +
-              drillTxt(d).replace(/<[^>]+>/g, ""),
+            (d.p && d.p.no
+              ? "#" + d.p.no + " — "
+              : d.p
+                ? t("fullTile") + " — "
+                : "") + drillTxt(d).replace(/<[^>]+>/g, ""),
             { size: 18 },
           ),
         );
@@ -418,7 +478,9 @@ async function makePdf(kind) {
   }
   S.labels = keep.l;
   S.nums = keep.n;
-  const url = URL.createObjectURL(new Blob([PDF.bytes], { type: "application/pdf" }));
+  const url = URL.createObjectURL(
+    new Blob([PDF.bytes], { type: "application/pdf" }),
+  );
   modal(
     `<h3>${t("pdfReady")}</h3><p class="hint">${esc(PDF.name)} · ${PDF.n} ${t("pagesN")}</p><div class="btns" style="flex-direction:column"><button class="btn p w" data-act="sharePdf">${t("sharePdf")}</button><a class="btn w" style="text-align:center;text-decoration:none" href="${url}" download="${esc(PDF.name)}" target="_blank">${t("dlPdf")}</a><button class="btn w" data-act="closeModal">${t("close")}</button></div><p class="hint">${t("pdfHint")}</p>`,
   );
@@ -459,14 +521,20 @@ function pdfFromCanvases(pages) {
     parts.push(b);
     len += b.length;
   };
-  push(new Uint8Array([37, 80, 68, 70, 45, 49, 46, 52, 10, 37, 226, 227, 207, 211, 10]));
+  push(
+    new Uint8Array([
+      37, 80, 68, 70, 45, 49, 46, 52, 10, 37, 226, 227, 207, 211, 10,
+    ]),
+  );
   const N = pages.length,
     kids = [];
   for (let i = 0; i < N; i++) kids.push(`${3 + 3 * i} 0 R`);
   off[1] = len;
   push(`1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n`);
   off[2] = len;
-  push(`2 0 obj\n<< /Type /Pages /Kids [${kids.join(" ")}] /Count ${N} >>\nendobj\n`);
+  push(
+    `2 0 obj\n<< /Type /Pages /Kids [${kids.join(" ")}] /Count ${N} >>\nendobj\n`,
+  );
   pages.forEach((c, i) => {
     const pg = 3 + 3 * i,
       ct = pg + 1,
@@ -478,7 +546,9 @@ function pdfFromCanvases(pages) {
       `${pg} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>\nendobj\n`,
     );
     off[ct] = len;
-    push(`${ct} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
+    push(
+      `${ct} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`,
+    );
     off[im] = len;
     push(
       `${im} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jp.length} >>\nstream\n`,
@@ -489,8 +559,12 @@ function pdfFromCanvases(pages) {
   const max = 2 + 3 * N,
     xo = len;
   let xr = `xref\n0 ${max + 1}\n0000000000 65535 f \n`;
-  for (let i = 1; i <= max; i++) xr += String(off[i]).padStart(10, "0") + " 00000 n \n";
-  push(xr + `trailer\n<< /Size ${max + 1} /Root 1 0 R >>\nstartxref\n${xo}\n%%EOF\n`);
+  for (let i = 1; i <= max; i++)
+    xr += String(off[i]).padStart(10, "0") + " 00000 n \n";
+  push(
+    xr +
+      `trailer\n<< /Size ${max + 1} /Root 1 0 R >>\nstartxref\n${xo}\n%%EOF\n`,
+  );
   const out = new Uint8Array(len);
   let p = 0;
   parts.forEach((b) => {

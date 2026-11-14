@@ -54,10 +54,16 @@ function renderHome() {
   const q = (S.hq || "").toLowerCase();
   const list = [...DB.projects]
     .sort((a, b) => (b.updated || 0) - (a.updated || 0))
-    .filter((p) => !q || [p.name, p.client, p.addr].join(" ").toLowerCase().includes(q));
+    .filter(
+      (p) =>
+        !q || [p.name, p.client, p.addr].join(" ").toLowerCase().includes(q),
+    );
   const fmtD = (ts) =>
     ts
-      ? new Date(ts).toLocaleDateString(lang === "ru" ? "ru-RU" : "en-US", { day: "numeric", month: "short" })
+      ? new Date(ts).toLocaleDateString(lang === "ru" ? "ru-RU" : "en-US", {
+          day: "numeric",
+          month: "short",
+        })
       : "";
   const sy = DB.sync && DB.sync.on;
   let h = `<div class="hhead"><div class="hbrand">${($("header .brand svg") || {}).outerHTML || ""}<div><b>PrusArt Inc</b><small>${t("app")}</small></div></div><div class="hhb"><button data-act="lang">${lang === "ru" ? "EN" : "RU"}</button><button data-act="homeTheme">${THEME === "dark" ? "☀︎" : "☾"}</button></div></div>`;
@@ -106,14 +112,38 @@ function nhDefaults() {
     name: "",
     client: "",
     addr: "",
-    jobs: { shower: false, tub: false, bfloor: false, kitchen: false, floor: false, wall: false },
-    sh: { walls: "3", back: 60, side: 36, h: 96, pan: true, curb: true, niche: true, drain: "center" },
+    jobs: {
+      shower: false,
+      tub: false,
+      bfloor: false,
+      kitchen: false,
+      floor: false,
+      wall: false,
+    },
+    sh: {
+      walls: "3",
+      back: 60,
+      side: 36,
+      h: 96,
+      pan: true,
+      curb: true,
+      niche: true,
+      drain: "center",
+    },
     tb: { len: 60, dep: 30, h: 72, niche: true },
     bf: { w: 96, l: 72, heat: false, volt: "120", toilet: true },
     kt: { kl: "I", ka: 120, kb: 96, kc: 96, kcab: 18, khood: 30, kwin: "none" },
     fl: { name: "", w: 120, l: 120, heat: false },
     wl: { name: "", w: 96, h: 48 },
-    tiles: { wall: "def", floor: "def", pan: "def", ww: 12, wh: 24, fw: 24, fh: 24 },
+    tiles: {
+      wall: "def",
+      floor: "def",
+      pan: "def",
+      ww: 12,
+      wh: 24,
+      fw: 24,
+      fh: 24,
+    },
     prep: { wall: "foam12", floor: "ditra" },
     prof: "JOLLY",
   };
@@ -163,28 +193,56 @@ function renderInterview() {
         : v === "man"
           ? "✎ " + t("wzManual")
           : "📚 " + libLabel(libTiles().find((q) => "l:" + q.id === v) || {});
-    const hasWall = N.jobs.shower || N.jobs.tub || N.jobs.kitchen || N.jobs.wall,
+    const hasWall =
+        N.jobs.shower || N.jobs.tub || N.jobs.kitchen || N.jobs.wall,
       hasFloor = N.jobs.bfloor || N.jobs.floor;
     h += `<h2>${t("nhMatT")}</h2><p class="hint">${t("nhMatHint")}</p><div class="grid">`;
     if (hasWall) {
       h += SEL(t("npWallTile"), "tiles.wall", src, 1, "h", "w2", lab);
       if (N.tiles.wall === "man")
-        h += F(t("tileW"), "tiles.ww", "len", "h") + F(t("tileL"), "tiles.wh", "len", "h");
+        h +=
+          F(t("tileW"), "tiles.ww", "len", "h") +
+          F(t("tileL"), "tiles.wh", "len", "h");
     }
     if (hasFloor) {
       h += SEL(t("npFloorTile"), "tiles.floor", src, 1, "h", "w2", lab);
       if (N.tiles.floor === "man")
-        h += F(t("tileW"), "tiles.fw", "len", "h") + F(t("tileL"), "tiles.fh", "len", "h");
+        h +=
+          F(t("tileW"), "tiles.fw", "len", "h") +
+          F(t("tileL"), "tiles.fh", "len", "h");
     }
-    if (N.jobs.shower && N.sh.pan) h += SEL(t("nhPanTile"), "tiles.pan", src, 0, "h", "w2", lab);
-    const boards = UNDER.filter((u) => u.k === "board" || u.k === "mem" || u.id === "none").map((u) => u.id),
-      floors = UNDER.filter((u) => u.k === "mem" || u.k === "ply" || u.k === "board" || u.id === "none").map(
-        (u) => u.id,
-      );
+    if (N.jobs.shower && N.sh.pan)
+      h += SEL(t("nhPanTile"), "tiles.pan", src, 0, "h", "w2", lab);
+    const boards = UNDER.filter(
+        (u) => u.k === "board" || u.k === "mem" || u.id === "none",
+      ).map((u) => u.id),
+      floors = UNDER.filter(
+        (u) =>
+          u.k === "mem" || u.k === "ply" || u.k === "board" || u.id === "none",
+      ).map((u) => u.id);
     if (N.jobs.shower || N.jobs.tub)
-      h += SEL(t("nhWallPrep"), "prep.wall", boards, 0, "h", "w2", (id) => underOf(id).n);
-    if (hasFloor && !((N.jobs.bfloor && N.bf.heat) || (N.jobs.floor && N.fl.heat)))
-      h += SEL(t("nhFloorPrep"), "prep.floor", floors, 0, "h", "w2", (id) => underOf(id).n);
+      h += SEL(
+        t("nhWallPrep"),
+        "prep.wall",
+        boards,
+        0,
+        "h",
+        "w2",
+        (id) => underOf(id).n,
+      );
+    if (
+      hasFloor &&
+      !((N.jobs.bfloor && N.bf.heat) || (N.jobs.floor && N.fl.heat))
+    )
+      h += SEL(
+        t("nhFloorPrep"),
+        "prep.floor",
+        floors,
+        0,
+        "h",
+        "w2",
+        (id) => underOf(id).n,
+      );
     if (hasWall)
       h += SEL(
         t("schProfile"),
@@ -221,10 +279,14 @@ function nhSummary(N) {
     out.push(
       `🚽 ${t("job_bfloor")}: ${f(N.bf.w)} × ${f(N.bf.l)}${N.bf.toilet ? " + " + t("toilet").toLowerCase() : ""}${N.bf.heat ? ` + 🔥 DITRA-HEAT ${N.bf.volt} V` : ""}`,
     );
-  if (N.jobs.kitchen) out.push(`🍳 ${t("job_kitchen")}: ${t("kl_" + N.kt.kl)}, A ${f(N.kt.ka)}`);
+  if (N.jobs.kitchen)
+    out.push(`🍳 ${t("job_kitchen")}: ${t("kl_" + N.kt.kl)}, A ${f(N.kt.ka)}`);
   if (N.jobs.floor)
-    out.push(`▦ ${N.fl.name || t("job_floor")}: ${f(N.fl.w)} × ${f(N.fl.l)}${N.fl.heat ? " + 🔥" : ""}`);
-  if (N.jobs.wall) out.push(`🧱 ${N.wl.name || t("job_wall")}: ${f(N.wl.w)} × ${f(N.wl.h)}`);
+    out.push(
+      `▦ ${N.fl.name || t("job_floor")}: ${f(N.fl.w)} × ${f(N.fl.l)}${N.fl.heat ? " + 🔥" : ""}`,
+    );
+  if (N.jobs.wall)
+    out.push(`🧱 ${N.wl.name || t("job_wall")}: ${f(N.wl.w)} × ${f(N.wl.h)}`);
   return out;
 }
 function nhPickTile(src, T, man) {
@@ -246,7 +308,10 @@ function nhCreate() {
   }
   p.client = N.client || "";
   p.addr = N.addr || "";
-  p.sch = Object.assign({}, p.sch, { type: N.prof || "JOLLY", profile: N.prof || "JOLLY" });
+  p.sch = Object.assign({}, p.sch, {
+    type: N.prof || "JOLLY",
+    profile: N.prof || "JOLLY",
+  });
   DB.projects.push(p);
   P = p;
   const named = (type, name) => {
@@ -256,7 +321,8 @@ function nhCreate() {
     s.nn = 0;
     return s;
   };
-  const wallTile = (s) => nhPickTile(N.tiles.wall, s.tile, [N.tiles.ww, N.tiles.wh]);
+  const wallTile = (s) =>
+    nhPickTile(N.tiles.wall, s.tile, [N.tiles.ww, N.tiles.wh]);
   const floorTile = (s) => {
     s.tile = stdTile("floor");
     nhPickTile(N.tiles.floor, s.tile, [N.tiles.fw, N.tiles.fh]);
@@ -292,7 +358,14 @@ function nhCreate() {
     left.tile = JSON.parse(JSON.stringify(back.tile));
     left.stack.under = N.prep.wall;
     left.wet = true;
-    left.openings.push({ id: uid(), type: "valve", shape: "circle", x: +N.sh.side / 2, y: 48, dia: 3 });
+    left.openings.push({
+      id: uid(),
+      type: "valve",
+      shape: "circle",
+      x: +N.sh.side / 2,
+      y: 48,
+      dia: 3,
+    });
     add(back);
     add(left);
     if (N.sh.walls === "3") {
@@ -319,7 +392,11 @@ function nhCreate() {
               len: Math.max(24, +N.sh.back - 6),
               wid: 2.75,
             })
-          : Object.assign(pan.drain, { type: "center", x: +N.sh.back / 2, y: +N.sh.side / 2 });
+          : Object.assign(pan.drain, {
+              type: "center",
+              x: +N.sh.back / 2,
+              y: +N.sh.side / 2,
+            });
       add(pan);
     }
   }
@@ -351,7 +428,14 @@ function nhCreate() {
       s.stack.under = N.prep.wall;
       s.wet = true;
       if (i === 0)
-        s.openings.push({ id: uid(), type: "valve", shape: "circle", x: +N.tb.dep / 2, y: 20, dia: 3 });
+        s.openings.push({
+          id: uid(),
+          type: "valve",
+          shape: "circle",
+          x: +N.tb.dep / 2,
+          y: 20,
+          dia: 3,
+        });
       add(s);
     });
   }
@@ -436,7 +520,9 @@ function buildKitchen(K, tileFn) {
         { k: "cab", len: L - 36 - a, h: ch },
       );
     } else segs.push({ k: "cab", len: L, h: ch });
-    s.bs = Object.assign(bsDefault(L), { segs: segs.map((q) => Object.assign({ sl: false, hR: q.h }, q)) });
+    s.bs = Object.assign(bsDefault(L), {
+      segs: segs.map((q) => Object.assign({ sl: false, hR: q.h }, q)),
+    });
     bsApply(s);
     if (K.kwin === nm && segs.length === 3 && segs[1].k === "window")
       s.openings.push({
@@ -519,7 +605,8 @@ function homeAct(a, arg) {
     return renderHome();
   }
   if (a === "nhNext") {
-    if (nhSteps(N)[N.step - 1] === "jobs" && !JOBS.some((j) => N.jobs[j])) return;
+    if (nhSteps(N)[N.step - 1] === "jobs" && !JOBS.some((j) => N.jobs[j]))
+      return;
     N.step++;
     homeEl().scrollTop = 0;
     return renderHome();

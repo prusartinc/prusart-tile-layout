@@ -70,9 +70,21 @@ function materials() {
       sf = R.area / 144,
       tr = trowelOf(T);
     thin[tr] += sf * (tr === "l" ? m.bb : 1);
-    grout += sf * 144 * jointPerArea(T) * (+T.g || 0.125) * (+T.thick || 0.375) * m.dens * 1.1;
+    grout +=
+      sf *
+      144 *
+      jointPerArea(T) *
+      (+T.g || 0.125) *
+      (+T.thick || 0.375) *
+      m.dens *
+      1.1;
     if (s.wet) wetSf += sf;
-    if (m.clips && T.shape === "rect" && !(T.sheet && T.sheet.on) && Math.max(+T.w, +T.h) >= 12)
+    if (
+      m.clips &&
+      T.shape === "rect" &&
+      !(T.sheet && T.sheet.on) &&
+      Math.max(+T.w, +T.h) >= 12
+    )
       clips += R.need * 2;
     s.openings.forEach((o) => {
       if (o.type === "valve") valves++;
@@ -97,7 +109,9 @@ function materials() {
       nItems[k] = (nItems[k] || 0) + it.n;
     }),
   );
-  const H = wetWalls.length ? Math.max(...wetWalls.map((w) => bboxOf(outerPoly(w)).y1)) : 0;
+  const H = wetWalls.length
+    ? Math.max(...wetWalls.map((w) => bboxOf(outerPoly(w)).y1))
+    : 0;
   if (wetWalls.length > 1) {
     band += (wetWalls.length - 1) * H;
     sil += (wetWalls.length - 1) * H;
@@ -131,7 +145,12 @@ function materials() {
         `${bagsOf(thin[k], cov[k])} ${t("bags")}`,
         `${t("trowel")} ${tn[k]} · ${thin[k].toFixed(0)} sf${k === "l" ? " · back-butter" : ""}`,
       ]);
-  if (memSf > 0.5) rows.push([t("thinset"), `${bagsOf(memSf, m.covS)} ${t("bags")}`, t("under")]);
+  if (memSf > 0.5)
+    rows.push([
+      t("thinset"),
+      `${bagsOf(memSf, m.covS)} ${t("bags")}`,
+      t("under"),
+    ]);
   if (grout > 0)
     rows.push([
       t("groutM"),
@@ -178,7 +197,11 @@ function materials() {
     bcnt[k].sf += compute(s2).area / 144;
   });
   Object.values(bcnt).forEach((c) =>
-    rows.push([c.u.n, `${c.n} × ${c.bs.replace("x", "×")}`, `${c.sf.toFixed(0)} sf · ${t("bySheetLayout")}`]),
+    rows.push([
+      c.u.n,
+      `${c.n} × ${c.bs.replace("x", "×")}`,
+      `${c.sf.toFixed(0)} sf · ${t("bySheetLayout")}`,
+    ]),
   );
   Object.keys(und).forEach((id) => {
     const u = underOf(id),
@@ -192,9 +215,14 @@ function materials() {
     const big = us[0],
       small = us[us.length - 1];
     let q;
-    if (us.length > 1 && sf2 * 1.1 < big[0] * 0.6) q = `${Math.ceil((sf2 * 1.1) / small[0])} × ${small[1]}`;
+    if (us.length > 1 && sf2 * 1.1 < big[0] * 0.6)
+      q = `${Math.ceil((sf2 * 1.1) / small[0])} × ${small[1]}`;
     else q = `${Math.ceil((sf2 * 1.1) / big[0])} × ${big[1]}`;
-    rows.push([u.n, q, `${sf2.toFixed(0)} sf${u.chk ? " · " + t("chkSpec") : ""}`]);
+    rows.push([
+      u.n,
+      q,
+      `${sf2.toFixed(0)} sf${u.chk ? " · " + t("chkSpec") : ""}`,
+    ]);
   });
   heats.forEach(({ s: s2, h: hp }) => {
     hp.cables.forEach((c, i) =>
@@ -206,7 +234,12 @@ function materials() {
     );
     rows.push([`${t("thermostat")} — ${s2.name}`, "1", t("thermoNote")]);
   });
-  if (clips) rows.push([t("clipsN"), `≈ ${Math.ceil(clips / 100) * 100}`, t("clipsNote")]);
+  if (clips)
+    rows.push([
+      t("clipsN"),
+      `≈ ${Math.ceil(clips / 100) * 100}`,
+      t("clipsNote"),
+    ]);
   if (sil > 0)
     rows.push([
       t("silicone"),
@@ -219,14 +252,20 @@ function materials() {
     for (const k in R2.profs) pf[k] = (pf[k] || 0) + R2.profs[k];
   });
   Object.keys(pf).forEach((k) =>
-    rows.push(["Schluter " + k, `${Math.ceil(pf[k] / 98.5)} × 8′2½″`, `${(pf[k] / 12).toFixed(1)} ft`]),
+    rows.push([
+      "Schluter " + k,
+      `${Math.ceil(pf[k] / 98.5)} × 8′2½″`,
+      `${(pf[k] / 12).toFixed(1)} ft`,
+    ]),
   );
   // kitchen / backsplash extras
   {
     const bsw = P.surfaces.filter((x) => x.bs && x.bs.on);
     if (bsw.length) {
       let lf = 0;
-      bsw.forEach((x) => x.bs.segs.forEach((q) => q.k !== "skip" && (lf += +q.len || 0)));
+      bsw.forEach((x) =>
+        x.bs.segs.forEach((q) => q.k !== "skip" && (lf += +q.len || 0)),
+      );
       lf += Math.max(0, bsw.length - 1) * 18;
       rows.push([
         t("mCaulkCounter"),
@@ -240,7 +279,8 @@ function materials() {
       insCut = 0,
       stoneSf = 0;
     P.surfaces.forEach((x) => {
-      if (x.type === "wall") rings += x.openings.filter((o) => o.type === "outlet").length;
+      if (x.type === "wall")
+        rings += x.openings.filter((o) => o.type === "outlet").length;
       shelves += x.openings.filter((o) => o.type === "shelf").length;
       const R2 = compute(x);
       if (R2.insN) {
@@ -261,9 +301,14 @@ function materials() {
         `${Math.ceil(ins * (1 + (P.waste || 10) / 100))} ${t("pcs")}`,
         `${insCut} ${t("mInsCut")}`,
       ]);
-    if (shelves) rows.push([t("mBlocking"), `${shelves} ${t("pcs")}`, t("mBlockingNote")]);
+    if (shelves)
+      rows.push([t("mBlocking"), `${shelves} ${t("pcs")}`, t("mBlockingNote")]);
     if (stoneSf > 0) {
-      rows.push([t("mSealer"), `${Math.max(1, Math.ceil(stoneSf / 80))} qt`, t("mSealerNote")]);
+      rows.push([
+        t("mSealer"),
+        `${Math.max(1, Math.ceil(stoneSf / 80))} qt`,
+        t("mSealerNote"),
+      ]);
       rows.push([t("mWhite"), "✓", ""]);
     }
   }

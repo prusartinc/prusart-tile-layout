@@ -40,14 +40,20 @@ function renderTabs() {
       )
       .join("") +
     `<button data-act="tot" class="${S.tab === "tot" ? "on" : ""}">Σ ${t("totals")}</button>` +
-    (S.client ? "" : `<button data-act="addMenu" class="add">${t("addSurf")}</button>`);
+    (S.client
+      ? ""
+      : `<button data-act="addMenu" class="add">${t("addSurf")}</button>`);
 }
 function ptEditable() {
   const s = typeof S.tab === "number" ? P.surfaces[S.tab] : null;
   return !!(s && s.type !== "wall" && !isShaped(s) && !(s.bs && s.bs.on));
 }
 function renderTools() {
-  const ml = { tiles: t("moveTiles"), view: t("moveView"), lock: t("moveLock") }[S.mode];
+  const ml = {
+    tiles: t("moveTiles"),
+    view: t("moveView"),
+    lock: t("moveLock"),
+  }[S.mode];
   $("#tools").innerHTML =
     (S.client
       ? ""
@@ -73,7 +79,8 @@ function renderLayers() {
   el.innerHTML = ["prep", "tile"]
     .concat(hw ? ["wire"] : [])
     .map(
-      (k) => `<button data-act="layer:${k}" class="${S.layer === k ? "on" : ""}">${t("lay_" + k)}</button>`,
+      (k) =>
+        `<button data-act="layer:${k}" class="${S.layer === k ? "on" : ""}">${t("lay_" + k)}</button>`,
     )
     .join("");
 }
@@ -99,7 +106,8 @@ function renderPad() {
   const show =
     canEdit() &&
     S.mode === "tiles" &&
-    ((S.layer === "tile" && (cur() || isMulti())) || (S.layer === "prep" && !!cur()));
+    ((S.layer === "tile" && (cur() || isMulti())) ||
+      (S.layer === "prep" && !!cur()));
   el.style.display = show ? "grid" : "none";
   if (show) {
     const b = el.querySelector(".stp");
@@ -122,7 +130,15 @@ function renderLegend() {
     `<span><i style="background:#c9bfae"></i>${t("legNiche")}</span><span><i style="background:#c3c8d0"></i>Schluter</span>`;
 }
 function aggItems() {
-  const a = { full: 0, cuts: 0, need: 0, order: 0, minc: 1e9, bad: 0, sheets: 0 };
+  const a = {
+    full: 0,
+    cuts: 0,
+    need: 0,
+    order: 0,
+    minc: 1e9,
+    bad: 0,
+    sheets: 0,
+  };
   for (const it of S.items) {
     const r = it.R;
     a.full += r.full;
@@ -147,7 +163,8 @@ function renderStat() {
     return;
   }
   if (!R || !cur()) {
-    el.innerHTML = R === null && cur() ? `<span class="bad">${t("tooMany")}</span>` : "";
+    el.innerHTML =
+      R === null && cur() ? `<span class="bad">${t("tooMany")}</span>` : "";
     return;
   }
   if (S.layer === "prep") {
@@ -159,13 +176,17 @@ function renderStat() {
   el.innerHTML = sheet
     ? `<span>${t("sheets")} <b>${R.sheets}</b></span><span>${t("order")} <b>${R.order}</b></span><span>${t("area")} <b>${sq(R.area)}</b></span>`
     : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
-  el.innerHTML += `<span class="more">${S.statX ? "▴" : "▾"}</span>` + (S.statX ? statDetails(R, cur()) : "");
+  el.innerHTML +=
+    `<span class="more">${S.statX ? "▴" : "▾"}</span>` +
+    (S.statX ? statDetails(R, cur()) : "");
   if (S.client) renderClient();
 }
 function patName(T) {
   const p = patOf(T);
-  let n = p === "hex" ? t("shex") : p === "chevron" ? t("schevron") : t("p" + p);
-  if (p === "offset" || p === "voffset") n += " " + Math.round(+T.off * 100) + "%";
+  let n =
+    p === "hex" ? t("shex") : p === "chevron" ? t("schevron") : t("p" + p);
+  if (p === "offset" || p === "voffset")
+    n += " " + Math.round(+T.off * 100) + "%";
   if (+T.ang) n += ", " + +T.ang + "°";
   if (T.checker) n += ", " + t("checker");
   return n;
@@ -198,7 +219,14 @@ const F = (label, k, ty = "len", sc = "s", cls = "") => {
   if (k === "_ox" || k === "_oy") v = offs(cur())[k === "_ox" ? "x" : "y"];
   else if (k === "_offp") v = Math.round(+cur().tile.off * 1000) / 10;
   else v = getPath(base, k);
-  const val = ty === "len" || ty === "slen" ? fmtIn(v) : ty === "num" ? (v == null ? "" : v) : esc(v);
+  const val =
+    ty === "len" || ty === "slen"
+      ? fmtIn(v)
+      : ty === "num"
+        ? v == null
+          ? ""
+          : v
+        : esc(v);
   return `<label class="f ${cls}"><span>${label}</span><input data-k="${k}" data-sc="${sc}" data-t="${ty}" value="${val}" autocomplete="off" ${ty === "num" ? 'inputmode="decimal"' : ""}></label>`;
 };
 const SEL = (label, k, opts, rb, sc = "s", cls = "", lab) => {
@@ -224,12 +252,14 @@ function offs(s) {
 function syncOff() {
   const s = cur();
   if (!s) return;
-  document.querySelectorAll('#panel [data-k="_ox"],#panel [data-k="_oy"]').forEach((el) => {
-    if (document.activeElement === el) return;
-    const o = offs(s);
-    el.value = fmtIn(el.dataset.k === "_ox" ? o.x : o.y);
-    el.classList.remove("bad");
-  });
+  document
+    .querySelectorAll('#panel [data-k="_ox"],#panel [data-k="_oy"]')
+    .forEach((el) => {
+      if (document.activeElement === el) return;
+      const o = offs(s);
+      el.value = fmtIn(el.dataset.k === "_ox" ? o.x : o.y);
+      el.classList.remove("bad");
+    });
 }
 
 function tileSection(s) {
@@ -249,13 +279,26 @@ function tileSection(s) {
       (o) => t("p" + o),
     );
   if (sh === "penny")
-    b += SEL(t("pattern"), "tile.pattern", ["grid", "offset"], 1, "s", "w2", (o) => t("p" + o));
-  if (sh === "rect" && pat === "pinwheel") b += F(t("bigSq"), "tile.w") + F(t("smallSq"), "tile.w2");
-  else if (sh === "rect") b += F(t("tileW"), "tile.w") + F(t("tileL"), "tile.h");
+    b += SEL(
+      t("pattern"),
+      "tile.pattern",
+      ["grid", "offset"],
+      1,
+      "s",
+      "w2",
+      (o) => t("p" + o),
+    );
+  if (sh === "rect" && pat === "pinwheel")
+    b += F(t("bigSq"), "tile.w") + F(t("smallSq"), "tile.w2");
+  else if (sh === "rect")
+    b += F(t("tileW"), "tile.w") + F(t("tileL"), "tile.h");
   if (sh === "hex") b += F(t("hexW"), "tile.w", "len", "s", "w2");
   if (sh === "penny") b += F(t("pennyD"), "tile.w", "len", "s", "w2");
   if (sh === "chevron")
-    b += F(t("chevW"), "tile.w") + F(t("chevH"), "tile.h") + F(t("chevA"), "tile.cang", "num");
+    b +=
+      F(t("chevW"), "tile.w") +
+      F(t("chevH"), "tile.h") +
+      F(t("chevA"), "tile.cang", "num");
   b += F(t("thick"), "tile.thick");
   b += `<div class="w2">${F(t("grout"), "tile.g")}<div class="chips">${[1 / 16, 1 / 8, 3 / 16, 1 / 4].map((g) => `<button class="btn sm" data-act="grout:${g}">${fmtIn(g)}</button>`).join("")}</div></div>`;
   if (pat === "offset" || pat === "voffset")
@@ -289,14 +332,20 @@ function tileSection(s) {
       W = Math.min(tw, th),
       g = +T.g,
       n = Math.round((L + g) / (W + g));
-    if (Math.abs(L - (n * W + (n - 1) * g)) > 0.07) b += `<div class="note">${t("basketWarn")}</div>`;
+    if (Math.abs(L - (n * W + (n - 1) * g)) > 0.07)
+      b += `<div class="note">${t("basketWarn")}</div>`;
   }
-  if (sh === "rect" && (pat === "grid" || pat === "offset")) b += CHK(t("checker"), "tile.checker");
+  if (sh === "rect" && (pat === "grid" || pat === "offset"))
+    b += CHK(t("checker"), "tile.checker");
   b += CHK(t("sheetOn"), "tile.sheet.on", 1);
   if (T.sheet.on)
     b += `<div class="grid">${F(t("sheetW"), "tile.sheet.w")}${F(t("sheetH"), "tile.sheet.h")}</div>`;
   b += `<div class="grid" style="margin-top:6px">${F(t("sqftBox"), "tile.sqftBox", "num")}</div>${CHK(t("stoneOn"), "tile.stone")}<div class="btns">${T.msheet ? `<span class="hint">🧩 ${t("msOnHint")} ${fmtIn(+T.w)}×${fmtIn(+T.h)}</span><button class="btn sm" data-act="msOff">✕</button>` : `<button class="btn sm" data-act="msOpen">🧩 ${t("msT")}</button>`}</div>${insBlock(T)}<div class="grid">${F(t("libPrice"), "tile.price", "num")}</div>${texBlock(T)}<div class="btns"><button class="btn" data-act="lib">📚 ${t("lib")}</button><button class="btn" data-act="libSave">＋ ${t("libSaveCur")}</button><button class="btn" data-act="applyAll">${t("applyAll")}</button></div>`;
-  return SEC("tile", `${t("tile")} · ${T.name ? esc(T.name) + " · " : ""}${esc(tileDesc(T))}`, b);
+  return SEC(
+    "tile",
+    `${t("tile")} · ${T.name ? esc(T.name) + " · " : ""}${esc(tileDesc(T))}`,
+    b,
+  );
 }
 
 function openingCard(o, i) {
@@ -304,7 +353,10 @@ function openingCard(o, i) {
     types = Object.keys(OPT);
   let b = `<div class="op"><div class="grid">${SEL(t("type"), `openings.${i}.type`, types, 1, "s", "w2")}`;
   if (circ)
-    b += F(t("cx"), `openings.${i}.x`) + F(t("cy"), `openings.${i}.y`) + F(t("dia"), `openings.${i}.dia`);
+    b +=
+      F(t("cx"), `openings.${i}.x`) +
+      F(t("cy"), `openings.${i}.y`) +
+      F(t("dia"), `openings.${i}.dia`);
   else
     b +=
       F(t("fromLeft"), `openings.${i}.x`) +
@@ -319,13 +371,23 @@ function openingCard(o, i) {
       F(t("shDia"), `openings.${i}.bdia`);
   if (o.type === "toilet" && cur().type !== "wall")
     b +=
-      SEL(t("tFace"), `openings.${i}.face`, ["auto", "u", "d", "l", "r"], 1, "s", "w2", (k) => t("tf_" + k)) +
+      SEL(
+        t("tFace"),
+        `openings.${i}.face`,
+        ["auto", "u", "d", "l", "r"],
+        1,
+        "s",
+        "w2",
+        (k) => t("tf_" + k),
+      ) +
       optLen(t("tFront"), `openings.${i}.front`, 18) +
       optLen(t("tWidth"), `openings.${i}.tw`, 20);
   b += "</div>";
-  if (TRIMMABLE[o.type] && o.type !== "niche") b += CHK(t("trimmed"), `openings.${i}.trim`);
+  if (TRIMMABLE[o.type] && o.type !== "niche")
+    b += CHK(t("trimmed"), `openings.${i}.trim`);
   if (o.type === "shelf") b += `<p class="hint">${t("shHint")}</p>`;
-  if (o.type === "outlet" && cur().type === "wall") b += `<p class="hint">${ringHint(cur())}</p>`;
+  if (o.type === "outlet" && cur().type === "wall")
+    b += `<p class="hint">${ringHint(cur())}</p>`;
   if (o.type === "niche") {
     const c = nicheCfg(o, cur());
     b += `<p class="hint">${[t("nk_" + c.kind), t("nf_" + c.form), c.form === "shelf" ? t("ns_" + c.shelf) : "", t("ne_" + c.edge), c.back.mode === "own" ? t("nBackT") + ": " + fmtIn(+c.back.w) + "×" + fmtIn(+c.back.h) : ""].filter(Boolean).join(" · ")}</p>`;
@@ -334,7 +396,9 @@ function openingCard(o, i) {
   return b;
 }
 
-const TURNS = [90, -90, 45, -45, 135, -135, 60, -60, 30, -30, 120, -120, 150, -150];
+const TURNS = [
+  90, -90, 45, -45, 135, -135, 60, -60, 30, -30, 120, -120, 150, -150,
+];
 function walkEditor(s) {
   const wk = walkPoly(s);
   let h = `<p class="hint" style="margin-top:8px">${t("walkHint")}</p>`;
@@ -357,7 +421,12 @@ function optLen(label, k, auto) {
 }
 function underSel(label, k, cls) {
   const v = getPath(cur(), k) || "none";
-  const grp = { heat: t("ug_heat"), mem: t("ug_mem"), board: t("ug_board"), ply: t("ug_ply") };
+  const grp = {
+    heat: t("ug_heat"),
+    mem: t("ug_mem"),
+    board: t("ug_board"),
+    ply: t("ug_ply"),
+  };
   let o = `<option value="none" ${v === "none" ? "selected" : ""}>— ${t("noUnder")}</option>`;
   for (const g of ["heat", "mem", "board", "ply"]) {
     const it = underList().filter((u) => u.k === g);
@@ -388,7 +457,9 @@ function stackBody(s) {
       (l) =>
         `<tr><td><span class="sw" style="background:${l.c}"></span>${esc(l.n)}</td><td class="n">${fmtIn(l.t)}″</td></tr>`,
     )
-    .join("")}<tr><td><b>${t("buildUp")}</b></td><td class="n"><b>${fmt(st.total)}</b></td></tr></table>`;
+    .join(
+      "",
+    )}<tr><td><b>${t("buildUp")}</b></td><td class="n"><b>${fmt(st.total)}</b></td></tr></table>`;
   if (s.shape === "rect" && s.type === "wall") {
     s.prep = s.prep || { l: 0, r: 0, b: 0, t: 0 };
     b += `<p style="margin:10px 0 2px"><b>${t("prepExt")}</b></p><div class="grid">${F(t("pe_l"), "prep.l")}${F(t("pe_r"), "prep.r")}${F(t("pe_b"), "prep.b")}${F(t("pe_t"), "prep.t")}</div><p class="hint">${t("prepExtHint")}</p>`;
@@ -406,8 +477,12 @@ function stackBody(s) {
     }
     if (s.type !== "wall")
       b +=
-        SEL(t("joist"), "joist", ["none", "h", "v"], 1, "s", "", (o) => t("jo_" + o)) +
-        ((s.joist || "none") !== "none" ? F(t("joistSp"), "joistSp") : "<div></div>");
+        SEL(t("joist"), "joist", ["none", "h", "v"], 1, "s", "", (o) =>
+          t("jo_" + o),
+        ) +
+        ((s.joist || "none") !== "none"
+          ? F(t("joistSp"), "joistSp")
+          : "<div></div>");
     b += `${F(t("prepOx"), "prepO.x", "slen")}${F(t("prepOy"), "prepO.y", "slen")}</div><p class="hint">${t("prepMoveHint")}</p><div class="btns"><button class="btn sm" data-act="prepReset">${t("prepReset")}</button></div>`;
   }
   if (st.u.chk) b += `<p class="hint">${t("chkSpec")}</p>`;
@@ -471,7 +546,11 @@ function transSection(s) {
     })
     .join("");
   b += `<p class="hint">${t("transHint")}</p><div class="btns"><button class="btn" data-act="addTrans">${t("addTrans")}</button></div>`;
-  return SEC("trans", `${t("transT")}${s.trans.length ? " · " + s.trans.length : ""}`, b);
+  return SEC(
+    "trans",
+    `${t("transT")}${s.trans.length ? " · " + s.trans.length : ""}`,
+    b,
+  );
 }
 function heatSection(s) {
   s.heat = s.heat || {
@@ -490,25 +569,49 @@ function heatSection(s) {
   if (H.on) {
     const sys = HEATSYS[H.sys] || {};
     b += `<div class="grid">${SEL(t("heatSys"), "heat.sys", Object.keys(HEATSYS), 1, "s", "w2", (o) => t("hs_" + o))}`;
-    if (sys.sp) b += SEL(t("spacing"), "heat.pattern", ["3", "32"], 1, "s", "", (o) => t("sp_" + o));
+    if (sys.sp)
+      b += SEL(t("spacing"), "heat.pattern", ["3", "32"], 1, "s", "", (o) =>
+        t("sp_" + o),
+      );
     else b += F(t("spacingIn"), "heat.sp") + F(t("wsf"), "heat.wsf", "num");
     b +=
       SEL(t("volt"), "heat.volt", ["120", "240"], 1, "s", "", (o) => o + " V") +
       F(t("clearWalls"), "heat.clear") +
-      SEL(t("runDir"), "heat.dir", ["auto", "h", "v"], 1, "s", "", (o) => t("dir_" + o)) +
-      SEL(t("nCables"), "heat.n", ["auto", "1", "2", "3", "4"], 1, "s", "", (o) =>
-        o === "auto" ? t("autoN") : o,
+      SEL(t("runDir"), "heat.dir", ["auto", "h", "v"], 1, "s", "", (o) =>
+        t("dir_" + o),
       ) +
-      F(t("maxSf") + (H.maxSf ? "" : ` (${(+H.volt || 120) === 240 ? 250 : 134.5})`), "heat.maxSf", "num") +
+      SEL(
+        t("nCables"),
+        "heat.n",
+        ["auto", "1", "2", "3", "4"],
+        1,
+        "s",
+        "",
+        (o) => (o === "auto" ? t("autoN") : o),
+      ) +
+      F(
+        t("maxSf") +
+          (H.maxSf ? "" : ` (${(+H.volt || 120) === 240 ? 250 : 134.5})`),
+        "heat.maxSf",
+        "num",
+      ) +
       optLen(t("ductClr"), "heat.ductClr", 4);
     const cat = cableCatalog(H.sys, H.volt);
     if (cat.length) {
       if (H.model && !cat.some((c) => c.id === H.model)) H.model = "";
-      b += SEL(t("cableModel"), "heat.model", [""].concat(cat.map((c) => c.id)), 1, "s", "w2", (id) => {
-        if (!id) return t("cableAuto");
-        const c = cat.find((q) => q.id === id);
-        return `${c.v}V · ${c.ft} ft · ${c.sf} sf (3) / ${c.sf32} sf (3-2)`;
-      });
+      b += SEL(
+        t("cableModel"),
+        "heat.model",
+        [""].concat(cat.map((c) => c.id)),
+        1,
+        "s",
+        "w2",
+        (id) => {
+          if (!id) return t("cableAuto");
+          const c = cat.find((q) => q.id === id);
+          return `${c.v}V · ${c.ft} ft · ${c.sf} sf (3) / ${c.sf32} sf (3-2)`;
+        },
+      );
     } else if (H.sys === "cable") b += F(t("cableFt"), "heat.cableFt", "num");
     b += `</div>`;
     b += `<div class="btns"><button class="btn ${S.pickConn === s.id ? "p" : ""}" data-act="pickConn">📍 ${S.pickConn === s.id ? t("tapPlan") : t("pickConn")}</button>${CHK(t("showHeat"), "heat.show", 0)}</div><p class="hint">${t("connDrag")}</p><p class="hint">${t("sensorDrag")}</p><p class="hint">${t("warmHint")}</p>`;
@@ -555,7 +658,9 @@ function renderPanel() {
         })
         .join("");
     b += `<div class="btns"><button class="btn p" data-act="autoFloor">${t("autoFloor")}</button><button class="btn" data-act="tileToFloors">${t("tileToFloors")}</button></div>`;
-    el.innerHTML = SEC("zones", t("zones"), b) + SEC("allres", t("results"), '<div id="res"></div>');
+    el.innerHTML =
+      SEC("zones", t("zones"), b) +
+      SEC("allres", t("results"), '<div id="res"></div>');
     renderRes();
     return;
   }
@@ -569,7 +674,9 @@ function renderPanel() {
       })
       .join("");
     b += `<div class="btns"><button class="btn p" data-act="autoAll">${t("autoAll")}</button><button class="btn" data-act="tileToAll">${t("tileToAll")}</button></div>`;
-    el.innerHTML = SEC("link", t("link"), b) + SEC("allres", t("results"), '<div id="res"></div>');
+    el.innerHTML =
+      SEC("link", t("link"), b) +
+      SEC("allres", t("results"), '<div id="res"></div>');
     renderRes();
     return;
   }
@@ -581,7 +688,9 @@ function renderPanel() {
   let h = "";
   let sb = `<div class="grid">${F(t("name"), "name", "text", "s", "w2")}${SEL(t("type"), "type", ["wall", "floor", "pan"], 1)}${SEL(t("shape"), "shape", ["rect", "L", "walk", "custom"], 1)}<div class="w2 btns" style="margin:0"><button class="btn" data-act="drawShape">✏️ ${t("drawBtn")}</button><button class="btn" data-act="help">? ${t("helpBtn")}</button></div>`;
   if (s.shape !== "custom" && s.shape !== "walk")
-    sb += F(t("width"), "w") + F(s.type === "wall" ? t("height") : t("length"), "h");
+    sb +=
+      F(t("width"), "w") +
+      F(s.type === "wall" ? t("height") : t("length"), "h");
   if (s.shape === "L")
     sb +=
       F(t("notchW"), "Lw") +
@@ -596,7 +705,15 @@ function renderPanel() {
   if (s.type === "wall")
     sb += `<div class="grid" style="margin-top:8px">${F(t("base"), "base")}<div>${P.link.mode !== "none" ? CHK(t("linked"), "link", 1) : ""}</div></div>`;
   if (s.type === "wall" && s.shape === "rect") {
-    s.tub = s.tub || { on: false, side: "r", d: 30, h: 15, r: 1.5, rF: 0, rB: 0 };
+    s.tub = s.tub || {
+      on: false,
+      side: "r",
+      d: 30,
+      h: 15,
+      r: 1.5,
+      rF: 0,
+      rB: 0,
+    };
     sb += `<div class="op" style="margin-top:8px">${CHK(t("tubOn"), "tub.on", 1)}`;
     if (s.tub.on) {
       const D = tubDims(s);
@@ -687,7 +804,10 @@ function stripTxt(x) {
 }
 function drillTxt(d) {
   const nm =
-    t(d.o.type) + (d.o.shape === "circle" ? " ⌀" + fmtIn(d.o.dia) : " " + fmtIn(d.o.w) + "×" + fmtIn(d.o.h));
+    t(d.o.type) +
+    (d.o.shape === "circle"
+      ? " ⌀" + fmtIn(d.o.dia)
+      : " " + fmtIn(d.o.w) + "×" + fmtIn(d.o.h));
   if (d.joint) return `${nm}: ${t("onJoint")}`;
   return `${nm}: ${t("drillPiece")} ${fmtIn(d.p.cw)}×${fmtIn(d.p.ch)} — ${t("drillFrom")} <b>${fmt(d.dx)}</b> ${t("fromL")}, <b>${fmt(d.dy)}</b> ${t("fromB")}${d.cross ? ` <span style="color:#b3261e">(${t("crosses")})</span>` : ""}`;
 }
@@ -718,7 +838,9 @@ function renderRes() {
     items.forEach((it) => {
       lf += it.R.lf;
       it.R.list.forEach((r) => {
-        const e = comb[r.k] || (comb[r.k] = { k: r.k, n: 0, c: r.c, cw: r.cw, ch: r.ch });
+        const e =
+          comb[r.k] ||
+          (comb[r.k] = { k: r.k, n: 0, c: r.c, cw: r.cw, ch: r.ch });
         e.n += r.n;
         if (RANK[r.c] > RANK[e.c]) e.c = r.c;
       });
@@ -726,7 +848,9 @@ function renderRes() {
     let h = `<table><tr><th>${t("surface")}</th><th class="n">${t("full")}</th><th class="n">${t("cuts")}</th><th class="n">${t("minCut")}</th><th class="n">${t("need")}</th></tr>${items.map((it) => `<tr><td>${esc(it.s.name)}${isLinked(it.s) ? " 🔗" : ""}</td><td class="n">${it.R.full}</td><td class="n">${it.R.cuts}</td><td class="n" style="${it.R.bad ? "color:#b3261e;font-weight:600" : ""}">${it.R.minc < 1e8 ? fmtIn(it.R.minc) : "—"}</td><td class="n">${it.R.need}</td></tr>`).join("")}</table>`;
     const a = aggItems();
     h += `<p><b>${t("total")}</b>: ${t("need")} ${a.need} → ${t("order")} <b>${a.order}</b>${lf > 0 ? ` · Schluter ${(lf / 12).toFixed(1)} ft (${Math.ceil(lf / 98.5)} ${t("sticks")})` : ""}</p>`;
-    const list = Object.values(comb).sort((a, b) => RANK[b.c] - RANK[a.c] || a.cw * a.ch - b.cw * b.ch);
+    const list = Object.values(comb).sort(
+      (a, b) => RANK[b.c] - RANK[a.c] || a.cw * a.ch - b.cw * b.ch,
+    );
     if (list.length)
       h += `<p style="margin:10px 0 4px"><b>${t("combined")}</b></p><table><tr><th>${t("size")}</th><th class="n">${t("qty")}</th></tr>${list.map((r) => `<tr><td><span class="sw" style="background:${COL[r.c]}"></span>${esc(r.k)}</td><td class="n">${r.n}</td></tr>`).join("")}</table>`;
     h += `<div class="btns"><button class="btn" data-act="copyCuts">${t("copyCuts")}</button></div>`;
@@ -756,7 +880,10 @@ function renderRes() {
       `<p style="margin:12px 0 4px"><b>${t("mStrips")}</b></p>` +
       R.strips
         .filter((x) => x.count || x.tiles)
-        .map((x) => `<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`)
+        .map(
+          (x) =>
+            `<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`,
+        )
         .join("");
   Object.keys(R.profs).forEach((k) => {
     const lf2 = R.profs[k];
@@ -815,8 +942,13 @@ function syncNames() {
 }
 function renderAll() {
   syncNames();
-  if (S.tab === "all" && P.surfaces.filter((s) => s.type === "wall").length < 2) S.tab = 0;
-  if (S.tab === "floor" && P.surfaces.filter((s) => s.type !== "wall").length < 2) S.tab = 0;
+  if (S.tab === "all" && P.surfaces.filter((s) => s.type === "wall").length < 2)
+    S.tab = 0;
+  if (
+    S.tab === "floor" &&
+    P.surfaces.filter((s) => s.type !== "wall").length < 2
+  )
+    S.tab = 0;
   if (typeof S.tab === "number" && !P.surfaces[S.tab]) S.tab = 0;
   renderHeader();
   renderTabs();
@@ -908,7 +1040,13 @@ function onInp(e) {
     if (sc === "p") delete P.nk;
     else if (s) delete s.nk;
   }
-  if (s && k === "type" && v === "pan" && !s.curb.on && s.drain.type === "none") {
+  if (
+    s &&
+    k === "type" &&
+    v === "pan" &&
+    !s.curb.on &&
+    s.drain.type === "none"
+  ) {
     s.curb.on = true;
     s.drain.type = "center";
     s.drain.x = s.w / 2;
@@ -991,7 +1129,8 @@ function onInp(e) {
     autoLayout(s);
   }
   if (s && k === "tile.pattern") {
-    if (v === "pinwheel" && !(+s.tile.w2 > 0 && +s.tile.w2 < +s.tile.w)) s.tile.w2 = +s.tile.w / 2;
+    if (v === "pinwheel" && !(+s.tile.w2 > 0 && +s.tile.w2 < +s.tile.w))
+      s.tile.w2 = +s.tile.w / 2;
     autoLayout(s);
   }
   if (k === "link.mode" && v !== "none") {
@@ -1006,7 +1145,9 @@ function onInp(e) {
   if (s && k === "shape" && v === "walk" && (!s.segs || !s.segs.length))
     s.segs = polyToSegs(outerPoly(Object.assign({}, s, { shape: "rect" })));
   if (s && k === "shape" && v === "walk") {
-    s.segs = polyToSegs(outerPoly(Object.assign({}, s, { shape: S.prevShape || "rect" })));
+    s.segs = polyToSegs(
+      outerPoly(Object.assign({}, s, { shape: S.prevShape || "rect" })),
+    );
   }
   if (k.endsWith("zlink") && v) {
     const tg = sc === "p" ? getPath(P, k.replace(/\.zlink$/, "")) : s;
@@ -1082,13 +1223,25 @@ const PRESETS = [
   },
   {
     id: "third",
-    set: { shape: "rect", pattern: "offset", off: 1 / 3, ang: 0, checker: false },
+    set: {
+      shape: "rect",
+      pattern: "offset",
+      off: 1 / 3,
+      ang: 0,
+      checker: false,
+    },
     orient: "h",
     demo: { w: 6, h: 2 },
   },
   {
     id: "quarter",
-    set: { shape: "rect", pattern: "offset", off: 0.25, ang: 0, checker: false },
+    set: {
+      shape: "rect",
+      pattern: "offset",
+      off: 0.25,
+      ang: 0,
+      checker: false,
+    },
     orient: "h",
     demo: { w: 6, h: 1.5 },
   },
@@ -1100,18 +1253,38 @@ const PRESETS = [
   },
   {
     id: "voff",
-    set: { shape: "rect", pattern: "voffset", off: 0.5, ang: 0, checker: false },
+    set: {
+      shape: "rect",
+      pattern: "voffset",
+      off: 0.5,
+      ang: 0,
+      checker: false,
+    },
     orient: "v",
     demo: { w: 2, h: 4 },
   },
-  { id: "diag", set: { shape: "rect", pattern: "grid", ang: 45, checker: false }, demo: { w: 3, h: 3 } },
+  {
+    id: "diag",
+    set: { shape: "rect", pattern: "grid", ang: 45, checker: false },
+    demo: { w: 3, h: 3 },
+  },
   {
     id: "diagbrick",
-    set: { shape: "rect", pattern: "offset", off: 0.5, ang: 45, checker: false },
+    set: {
+      shape: "rect",
+      pattern: "offset",
+      off: 0.5,
+      ang: 45,
+      checker: false,
+    },
     orient: "h",
     demo: { w: 4, h: 2 },
   },
-  { id: "checker", set: { shape: "rect", pattern: "grid", ang: 0, checker: true }, demo: { w: 3, h: 3 } },
+  {
+    id: "checker",
+    set: { shape: "rect", pattern: "grid", ang: 0, checker: true },
+    demo: { w: 3, h: 3 },
+  },
   {
     id: "herr45",
     set: { shape: "rect", pattern: "herring", ang: 45, checker: false },
@@ -1141,10 +1314,21 @@ const PRESETS = [
     size: { w: 8.5, h: 4.25, cang: 45 },
     demo: { w: 2.6, h: 1.6 },
   },
-  { id: "hex", set: { shape: "hex", ang: 0, checker: false, rot: false }, size: { w: 8 }, demo: { w: 3 } },
+  {
+    id: "hex",
+    set: { shape: "hex", ang: 0, checker: false, rot: false },
+    size: { w: 8 },
+    demo: { w: 3 },
+  },
   {
     id: "penny",
-    set: { shape: "penny", pattern: "offset", off: 0.5, ang: 0, checker: false },
+    set: {
+      shape: "penny",
+      pattern: "offset",
+      off: 0.5,
+      ang: 0,
+      checker: false,
+    },
     size: { w: 0.75 },
     sheet: true,
     demo: { w: 1.3 },
@@ -1161,7 +1345,12 @@ function presetMatch(T, p) {
   const s = p.set;
   if (T.shape !== s.shape) return false;
   if (s.shape === "rect") {
-    if (patOf(T) !== s.pattern || (+T.ang || 0) !== s.ang || !!T.checker !== !!s.checker) return false;
+    if (
+      patOf(T) !== s.pattern ||
+      (+T.ang || 0) !== s.ang ||
+      !!T.checker !== !!s.checker
+    )
+      return false;
     if (s.off != null && Math.abs(T.off - s.off) > 1e-6) return false;
     if (!!p.sheet !== !!(T.sheet && T.sheet.on)) return false;
     const { tw, th } = rdims(T);
@@ -1175,7 +1364,15 @@ function thumb(p) {
     Object.assign(
       {},
       p.set,
-      { g: 0.28, ox: 0.4, oy: 0.4, rot: false, w2: 2, cang: 45, sheet: { on: false, w: 12, h: 12 } },
+      {
+        g: 0.28,
+        ox: 0.4,
+        oy: 0.4,
+        rot: false,
+        w2: 2,
+        cang: 45,
+        sheet: { on: false, w: 12, h: 12 },
+      },
       p.demo,
     ),
   );
@@ -1184,7 +1381,9 @@ function thumb(p) {
     O = [T.ox, T.oy],
     toL = a ? (q) => rotP(q, O, -a) : (q) => q;
   const tiles = genTiles(T, bboxOf(sq.map(toL))) || [];
-  const rt = a ? ` transform="rotate(${((-a * 180) / Math.PI).toFixed(3)} ${O[0]} ${-O[1]})"` : "";
+  const rt = a
+    ? ` transform="rotate(${((-a * 180) / Math.PI).toFixed(3)} ${O[0]} ${-O[1]})"`
+    : "";
   const body = tiles
     .map((tl) => {
       const alt = (T.checker && tl.q) || (p.set.pattern === "pinwheel" && tl.q);
@@ -1213,7 +1412,8 @@ function applyPreset(s, id) {
   const wasPlain = prev === "rect" && !(T.sheet && T.sheet.on);
   if (wasPlain) T.mem = { w: +T.w, h: +T.h };
   Object.assign(T, p.set);
-  if (p.size && (prev !== T.shape || p.sheet !== !!T.sheet.on)) Object.assign(T, p.size);
+  if (p.size && (prev !== T.shape || p.sheet !== !!T.sheet.on))
+    Object.assign(T, p.size);
   if (T.shape === "rect" && !p.sheet && !wasPlain && T.mem) {
     T.w = T.mem.w;
     T.h = T.mem.h;
@@ -1224,7 +1424,8 @@ function applyPreset(s, id) {
     if (p.needRect && Math.abs(+T.w - +T.h) < 1e-6) T.w = +T.h / 2;
     if (p.orient === "h") T.rot = +T.w < +T.h;
     if (p.orient === "v") T.rot = +T.w > +T.h;
-    if (p.set.pattern === "pinwheel" && !(+T.w2 > 0 && +T.w2 < +T.w)) T.w2 = +T.w / 2;
+    if (p.set.pattern === "pinwheel" && !(+T.w2 > 0 && +T.w2 < +T.w))
+      T.w2 = +T.w / 2;
     if (p.id === "mosaic" && (+T.w > 6 || +T.h > 6)) {
       T.w = 2;
       T.h = 2;
@@ -1252,10 +1453,13 @@ function closeModal() {
   }
 }
 $("#modal").addEventListener("click", (e) => {
-  if (e.target.id === "modal" && Date.now() - (S.modalAt || 0) > 500) closeModal();
+  if (e.target.id === "modal" && Date.now() - (S.modalAt || 0) > 500)
+    closeModal();
 });
 function projectsModal() {
-  const list = [...DB.projects].sort((a, b) => (b.updated || 0) - (a.updated || 0));
+  const list = [...DB.projects].sort(
+    (a, b) => (b.updated || 0) - (a.updated || 0),
+  );
   const sy = DB.sync && DB.sync.on;
   modal(`${themePicker()}<h3>${t("projects")}</h3><div class="btns"><button class="btn p" data-act="newProj">${t("newProj")}</button><button class="btn" data-act="syModal">🔄 ${sy ? t("syOnShort") : t("syT")}</button><button class="btn" data-act="bkModal">💾 ${t("bkT")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>
  ${list.map((p) => `<div class="pl"><div class="nm"><b>${esc(p.name)}</b><small>${esc(p.client || "")} ${p.updated ? new Date(p.updated).toLocaleDateString() : ""}${p.id === P.id ? " · ✓" : ""}</small></div><button class="btn sm" data-act="openProj:${p.id}">${t("open")}</button><button class="btn sm" data-act="dupProj:${p.id}">${t("dup")}</button>${DB.projects.length > 1 ? `<button class="btn sm d" data-act="delProj:${p.id}">✕</button>` : ""}</div>`).join("")}
@@ -1280,7 +1484,9 @@ function copyText(txt, btn) {
     }
   };
   try {
-    navigator.clipboard.writeText(txt).then(done, () => fallbackCopy(txt, done));
+    navigator.clipboard
+      .writeText(txt)
+      .then(done, () => fallbackCopy(txt, done));
   } catch (e) {
     fallbackCopy(txt, done);
   }
@@ -1336,10 +1542,18 @@ function exportImage() {
       if (LOGOIMG) x.drawImage(LOGOIMG, 12, 5, 140, 140);
       x.fillStyle = "#fff";
       x.font = "bold 34px " + FONT;
-      x.fillText(`${P.name} — ${s ? s.name : t(S.tab === "floor" ? "allFloor" : "allWalls")}`, 170, 50);
+      x.fillText(
+        `${P.name} — ${s ? s.name : t(S.tab === "floor" ? "allFloor" : "allWalls")}`,
+        170,
+        50,
+      );
       x.font = "26px " + FONT;
       x.fillStyle = "#a8a390";
-      x.fillText(`${t("tile")} ${tileDesc(T)} · ${patName(T)} · ${t("grout")} ${fmt(+T.g)}`, 170, 92);
+      x.fillText(
+        `${t("tile")} ${tileDesc(T)} · ${patName(T)} · ${t("grout")} ${fmt(+T.g)}`,
+        170,
+        92,
+      );
       const a = s ? r0 : aggItems();
       x.fillText(
         `${t("full")} ${a.full} · ${t("cuts")} ${a.cuts} · ${t("minCut")} ${a.minc < 1e8 ? fmt(a.minc) : "—"}${P.client ? " · " + P.client : ""}`,
@@ -1372,12 +1586,17 @@ function cutsText() {
   const s = cur(),
     T = R.T;
   let o = `${P.name} — ${s.name}\n${t("tile")} ${tileDesc(T)}, ${patName(T)}, ${t("grout")} ${fmt(+T.g)}\n${t("full")}: ${R.full}, ${t("cuts")}: ${R.cuts}, ${t("order")}: ${R.order}\n\n${t("cutList")} (${t("size")}):\n`;
-  R.list.forEach((r) => (o += `${r.k}  — ${r.n} ${t("pcs")}${r.c === "bad" ? " ⚠" : ""}\n`));
+  R.list.forEach(
+    (r) => (o += `${r.k}  — ${r.n} ${t("pcs")}${r.c === "bad" ? " ⚠" : ""}\n`),
+  );
   if (R.drill.length) {
     o += `\n${t("drill")}:\n`;
     R.drill.forEach((d) => (o += drillTxt(d).replace(/<[^>]+>/g, "") + "\n"));
   }
-  R.strips.filter((x) => x.count || x.tiles).forEach((x) => (o += stripTxt(x) + "\n"));
-  if (R.lf > 0) o += `Schluter: ${(R.lf / 12).toFixed(1)} ft (${Math.ceil(R.lf / 98.5)} ${t("sticks")})\n`;
+  R.strips
+    .filter((x) => x.count || x.tiles)
+    .forEach((x) => (o += stripTxt(x) + "\n"));
+  if (R.lf > 0)
+    o += `Schluter: ${(R.lf / 12).toFixed(1)} ft (${Math.ceil(R.lf / 98.5)} ${t("sticks")})\n`;
   return o;
 }

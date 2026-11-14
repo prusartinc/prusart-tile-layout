@@ -12,7 +12,8 @@ function editDim(key) {
     label = `${t("wallN")} ${+c + 1}`;
   } else {
     path = `surfaces.${si}.${b}`;
-    label = b === "w" ? t("width") : s.type === "wall" ? t("height") : t("length");
+    label =
+      b === "w" ? t("width") : s.type === "wall" ? t("height") : t("length");
   }
   modal(
     `<h3>${esc(s.name)} — ${esc(label)}</h3><div class="grid">${F(label, path, "len", "p", "w2")}</div><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button></div>`,
@@ -189,7 +190,8 @@ function drawModal() {
     const st = DRAW.stroke;
     DRAW.stroke = null;
     let len = 0;
-    for (let i = 1; i < st.length; i++) len += Math.hypot(st[i][0] - st[i - 1][0], st[i][1] - st[i - 1][1]);
+    for (let i = 1; i < st.length; i++)
+      len += Math.hypot(st[i][0] - st[i - 1][0], st[i][1] - st[i - 1][1]);
     if (len < 10) {
       DRAW.pts.push(st[0]);
     } else {
@@ -219,7 +221,10 @@ function rdp(pts, eps) {
     ix = 0;
   const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1e-9;
   for (let i = 1; i < pts.length - 1; i++) {
-    const d = Math.abs((b[0] - a[0]) * (a[1] - pts[i][1]) - (a[0] - pts[i][0]) * (b[1] - a[1])) / L;
+    const d =
+      Math.abs(
+        (b[0] - a[0]) * (a[1] - pts[i][1]) - (a[0] - pts[i][0]) * (b[1] - a[1]),
+      ) / L;
     if (d > mx) {
       mx = d;
       ix = i;
@@ -238,8 +243,10 @@ function renderDraw() {
   let h = "";
   const W = DRAW.W || 300,
     H = DRAW.H || 300;
-  for (let x = 0; x < W; x += 20) h += `<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#ece7de"/>`;
-  for (let y = 0; y < H; y += 20) h += `<line y1="${y}" y2="${y}" x1="0" x2="${W}" stroke="#ece7de"/>`;
+  for (let x = 0; x < W; x += 20)
+    h += `<line x1="${x}" x2="${x}" y1="0" y2="${H}" stroke="#ece7de"/>`;
+  for (let y = 0; y < H; y += 20)
+    h += `<line y1="${y}" y2="${y}" x1="0" x2="${W}" stroke="#ece7de"/>`;
   const RAW = DRAW.pts,
     P2 = snapPolyline(RAW);
   if (RAW.length)
@@ -283,7 +290,12 @@ function snapDeg(d) {
   for (const c of SNAPS) {
     const df = Math.abs(d - c),
       tol = c % 90 === 0 ? 15 : 9;
-    if (df <= tol && (!best || df < best.df - 0.01 || (Math.abs(df - best.df) <= 0.01 && c % 90 === 0)))
+    if (
+      df <= tol &&
+      (!best ||
+        df < best.df - 0.01 ||
+        (Math.abs(df - best.df) <= 0.01 && c % 90 === 0))
+    )
       best = { c, df };
   }
   return best ? best.c : Math.round(d);
@@ -295,7 +307,10 @@ function snapPolyline(pts) {
     const a = pts[i - 1],
       b = pts[i],
       L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    const h = (snapDeg((Math.atan2(-(b[1] - a[1]), b[0] - a[0]) * 180) / Math.PI) * Math.PI) / 180;
+    const h =
+      (snapDeg((Math.atan2(-(b[1] - a[1]), b[0] - a[0]) * 180) / Math.PI) *
+        Math.PI) /
+      180;
     const pr = out[out.length - 1];
     out.push([pr[0] + L * Math.cos(h), pr[1] - L * Math.sin(h)]);
   }
@@ -307,10 +322,18 @@ function straighten(raw, target) {
     diag = Math.hypot(bb.x1 - bb.x0, bb.y1 - bb.y0) || 1;
   const M = [];
   P0.forEach((q) => {
-    if (!M.length || Math.hypot(q[0] - M[M.length - 1][0], q[1] - M[M.length - 1][1]) > diag * 0.04)
+    if (
+      !M.length ||
+      Math.hypot(q[0] - M[M.length - 1][0], q[1] - M[M.length - 1][1]) >
+        diag * 0.04
+    )
       M.push(q);
   });
-  while (M.length > 3 && Math.hypot(M[0][0] - M[M.length - 1][0], M[0][1] - M[M.length - 1][1]) < diag * 0.1)
+  while (
+    M.length > 3 &&
+    Math.hypot(M[0][0] - M[M.length - 1][0], M[0][1] - M[M.length - 1][1]) <
+      diag * 0.1
+  )
     M.pop();
   if (M.length < 3) return null;
   const n = M.length,
@@ -399,9 +422,12 @@ function walkFixModal(si) {
   let h = `<h3>⚠ ${t("walkFixT")}</h3><p class="hint">${t("walkFixQ")}</p>`;
   const ox = Math.abs(x) > 0.05 ? opts(0, x) : "",
     oy = Math.abs(y) > 0.05 ? opts(1, y) : "";
-  if (Math.abs(x) > 0.05) h += `<h4>${t("walkFixX")} ${fmt(Math.abs(x))}</h4><div class="btns">${ox || "—"}</div>`;
-  if (Math.abs(y) > 0.05) h += `<h4>${t("walkFixY")} ${fmt(Math.abs(y))}</h4><div class="btns">${oy || "—"}</div>`;
-  if ((Math.abs(x) > 0.05 && !ox) || (Math.abs(y) > 0.05 && !oy)) h += `<p class="note">${t("walkFixA")}</p>`;
+  if (Math.abs(x) > 0.05)
+    h += `<h4>${t("walkFixX")} ${fmt(Math.abs(x))}</h4><div class="btns">${ox || "—"}</div>`;
+  if (Math.abs(y) > 0.05)
+    h += `<h4>${t("walkFixY")} ${fmt(Math.abs(y))}</h4><div class="btns">${oy || "—"}</div>`;
+  if ((Math.abs(x) > 0.05 && !ox) || (Math.abs(y) > 0.05 && !oy))
+    h += `<p class="note">${t("walkFixA")}</p>`;
   h += `<div class="btns"><button class="btn" data-act="closeWalk">${t("closeWalk")}</button><button class="btn p" data-act="closeModal">${t("manual")}</button></div>`;
   modal(h);
 }
@@ -443,7 +469,13 @@ function helpModal() {
 /* put a full tile edge on the threshold line, a tile centered on the door */
 function transStart(s, tr) {
   const T = effT(s);
-  if (angOf(T) || !["grid", "offset"].includes(patOf(T)) || T.shape === "hex" || T.shape === "penny") return false;
+  if (
+    angOf(T) ||
+    !["grid", "offset"].includes(patOf(T)) ||
+    T.shape === "hex" ||
+    T.shape === "penny"
+  )
+    return false;
   const O = outerPoly(s),
     n = O.length,
     a = O[+tr.edge % n],

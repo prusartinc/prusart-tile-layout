@@ -31,7 +31,9 @@ let LOGOIMG = null;
 function applyTheme() {
   const dark =
     THEME === "dark" ||
-    (THEME === "auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    (THEME === "auto" &&
+      window.matchMedia &&
+      matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.dataset.theme = dark ? "dark" : "light";
   PAL = dark ? PAL_D : PAL_L;
 }
@@ -46,10 +48,23 @@ try {
 function themePicker() {
   return `<p style="margin:0 0 4px"><b>${t("theme")}</b></p><div class="seg3">${["light", "dark", "auto"].map((k) => `<button data-act="theme:${k}" class="${THEME === k ? "on" : ""}">${t("th_" + k)}</button>`).join("")}</div>`;
 }
-const COL = { full: "#ece5d7", cut: "#c9def3", warn: "#f7cf96", bad: "#f19c96" };
-const COL2 = { full: "#b8ac96", cut: "#97b5d6", warn: "#dfae6b", bad: "#d6766d" };
+const COL = {
+  full: "#ece5d7",
+  cut: "#c9def3",
+  warn: "#f7cf96",
+  bad: "#f19c96",
+};
+const COL2 = {
+  full: "#b8ac96",
+  cut: "#97b5d6",
+  warn: "#dfae6b",
+  bad: "#d6766d",
+};
 const FONT = "-apple-system,Segoe UI,Roboto,Arial,sans-serif";
-const pd = (p) => "M" + p.map((q) => q[0].toFixed(3) + " " + (-q[1]).toFixed(3)).join("L") + "Z";
+const pd = (p) =>
+  "M" +
+  p.map((q) => q[0].toFixed(3) + " " + (-q[1]).toFixed(3)).join("L") +
+  "Z";
 // tile photo texture: set by surfBody while drawing the surface's own tiles
 let TEXON = false,
   TXID = null,
@@ -63,7 +78,8 @@ function tileSVG(p, T, px) {
     fill = `url(#${TXID}${p.lw >= p.lh === land ? "" : "r"})`;
   }
   const sw = px(0.5);
-  if (p.k === "p") return `<path d="${pd(p.t.poly)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;
+  if (p.k === "p")
+    return `<path d="${pd(p.t.poly)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;
   if (p.k === "c") {
     const r = Math.min(p.lw, p.lh) / 2;
     return `<circle cx="${(p.x0 + p.lw / 2).toFixed(3)}" cy="${(-(p.y0 + p.lh / 2)).toFixed(3)}" r="${r.toFixed(3)}" fill="${fill}" stroke="#7c766c" stroke-width="${sw}"/>`;
@@ -76,7 +92,13 @@ function dimKey(s, k) {
 }
 let LAYER = null;
 const heatVis = (s) => LAYER === "wire";
-const PREPCOL = { heat: "#f3c08a", mem: "#f6d48c", board: "#d6d6d6", ply: "#e2cfa6", none: "#ece8e0" };
+const PREPCOL = {
+  heat: "#f3c08a",
+  mem: "#f6d48c",
+  board: "#d6d6d6",
+  ply: "#e2cfa6",
+  none: "#ece8e0",
+};
 const ftin = (x) => {
   const f = Math.floor(x / 12 + 1e-6),
     i = Math.round(x - f * 12);
@@ -100,7 +122,11 @@ const boardOf = (s) => {
   const st = s.stack || {},
     u = underOf(st.under || "none"),
     u2 = underOf(st.under2 || "none");
-  return u.k === "board" || u.k === "ply" ? u : u2.k === "board" || u2.k === "ply" ? u2 : null;
+  return u.k === "board" || u.k === "ply"
+    ? u
+    : u2.k === "board" || u2.k === "ply"
+      ? u2
+      : null;
 };
 const bSizeOf = (s, u) => {
   const v = (s.stack || {}).bsize;
@@ -134,7 +160,10 @@ function prepPlan(s, R, uo) {
     horiz = dd == null ? W >= H : dd;
   const inR = (x, y) => pip(O, x, y);
   const sheetOnly =
-    u.k === "board" || u.k === "ply" || u.id === "ditraheatduo" || (u.u && u.u.every((q) => q[0] < 10));
+    u.k === "board" ||
+    u.k === "ply" ||
+    u.id === "ditraheatduo" ||
+    (u.u && u.u.every((q) => q[0] < 10));
   if (!sheetOnly) {
     const RW = 39,
       A0 = horiz ? bb.y0 : bb.x0,
@@ -157,7 +186,8 @@ function prepPlan(s, R, uo) {
           }
         }
       }
-      if (mx > mn) strips.push({ a, a2, b0: Math.max(B0, mn), b1: Math.min(B1, mx) });
+      if (mx > mn)
+        strips.push({ a, a2, b0: Math.max(B0, mn), b1: Math.min(B1, mx) });
     }
     const lf = strips.reduce((q, t) => q + (t.b1 - t.b0), 0),
       sfS = strips.reduce((q, t) => q + (t.b1 - t.b0) * RW, 0) / 144,
@@ -166,7 +196,9 @@ function prepPlan(s, R, uo) {
     if (roll.length) {
       const big = Math.max(...roll),
         fit = roll.filter((r) => r >= sfS * 1.05).sort((x, y) => x - y)[0];
-      rolls = fit ? { n: 1, sf: fit } : { n: Math.ceil((sfS * 1.05) / big), sf: big };
+      rolls = fit
+        ? { n: 1, sf: fit }
+        : { n: Math.ceil((sfS * 1.05) / big), sf: big };
     }
     return { kind: "roll", u, horiz, strips, lf, sfS, rolls, RW, O, bb };
   }
@@ -180,7 +212,11 @@ function prepPlan(s, R, uo) {
     let row = 0;
     const oa = hz ? PO.y : PO.x,
       ob = hz ? PO.x : PO.y;
-    for (let a = (hz ? bb.y0 : bb.x0) + pMod(oa, SW); a < (hz ? bb.y1 : bb.x1) - 0.5; a += SW, row++) {
+    for (
+      let a = (hz ? bb.y0 : bb.x0) + pMod(oa, SW);
+      a < (hz ? bb.y1 : bb.x1) - 0.5;
+      a += SW, row++
+    ) {
       const span = hz ? bb.x1 - bb.x0 : bb.y1 - bb.y0,
         off = stag && row % 2 && span > SL + 0.5 ? -SL / 2 : 0;
       for (
@@ -210,7 +246,10 @@ function prepPlan(s, R, uo) {
     sh = lay(hz);
   if (dd2 == null) {
     const o2 = lay(!hz);
-    if (o2.length < sh.length || (o2.length === sh.length && !hz && s.type === "wall")) {
+    if (
+      o2.length < sh.length ||
+      (o2.length === sh.length && !hz && s.type === "wall")
+    ) {
       sh = o2;
       hz = !hz;
     }
@@ -243,7 +282,8 @@ function prepSVG(s, R, id, px, fs0, noLbl) {
   const fl = +px(10 * fs0);
   if (pp) {
     h += `<g clip-path="url(#cP${id})">`;
-    const rr = (a, a2, b, b2) => (pp.horiz ? [b, a, b2 - b, a2 - a] : [a, b, a2 - a, b2 - b]);
+    const rr = (a, a2, b, b2) =>
+      pp.horiz ? [b, a, b2 - b, a2 - a] : [a, b, a2 - a, b2 - b];
     if (pp.kind === "roll") {
       pp.strips.forEach((t, i) => {
         const [x, y, w, hh] = rr(t.a, t.a2, t.b0, t.b1);
@@ -278,7 +318,11 @@ function prepSVG(s, R, id, px, fs0, noLbl) {
       v = jd === "v";
     let jl = "";
     const o = pMod(+s.joistO || 0, sp);
-    for (let c = (v ? B.x0 : B.y0) + o; c <= (v ? B.x1 : B.y1) + 0.01; c += sp) {
+    for (
+      let c = (v ? B.x0 : B.y0) + o;
+      c <= (v ? B.x1 : B.y1) + 0.01;
+      c += sp
+    ) {
       if (c < (v ? B.x0 : B.y0) - 0.01) continue;
       jl += v ? `M${c} ${-B.y0}V${-B.y1}` : `M${B.x0} ${-c}H${B.x1}`;
     }
@@ -298,7 +342,9 @@ function prepCutRows(pp) {
     g[k] = g[k] || { k, n: 0, full: q.full, w, hh };
     g[k].n++;
   });
-  return Object.values(g).sort((a, b) => b.full - a.full || b.w * b.hh - a.w * a.hh);
+  return Object.values(g).sort(
+    (a, b) => b.full - a.full || b.w * b.hh - a.w * a.hh,
+  );
 }
 function prepSummary(s, R) {
   const st = s.stack || {},
@@ -311,12 +357,16 @@ function prepSummary(s, R) {
     pb = bboxOf(PO);
   let h =
     `<span><b>${names.length ? names.join(" + ") : t("noPrep")}</b></span>` +
-    (ext ? `<span>${t("prepSize")} <b>${fmtIn(pb.x1 - pb.x0)}×${fmtIn(pb.y1 - pb.y0)}</b></span>` : "") +
+    (ext
+      ? `<span>${t("prepSize")} <b>${fmtIn(pb.x1 - pb.x0)}×${fmtIn(pb.y1 - pb.y0)}</b></span>`
+      : "") +
     `<span>${t("area")} <b>${(Math.abs(sArea(PO)) / 144).toFixed(1)} sf</b></span>`;
   if (pp && pp.kind === "roll")
     h +=
       `<span>${pp.strips.length} ${t("mStrips")} · <b>${Math.ceil(pp.lf / 12)} lf</b></span>` +
-      (pp.rolls ? `<span><b>${pp.rolls.n}× ${pp.rolls.sf} sf</b> ${t("rollsN")}</span>` : "");
+      (pp.rolls
+        ? `<span><b>${pp.rolls.n}× ${pp.rolls.sf} sf</b> ${t("rollsN")}</span>`
+        : "");
   if (pp && pp.kind === "sheet") {
     h += `<span><b>${pp.sheets.length}</b> ${t("sheetsN")}${pp.bs ? " " + pp.bs.replace("x", "×") : ""}</span>`;
     const cr = prepCutRows(pp).filter((c) => !c.full);
@@ -343,9 +393,12 @@ function surfBody(s, R, o) {
   if (LAYER !== "prep" && LAYER !== "wire")
     h += `<path d="${pd(G.region)}${hD}" fill-rule="evenodd" fill="${PAL.grout}"/>`;
   G.niches.forEach(
-    (n) => (h += `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}" fill="#8d877d"/>`),
+    (n) =>
+      (h += `<rect x="${n.x}" y="${-(n.y + n.h)}" width="${n.w}" height="${n.h}" fill="#8d877d"/>`),
   );
-  const rt = R.a ? ` transform="rotate(${((-R.a * 180) / Math.PI).toFixed(4)} ${R.O[0]} ${-R.O[1]})"` : "";
+  const rt = R.a
+    ? ` transform="rotate(${((-R.a * 180) / Math.PI).toFixed(4)} ${R.O[0]} ${-R.O[1]})"`
+    : "";
   if ((TEXON || T.msheet) && T.tex) {
     TXID = "tx" + id;
     TXT = T;
@@ -374,7 +427,12 @@ function surfBody(s, R, o) {
       h += `<rect x="${N.div.x}" y="${-(N.div.y + N.div.h)}" width="${N.div.w}" height="${N.div.h}" fill="#ece5d7" stroke="#6b665e" stroke-width="${px(1)}"/>`;
     if (N.shelf) {
       const c = N.c,
-        col = c.shelf === "metal" ? "#9aa3ad" : c.shelf === "stone" ? "#b9b1a4" : "#f3dcb4",
+        col =
+          c.shelf === "metal"
+            ? "#9aa3ad"
+            : c.shelf === "stone"
+              ? "#b9b1a4"
+              : "#f3dcb4",
         th = Math.max(N.shelf.t, +px(3));
       h += `<rect x="${N.shelf.x}" y="${-(N.shelf.y + th)}" width="${N.shelf.w}" height="${th}" fill="${col}" stroke="#5b5348" stroke-width="${px(0.8)}"/>`;
       if (N.shelf.apron)
@@ -390,10 +448,14 @@ function surfBody(s, R, o) {
     TR = 'fill="#c3c8d0" stroke="#7f8690" stroke-width="' + px(0.8) + '"';
   if (s.shape === "rect" && sw > 0) {
     const q = s.trim;
-    if (q.l) h += `<rect x="0" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
-    if (q.r) h += `<rect x="${s.w - sw}" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
-    if (q.t) h += `<rect x="0" y="${-s.h}" width="${s.w}" height="${sw}" ${TR}/>`;
-    if (q.b) h += `<rect x="0" y="${-sw}" width="${s.w}" height="${sw}" ${TR}/>`;
+    if (q.l)
+      h += `<rect x="0" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
+    if (q.r)
+      h += `<rect x="${s.w - sw}" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
+    if (q.t)
+      h += `<rect x="0" y="${-s.h}" width="${s.w}" height="${sw}" ${TR}/>`;
+    if (q.b)
+      h += `<rect x="0" y="${-sw}" width="${s.w}" height="${sw}" ${TR}/>`;
   }
   const lbl = (B, txt, maxW, col) => {
     const f = Math.min(+px(10.5 * fs0), maxW / (txt.length * 0.56));
@@ -520,8 +582,14 @@ function surfBody(s, R, o) {
       my = (p0[1] + p1[1]) / 2 + ny * off;
     h += `<line x1="${p0[0]}" y1="${-p0[1]}" x2="${p1[0]}" y2="${-p1[1]}" stroke="#7a4fb3" stroke-width="${px(5)}" stroke-linecap="round" opacity=".85"/><text class="lbO" data-alt="${[
       [mx - 2 * nx * off, -(my - 2 * ny * off)],
-      [mx + nx * off * 0.6 + ux * off * 3, -(my + ny * off * 0.6 + uy * off * 3)],
-      [mx + nx * off * 0.6 - ux * off * 3, -(my + ny * off * 0.6 - uy * off * 3)],
+      [
+        mx + nx * off * 0.6 + ux * off * 3,
+        -(my + ny * off * 0.6 + uy * off * 3),
+      ],
+      [
+        mx + nx * off * 0.6 - ux * off * 3,
+        -(my + ny * off * 0.6 - uy * off * 3),
+      ],
     ]
       .map((q) => q.map((v) => v.toFixed(3)).join(","))
       .join(
@@ -565,12 +633,23 @@ function surfBody(s, R, o) {
       if (p.taper || p.taperW) {
         const wp = p.taperW ? p.taperW.map(fmtIn).join("→") : fmtIn(p.cw),
           hp = p.taper ? p.taper.map(fmtIn).join("→") : fmtIn(p.ch);
-        tx = (p.cutX ? wp : "") + (p.cutX && p.cutY ? "×" : "") + (p.cutY ? hp : "");
+        tx =
+          (p.cutX ? wp : "") +
+          (p.cutX && p.cutY ? "×" : "") +
+          (p.cutY ? hp : "");
       } else if (p.notch)
-        tx = (p.arc ? "◠ " : p.cutX || p.cutY || (p.ax && !p.hl) ? "L " : p.hl ? "⊙ " : "◿ ") + tx;
+        tx =
+          (p.arc
+            ? "◠ "
+            : p.cutX || p.cutY || (p.ax && !p.hl)
+              ? "L "
+              : p.hl
+                ? "⊙ "
+                : "◿ ") + tx;
       const lw = p.lp ? p.lp[2] : b.x1 - b.x0,
         lh = p.lp ? p.lp[3] : b.y1 - b.y0;
-      const nt = p.notch && !p.taper && !p.taperW && !p.arc ? notchTxt(p, "×") : "";
+      const nt =
+        p.notch && !p.taper && !p.taperW && !p.arc ? notchTxt(p, "×") : "";
       if (nt) {
         const lt = tx0 + " ⌐" + nt;
         if (Math.max(lw, lh) / (lt.length * 0.58) >= fMin) tx = lt;
@@ -585,7 +664,9 @@ function surfBody(s, R, o) {
           rot = true;
         } else if (f < fMin * 0.75) continue;
       }
-      const pl = p.lp ? [p.lp[0], p.lp[1]] : [(b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2],
+      const pl = p.lp
+          ? [p.lp[0], p.lp[1]]
+          : [(b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2],
         w = p.own ? pl : R.toW(pl),
         x = w[0],
         y = -w[1];
@@ -593,7 +674,10 @@ function surfBody(s, R, o) {
       const col = p.c === "bad" ? "#7d1410" : "#1d3550";
       let inner = esc(tx);
       if (nt && tx.indexOf("⌐") < 0 && !(S.nums && p.no)) {
-        const f2 = Math.min(f * 0.85, ((rot ? lh : lw) / ((nt.length + 2) * 0.58)) * 0.94);
+        const f2 = Math.min(
+          f * 0.85,
+          ((rot ? lh : lw) / ((nt.length + 2) * 0.58)) * 0.94,
+        );
         if ((rot ? lw : lh) >= f + f2 * 1.5 && f2 >= fMin * 0.6)
           inner = `<tspan x="${x.toFixed(3)}" dy="${(-f * 0.55).toFixed(3)}">${esc(tx)}</tspan><tspan x="${x.toFixed(3)}" dy="${(f * 1.15).toFixed(3)}" font-size="${f2.toFixed(3)}" fill="#b4441b">⌐ ${esc(nt)}</tspan>`;
       }
@@ -613,7 +697,7 @@ function surfBody(s, R, o) {
     bb = G.bb,
     m = o.m;
   const bsOn = !!(s.bs && s.bs.on);
-  if (s.shape !== "walk" || bsOn) {
+  if (!o.noDims && (s.shape !== "walk" || bsOn)) {
     const yb = Math.min(bb.y0, curbOn ? -s.curb.w : bb.y0) - m * 0.42;
     h += `<path d="M${bb.x0} ${-yb}H${bb.x1}M${bb.x0} ${-yb - tk}v${2 * tk}M${bb.x1} ${-yb - tk}v${2 * tk}" stroke="${dimC}" stroke-width="${px(1)}"/>`;
     h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-yb + +px(5)}" dominant-baseline="hanging" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" ${bsOn ? "" : dimKey(s, "w")}>${fmt(bb.x1 - bb.x0)}</text>`;
@@ -671,7 +755,12 @@ const isMulti = () => S.tab === "all" || S.tab === "floor";
 function floorItems() {
   return P.surfaces
     .filter((s) => s.type !== "wall")
-    .map((s) => ({ s, R: compute(s), dx: +(s.pos || {}).x || 0, dy: +(s.pos || {}).y || 0 }));
+    .map((s) => ({
+      s,
+      R: compute(s),
+      dx: +(s.pos || {}).x || 0,
+      dy: +(s.pos || {}).y || 0,
+    }));
 }
 function viewItems() {
   if (S.tab === "all") return allWallItems();
@@ -709,7 +798,10 @@ function buildViewItems(Wpx, Hpx, v, fs, items, all, ins) {
   let vw = (bb.x1 - bb.x0 + 2 * m) / v.zoom,
     vh = (bb.y1 - bb.y0 + 2 * m + (all ? m * 0.5 : 0)) / v.zoom;
   if (!Hpx) Hpx = (Wpx * vh) / vw;
-  const I = ins && Hpx - ins.t - ins.b > 80 && Wpx - ins.l - ins.r > 80 ? ins : { t: 0, b: 0, l: 0, r: 0 },
+  const I =
+      ins && Hpx - ins.t - ins.b > 80 && Wpx - ins.l - ins.r > 80
+        ? ins
+        : { t: 0, b: 0, l: 0, r: 0 },
     aw = Wpx - I.l - I.r,
     ah = Hpx - I.t - I.b;
   {
@@ -719,7 +811,11 @@ function buildViewItems(Wpx, Hpx, v, fs, items, all, ins) {
   }
   let upp = vw / Wpx;
   const cx = (bb.x0 + bb.x1) / 2 + v.panX - ((I.l - I.r) / 2) * upp,
-    cy = (bb.y0 + bb.y1) / 2 + (all ? m * 0.25 : 0) + v.panY + ((I.t - I.b) / 2) * upp;
+    cy =
+      (bb.y0 + bb.y1) / 2 +
+      (all ? m * 0.25 : 0) +
+      v.panY +
+      ((I.t - I.b) / 2) * upp;
   let vb = [cx - vw / 2, -(cy + vh / 2), vw, vh];
   // while a floor zone is being dragged the view stays put, so the zone follows the finger
   if (S.vbLock && fs === 1) {
@@ -742,7 +838,8 @@ const svg = $("#svg");
 let R = null;
 /* corner angles (always for odd ones; all of them + drag handles in points mode) */
 function cornerSVG(s, G, px, fs0, o) {
-  if (o.title || s.type === "wall" || isShaped(s) || (s.bs && s.bs.on)) return "";
+  if (o.title || s.type === "wall" || isShaped(s) || (s.bs && s.bs.on))
+    return "";
   const O = G.outer,
     edit = S.ptEdit && !isMulti() && !S.client,
     A = cornerAngles(O),
@@ -774,7 +871,14 @@ function cornerSVG(s, G, px, fs0, o) {
       const r = +px((edit ? 30 : 22) * fs0),
         lx = b[0] + bx * r,
         ly = b[1] + by * r;
-      const alt = [1.7, -1, -1.7, 2.4].map((k) => (b[0] + bx * r * k).toFixed(3) + "," + (-(b[1] + by * r * k)).toFixed(3)).join(";");
+      const alt = [1.7, -1, -1.7, 2.4]
+        .map(
+          (k) =>
+            (b[0] + bx * r * k).toFixed(3) +
+            "," +
+            (-(b[1] + by * r * k)).toFixed(3),
+        )
+        .join(";");
       h += `<text class="lbO" data-alt="${alt}" x="${lx.toFixed(3)}" y="${(-ly).toFixed(3)}" font-size="${px((edit ? 11 : 9.5) * fs0)}" text-anchor="middle" dominant-baseline="central" fill="${odd ? "#b4441b" : "#8a8476"}" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}">${Math.round(ang * 10) / 10}°</text>`;
     }
     if (edit)
@@ -795,7 +899,13 @@ function declutter(root) {
     return { l: r.left, r: r.right, t: r.top, b: r.bottom };
   };
   const hit = (a) =>
-    placed.some((b) => a.l < b.r - 0.5 && a.r > b.l + 0.5 && a.t < b.b - 0.5 && a.b > b.t + 0.5);
+    placed.some(
+      (b) =>
+        a.l < b.r - 0.5 &&
+        a.r > b.l + 0.5 &&
+        a.t < b.b - 0.5 &&
+        a.b > b.t + 0.5,
+    );
   root.querySelectorAll("text.lbC,text.lbD,text[data-dim]").forEach((e) => {
     const r = box(e);
     if (r.r > r.l) placed.push(r);
@@ -855,7 +965,8 @@ function declutter(root) {
         e.setAttribute("x", x);
         e.setAttribute("y", y);
         const r = box(e);
-        if (r.l < vb.left || r.r > vb.right || r.t < vb.top || r.b > vb.bottom) continue;
+        if (r.l < vb.left || r.r > vb.right || r.t < vb.top || r.b > vb.bottom)
+          continue;
         if (hit(r) || (strict && cross(r))) continue;
         placed.push(r);
         ok = true;
@@ -883,7 +994,10 @@ function declutterBody(body, vb, W, H) {
   return body;
 }
 function overlayInsets(r) {
-  const vis = (e) => e && getComputedStyle(e).display !== "none" && e.getBoundingClientRect().height > 0;
+  const vis = (e) =>
+    e &&
+    getComputedStyle(e).display !== "none" &&
+    e.getBoundingClientRect().height > 0;
   let t = 0,
     b = 0;
   const tl = $("#tools");

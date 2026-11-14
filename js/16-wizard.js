@@ -2,16 +2,46 @@
 /* ================= tile library ================= */
 /* Saved tiles live in DB.tiles (shared by all projects on this device). */
 const LIB_SEED = [
-  { name: "Porcelain 12×24", w: 12, h: 24, thick: 0.375, g: 0.125, sqftBox: 15.5 },
-  { name: "Porcelain 24×24", w: 24, h: 24, thick: 0.375, g: 0.125, sqftBox: 15.5 },
-  { name: "Porcelain 24×48", w: 24, h: 48, thick: 0.375, g: 0.125, sqftBox: 15.5 },
+  {
+    name: "Porcelain 12×24",
+    w: 12,
+    h: 24,
+    thick: 0.375,
+    g: 0.125,
+    sqftBox: 15.5,
+  },
+  {
+    name: "Porcelain 24×24",
+    w: 24,
+    h: 24,
+    thick: 0.375,
+    g: 0.125,
+    sqftBox: 15.5,
+  },
+  {
+    name: "Porcelain 24×48",
+    w: 24,
+    h: 48,
+    thick: 0.375,
+    g: 0.125,
+    sqftBox: 15.5,
+  },
   { name: "Subway 3×12", w: 3, h: 12, thick: 0.3125, g: 0.0625, sqftBox: 10 },
   { name: "Subway 3×6", w: 3, h: 6, thick: 0.3125, g: 0.0625, sqftBox: 12.5 },
-  { name: "Mosaic 2×2 (sheet 12×12)", w: 2, h: 2, thick: 0.25, g: 0.125, sheet: true },
+  {
+    name: "Mosaic 2×2 (sheet 12×12)",
+    w: 2,
+    h: 2,
+    thick: 0.25,
+    g: 0.125,
+    sheet: true,
+  },
 ];
 function libTiles() {
   if (!DB.tiles) {
-    DB.tiles = LIB_SEED.map((x) => Object.assign({ id: uid(), shape: "rect", price: 0 }, x));
+    DB.tiles = LIB_SEED.map((x) =>
+      Object.assign({ id: uid(), shape: "rect", price: 0 }, x),
+    );
   }
   return DB.tiles;
 }
@@ -35,7 +65,9 @@ function libToTile(q, T) {
     delete T.tex;
     delete T.texAR;
   }
-  T.sheet = q.sheet ? { on: true, w: 12, h: 12 } : Object.assign({}, T.sheet || {}, { on: false });
+  T.sheet = q.sheet
+    ? { on: true, w: 12, h: 12 }
+    : Object.assign({}, T.sheet || {}, { on: false });
   return T;
 }
 function libModal(applyTo) {
@@ -126,19 +158,40 @@ function libAct(cmd, arg) {
 /* ================= surface wizard (reset / new surface) ================= */
 /* Draft lives in S.wiz: { mode: "reset"|"new", si, s: draft surface, src } — edited through scope "w". */
 function stdTile(type) {
-  if (type === "floor") return defTile({ w: 24, h: 24, w2: 12, pattern: "grid", rot: false });
+  if (type === "floor")
+    return defTile({ w: 24, h: 24, w2: 12, pattern: "grid", rot: false });
   if (type === "pan")
-    return defTile({ w: 2, h: 2, w2: 1, pattern: "grid", rot: false, sheet: { on: true, w: 12, h: 12 } });
+    return defTile({
+      w: 2,
+      h: 2,
+      w2: 1,
+      pattern: "grid",
+      rot: false,
+      sheet: { on: true, w: 12, h: 12 },
+    });
   return defTile();
 }
 function wizStart(mode, type) {
   const s0 = mode === "reset" ? cur() : null;
   if (mode === "reset" && !s0) return;
   const f = newSurface(mode === "reset" ? s0.type : type || "wall");
-  if (s0) Object.assign(f, { id: s0.id, name: s0.name, nk: s0.nk, nn: s0.nn, pos: s0.pos });
+  if (s0)
+    Object.assign(f, {
+      id: s0.id,
+      name: s0.name,
+      nk: s0.nk,
+      nn: s0.nn,
+      pos: s0.pos,
+    });
   f.tile = stdTile(f.type);
   const firstWall = P.surfaces.find((x) => x.type === f.type && x !== s0);
-  S.wiz = { mode, si: S.tab, s: f, src: firstWall ? "s:" + firstWall.id : "def", name0: f.name };
+  S.wiz = {
+    mode,
+    si: S.tab,
+    s: f,
+    src: firstWall ? "s:" + firstWall.id : "def",
+    name0: f.name,
+  };
   wizOpen();
 }
 function wizOpen() {
@@ -148,7 +201,9 @@ function wizOpen() {
   const f = W.s,
     reset = W.mode === "reset";
   const opts = ["def"]
-    .concat(P.surfaces.filter((x) => !reset || x.id !== f.id).map((x) => "s:" + x.id))
+    .concat(
+      P.surfaces.filter((x) => !reset || x.id !== f.id).map((x) => "s:" + x.id),
+    )
     .concat(libTiles().map((q) => "l:" + q.id))
     .concat(["manual"]);
   const lab = (v) => {
@@ -162,7 +217,8 @@ function wizOpen() {
     return q ? "📚 " + libLabel(q) : v;
   };
   let h = `<h3>${reset ? "⌫ " + t("qClearT") : "＋ " + t("wzNewT") + " · " + t(f.type)}</h3>`;
-  if (reset) h += `<p class="hint">${t("qClearMsg").replace("{n}", esc(f.name))}</p>`;
+  if (reset)
+    h += `<p class="hint">${t("qClearMsg").replace("{n}", esc(f.name))}</p>`;
   h += `<p class="nh">${t("wzSizeT")}</p><div class="grid">`;
   if (!reset) h += F(t("name"), "s.name", "text", "w", "w2");
   h +=
@@ -176,7 +232,15 @@ function wizOpen() {
       F(t("tileL"), "s.tile.h", "len", "w") +
       F(t("grout"), "s.tile.g", "len", "w") +
       F(t("thick"), "s.tile.thick", "len", "w") +
-      SEL(t("pattern"), "s.tile.pattern", ["grid", "offset"], 0, "w", "w2", (o) => t("p" + o));
+      SEL(
+        t("pattern"),
+        "s.tile.pattern",
+        ["grid", "offset"],
+        0,
+        "w",
+        "w2",
+        (o) => t("p" + o),
+      );
   h += `</div><div class="btns"><button class="btn sm" data-act="wizLib">📚 ${t("lib")}</button></div>`;
   h += `<p class="nh">${t("wzBaseT")}</p><div class="grid">${SEL(
     t("underTop"),
@@ -226,7 +290,13 @@ function wizAct(cmd) {
   }
   if (cmd === "wizDefault") {
     const g = newSurface(f.type);
-    Object.assign(g, { id: f.id, name: f.name, nk: f.nk, nn: f.nn, pos: f.pos });
+    Object.assign(g, {
+      id: f.id,
+      name: f.name,
+      nk: f.nk,
+      nn: f.nn,
+      pos: f.pos,
+    });
     g.tile = stdTile(g.type);
     W.s = g;
   }
