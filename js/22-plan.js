@@ -84,6 +84,10 @@ const PLT = {
     plFloorName: "Пол (из плана)",
     plPanName: "Поддон душа",
     plNewT: "Новый проект с плана комнаты",
+    plEdgeS: "край",
+    plCenterS: "центр",
+    plRefHint:
+      "Все расстояния «от стены» (унитаз, окна, трап, шкафы) показываются и вводятся до выбранного: каркаса, основы или готовой плитки. Толщины слоёв стены берутся из стен проекта (Основание).",
     plNewHint: "Нарисуй комнату — стены, пол и душ создадутся сами",
     plStartHint:
       "Выбери шаблон и поправь размеры, или начни с пустой комнаты 8′ × 5′.",
@@ -235,6 +239,10 @@ const PLT = {
     plFloorName: "Floor (from plan)",
     plPanName: "Shower pan",
     plNewT: "New project from a room plan",
+    plEdgeS: "edge",
+    plCenterS: "center",
+    plRefHint:
+      "Every “from the wall” distance (toilet, windows, drain, cabinets) is shown and typed to the chosen reference: framing, prep or finished tile. Wall layer thicknesses come from the project's walls (Build-up).",
     plNewHint: "Draw the room — walls, floor and shower are made for you",
     plStartHint:
       "Pick a template and fix the sizes, or start with an empty 8′ × 5′ room.",
@@ -556,6 +564,32 @@ function planFoot(it, pts) {
     w = +it.w / 2,
     d0 = K.inwall ? -W.th : 0,
     d1 = K.inwall ? 0 : it.k === "niche" ? -(+it.dp || 0) : +it.dp || 0;
+  if (it.k === "shower" && it.psh === "cut") {
+    const pc = it.pcut || { at: "fl", a: 12, b: 12 },
+      wd = +it.w,
+      dp = +it.dp || 0,
+      a = Math.max(1, Math.min(wd - 1, +pc.a || 12)),
+      b = Math.max(1, Math.min(dp - 1, +pc.b || 12)),
+      // pan coordinates: x from the left as seen facing the back wall, y from the front (entry)
+      P2 = (x, y) => plAt(W, W.flip ? c + w - x : c - w + x, dp - y),
+      Q =
+        pc.at === "fr"
+          ? [
+              [0, 0],
+              [wd - a, 0],
+              [wd, b],
+              [wd, dp],
+              [0, dp],
+            ]
+          : [
+              [a, 0],
+              [wd, 0],
+              [wd, dp],
+              [0, dp],
+              [0, b],
+            ];
+    return Q.map((q) => P2(q[0], q[1]));
+  }
   if (it.k === "niche")
     return [
       plAt(W, c - w, 0),

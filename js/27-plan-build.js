@@ -200,12 +200,22 @@ function planBuild() {
       s.w = +it.w;
       s.h = +it.dp;
       s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
+      s.pcutOn = false;
       s.drain = Object.assign(s.drain || {}, planDrain(it));
+      panNorm(s);
+      s.panType = it.cl ? "curbless" : "curb";
+      s.panShape = it.psh === "cut" ? "cut" : "rect";
+      s.pcut = Object.assign({ at: "fl", a: 12, b: 12 }, it.pcut || {});
+      // which sides of the pan are walls: the back always; a side when the pan reaches that corner
+      const W = planWall(it.wall, pts),
+        e = planItemX(it, W);
+      s.pw = { b: true, l: e[0] <= 1, r: e[1] >= W.L - 1, f: false };
       if (isNew) {
-        s.curb.on = true;
         s.curb.len = s.w;
         fresh.push(s);
       }
+      s.curb.on = !it.cl;
+      panApplyShape(s);
     });
   // drop surfaces whose plan wall lost its tile
   P.surfaces = P.surfaces.filter((s) => {

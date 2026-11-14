@@ -95,7 +95,7 @@ function planSheet() {
             `<option value="${i}" ${i === +it.wall ? "selected" : ""}>${pt("plWall")} ${i + 1}</option>`,
         )
         .join("")}</select></label>`;
-      h += F(pt("plC"), p + "c", "len", "p");
+      h += planFromWalls(it);
     } else {
       h +=
         F(pt("plX"), p + "x", "len", "p") + F(pt("plY"), p + "y", "len", "p");
@@ -119,7 +119,23 @@ function planSheet() {
     if (["window", "ucab", "mirror", "niche", "shelf"].includes(it.k))
       h += F(pt("plZ"), p + "z", "len", "p");
     if (K.pt) h += F(pt("plZc"), p + "z", "len", "p");
-    if (it.k === "toilet") h += F(pt("plRi"), p + "ri", "len", "p");
+    if (it.k === "toilet")
+      h += plvField(
+        `${pt("plRi")} · ${pt("plWall")} ${+it.wall + 1}`,
+        it,
+        "ri",
+        +it.ri + refOff(wallLayers()),
+      );
+    if (it.k === "shower") {
+      h += `</div>${CHK(sht("sh_curbless"), p + "cl", 1, "p")}<div class="grid2">${SEL(sht("shShape"), p + "psh", ["rect", "cut"], 1, "p", "", (o) => sht("shp_" + o))}`;
+      if (it.psh === "cut")
+        h +=
+          SEL(sht("shCutAt"), p + "pcut.at", ["fl", "fr"], 1, "p", "", (o) =>
+            sht("cc_" + o),
+          ) +
+          F(sht("shCutA"), p + "pcut.a", "len", "p") +
+          F(sht("shCutB"), p + "pcut.b", "len", "p");
+    }
     if (it.k === "cab")
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
@@ -241,7 +257,7 @@ function planSheet() {
   else if (pl.items.length) h += `<p class="hint">✓ ${pt("plChkOk")}</p>`;
   if (wk.gap > 0.1)
     h += `<div class="note">⚠ ${pt("plGap")}: ${fmt(wk.gap)} <button class="btn sm" data-act="plFit">${pt("plFit")}</button></div>`;
-  h += `<h4>${pt("plRoom")}</h4><div class="grid2">${F(pt("plH"), "plan.H", "len", "p")}</div>`;
+  h += `<h4>${pt("plRoom")}</h4><div class="grid2">${F(pt("plH"), "plan.H", "len", "p")}${SEL(sht("dref"), "dref", ["frame", "prep", "finish"], 1, "p", "", (o) => sht("dr_" + o))}</div><p class="hint">${pt("plRefHint")}</p>`;
   h += `<p class="hint">${pt("plWalls")}</p><div class="plwalls">${pl.room.segs
     .map(
       (g, i) =>
@@ -658,8 +674,18 @@ function planItemTop(it, pts, k, sel) {
       break;
     case "shower": {
       h +=
-        poly(rect(s0, s1, 0, dp)) +
-        ` fill="#eef3f8" stroke="${stc}" stroke-width="${sw}"/>`;
+        poly(planFoot(it, pts).map(sp)) +
+        ` fill="#eef3f8" stroke="${stc}" stroke-width="${sw}" stroke-dasharray="${it.cl ? `${3 * k} ${2 * k}` : "none"}"/>`;
+      if (!it.cl) {
+        // the curb along the entry
+        const ft = planFoot(it, pts).slice(),
+          fa = rect(s0, s1, dp - 4, dp);
+        if (it.psh !== "cut")
+          h +=
+            poly(fa) +
+            ` fill="#fff" stroke="${stc}" stroke-width="${0.8 * k}"/>`;
+        void ft;
+      }
       const D = planDrain(it),
         // pan x (as seen facing the back wall) -> distance along the wall
         sx = (x) => (W.flip ? s1 - x : s0 + x),
@@ -1491,3 +1517,60 @@ function planMove(e) {
       : planElevSVG(+V.v, box.clientWidth, box.clientHeight);
   $("#plsvg svg").setAttribute("viewBox", d.vb);
 }
+
+/* "from wall N" fields: distances along the wall to the neighbouring walls, to the chosen reference
+   (framing / prep / finished tile). Sized items: to their edges; toilet and point items: to the center. */
+function plvField(label, it, side, v) {
+  return `<label class="f"><span>${label}</span><input data-plv="${it.id}:${side}" data-t="len" value="${fmtIn(Math.round(v * 16) / 16)}" autocomplete="off"></label>`;
+}
+function planFromWalls(it) {
+  const pts = planPts(),
+    n = pts.length,
+    W = planWall(it.wall, pts),
+    K = PL_KINDS[it.k],
+    half = K.pt || it.k === "toilet" ? 0 : +it.w / 2,
+    off = refOff(wallLayers()),
+    wa = (+it.wall - 1 + n) % n,
+    wb = (+it.wall + 1) % n;
+  return (
+    plvField(
+      `${pt("plWall")} ${wa + 1} → ${half ? pt("plEdgeS") : pt("plCenterS")}`,
+      it,
+      "a",
+      +it.c - half + off,
+    ) +
+    plvField(
+      `${pt("plWall")} ${wb + 1} → ${half ? pt("plEdgeS") : pt("plCenterS")}`,
+      it,
+      "b",
+      W.L - +it.c - half + off,
+    )
+  );
+}
+function plvInp(e) {
+  const el = e.target;
+  if (!el.dataset || !el.dataset.plv) return;
+  const [id, side] = el.dataset.plv.split(":"),
+    it = P.plan.items.find((x) => x.id === id);
+  if (!it) return;
+  const v = parseLen(el.value);
+  if (!isFinite(v)) return el.classList.add("bad");
+  el.classList.remove("bad");
+  const off = refOff(wallLayers()),
+    K = PL_KINDS[it.k],
+    half = K.pt || it.k === "toilet" ? 0 : +it.w / 2;
+  if (side === "ri") it.ri = Math.max(1, v - off);
+  else {
+    const W = planWall(it.wall);
+    it.c = side === "a" ? v - off + half : W.L - (v - off) - half;
+    it.c = Math.max(
+      K.pt ? 0 : +it.w / 2,
+      Math.min(W.L - (K.pt ? 0 : +it.w / 2), it.c),
+    );
+  }
+  saveSoon();
+  if (e.type === "change") renderPlan();
+  else planDraw();
+}
+document.addEventListener("input", plvInp);
+document.addEventListener("change", plvInp);

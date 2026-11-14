@@ -23,7 +23,7 @@ async (seed)=>{
         const o=planNew(k,w,R()*W.L, K.floor?{x:R()*80,y:R()*60}:{});
         if(R()<0.3) o.w=R()*80; if(R()<0.2) o.dp=R()*40; if(R()<0.2) o.z=R()*90;
         if(K.tzh!=null){o.tz=R()<0.7;o.tzl=R()*20;o.tzr=R()*20;o.tzf=R()<0.2;o.tzs=R()<0.7;o.tzsf=R()<0.3;o.tzh=R()*100;}
-        if(k==='shower'){o.drn=pick(['center','point','linear']);o.lside=pick(['back','left','right','front']);o.dl=R()*60;o.db=R()*40;o.llen=R()*80;}
+        if(k==='shower'){o.cl=R()<0.5;o.psh=pick(['rect','cut']);o.pcut={at:pick(['fl','fr']),a:R()*40,b:R()*40};o.drn=pick(['center','point','linear']);o.lside=pick(['back','left','right','front']);o.dl=R()*60;o.db=R()*40;o.llen=R()*80;}
         if(k==='door'){o.dtype=pick(['swing','pocket','slide','opening']);o.swing=pick(['in','out']);o.hinge=pick(['a','b']);}
         if(k==='glass'){o.door=pick(['none','a','b']);o.ang=R()*360;}
         if(k==='cab'){o.ctl=R()*3;o.ctr=R()*3;o.ctt=R()*2;}
