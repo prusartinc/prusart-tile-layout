@@ -25,7 +25,31 @@ function planOpen() {
   renderPlan();
   renderBtab();
 }
+/* surfaces made from the plan follow it: rebuild when leaving the plan if anything changed */
+function planHash(pl) {
+  const s = JSON.stringify([pl.room, pl.walls, pl.H, pl.items]);
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return h;
+}
+function planAutoBuild() {
+  const pl = P.plan;
+  if (!pl) return;
+  const linked = P.surfaces.some((s) => s.fromPlan);
+  if (!(linked || !P.surfaces.length)) return; // surfaces from the interview: build only on request
+  if (pl.bh === planHash(pl) && P.surfaces.length) return;
+  bkBefore(pt("plBuild"));
+  const r = planBuild();
+  pl.bh = planHash(pl);
+  saveSoon();
+  if (r.a || r.b) toast("✓ " + pt("plSynced").replace("{n}", r.a + r.b), false);
+}
 function planClose() {
+  try {
+    planAutoBuild();
+  } catch (e) {
+    console.error(e);
+  }
   S.plan = null;
   document.body.classList.remove("planon");
   renderAll();
@@ -40,7 +64,7 @@ function renderPlan() {
   if (typeof V.v === "number" && V.v >= n) V.v = "top";
   if (V.sel && !pl.items.find((x) => x.id === V.sel)) V.sel = null;
   if (V.wsel != null && V.wsel >= n) V.wsel = null;
-  let h = `<div class="plhead"><button data-act="plClose">‹ ${pt("plBack")}</button><b>${pt("plT")}</b><button data-act="plUndo" title="Undo">↶</button></div>`;
+  let h = `<div class="plhead"><button data-act="plClose">‹ ${pt("plBack")}</button><b class="plproj" data-act="homeMenu:${P.id}">${pt("plT")}<small>${esc(P.name || "")}${P.client ? " · " + esc(P.client) : ""} ✎</small></b><button data-act="plUndo" title="Undo">↶</button></div>`;
   h += `<div class="plviews"><button data-act="plView:top" class="${V.v === "top" ? "on" : ""}">▦ ${pt("plTop")}</button>${pl.room.segs
     .map(
       (g, i) =>
@@ -207,6 +231,8 @@ function planSheet() {
   }
   // room
   const wk = walkPoly(pl.room);
+  if (S.plan.fresh && !pl.items.length)
+    return `<h4>${pt("plNewT")}</h4><p class="hint">${pt("plStartHint")}</p><div class="btns">${["bath58", "walkin", "kitchen"].map((k2) => B("plTpl:" + k2, pt("tpl_" + k2), "p")).join("")}${B("plBlank", pt("plBlank"))}</div>`;
   let h = `<div class="btns">${B("plAdd:door", pt("plAddDoor"))}${B("plAdd:window", pt("plAddWin"))}${B("plLib", pt("plAddItem"), "p")}</div>`;
   h += `<p class="hint">${pt("plNone")}</p>`;
   const W2 = planChecks();

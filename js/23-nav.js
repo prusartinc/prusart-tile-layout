@@ -74,6 +74,11 @@ function navGo(k) {
   closeModal();
   if (k === "pdf") return S.plan ? planPdf() : exportMenu();
   if (S.plan && k !== "plan") {
+    try {
+      planAutoBuild();
+    } catch (e) {
+      console.error(e);
+    }
     S.plan = null;
     document.body.classList.remove("planon");
   }

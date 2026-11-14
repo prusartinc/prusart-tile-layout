@@ -1902,3 +1902,36 @@ select,
 textarea {
   font-family: inherit;
 }
+.hplan {
+  position: absolute;
+  right: 42px;
+  top: 8px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: none;
+  font-size: 18px;
+}
+.hnew.hnew2 {
+  background: var(--card, #fff);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  margin-top: 8px;
+}
+.plproj {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+  cursor: pointer;
+  min-width: 0;
+}
+.plproj small {
+  font-weight: 500;
+  font-size: 12px;
+  opacity: 0.75;
+  max-width: 52vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -72,16 +72,17 @@ function renderHome() {
   if (P && DB.projects.includes(P))
     h += `<button class="hcont" data-act="homeOpen:${P.id}"><span>${t("hContinue")}</span><b>${esc(P.name)}</b><small>${esc(P.client || "")}</small><i>→</i></button>`;
   h += `<button class="hnew" data-act="nhStart"><span>＋</span><div><b>${t("newProj")}</b><small>${t("hNewHint")}</small></div></button>`;
+  h += `<button class="hnew hnew2" data-act="homeNewPlan"><span>📐</span><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
   h += `<div class="hsearch"><input id="hq" type="search" placeholder="🔎 ${t("hSearch")}" value="${esc(S.hq || "")}"></div>`;
   h += `<p class="hsec">${t("projects")} · ${DB.projects.length}</p><div class="hgrid">`;
   h += list
     .map((p) => {
       const st = projStats(p);
-      return `<div class="hcard ${P && p.id === P.id ? "on" : ""}"><button class="hopen" data-act="homeOpen:${p.id}">${homeThumb(p)}<div class="hinfo"><b>${esc(p.name)}</b><small>${esc([p.client, p.addr].filter(Boolean).join(" · "))}</small><span>${st.w ? `${st.w} ${t("hWalls")}` : ""}${st.w && st.f ? " · " : ""}${st.f ? `${st.f} ${t("hFloors")}` : ""} · ${Math.round(st.sf)} sf · ${fmtD(p.updated)}</span></div></button><button class="hmore" data-act="homeMenu:${p.id}">⋯</button></div>`;
+      return `<div class="hcard ${P && p.id === P.id ? "on" : ""}"><button class="hopen" data-act="homeOpen:${p.id}">${homeThumb(p)}<div class="hinfo"><b>${esc(p.name)}</b><small>${esc([p.client, p.addr].filter(Boolean).join(" · "))}</small><span>${st.w ? `${st.w} ${t("hWalls")}` : ""}${st.w && st.f ? " · " : ""}${st.f ? `${st.f} ${t("hFloors")}` : ""} · ${Math.round(st.sf)} sf · ${fmtD(p.updated)}</span></div></button><button class="hplan" data-act="homePlan:${p.id}" title="${pt("plT")}">📐</button><button class="hmore" data-act="homeMenu:${p.id}">⋯</button></div>`;
     })
     .join("");
   if (!list.length) h += `<p class="hint">${t("hNone")}</p>`;
-  h += `</div><p class="hsec">${t("hTools")}</p><div class="htools">${P && DB.projects.includes(P) ? `<button data-act="plan">📐<span>${pt("plT")}</span></button>` : ""}<button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
+  h += `</div><p class="hsec">${t("hTools")}</p><div class="htools"><button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
   el.innerHTML = h;
   const inp = $("#hq");
   if (inp)
@@ -100,7 +101,7 @@ function homeMenu(id) {
   const p = DB.projects.find((x) => x.id === id);
   if (!p) return;
   modal(
-    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button>${DB.projects.length > 1 ? `<button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button>` : ""}</div>`,
+    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="homePlan:${p.id}">📐 ${pt("plT")}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button>${DB.projects.length > 1 ? `<button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button>` : ""}</div>`,
   );
   S.__hp = p;
 }
@@ -567,6 +568,7 @@ function homeAct(a, arg) {
     S.__hp = null;
     closeModal();
     saveSoon();
+    if (S.plan) return renderPlan();
     return renderHome();
   }
   if (a === "homeDel") {
@@ -602,6 +604,49 @@ function homeAct(a, arg) {
     return renderHome();
   }
   if (a === "homeImport") return bkOpenFile();
+  if (a === "homePlan") {
+    // open THIS project's plan
+    closeModal();
+    const p = DB.projects.find((x) => x.id === arg);
+    if (!p) return;
+    if (P !== p) {
+      P = p;
+      resetUndo();
+      S.tab = 0;
+    }
+    DB.cur = p.id;
+    saveSoon();
+    S.home = false;
+    document.body.classList.remove("homeon");
+    renderAll();
+    return planOpen();
+  }
+  if (a === "homeNewPlan") {
+    // a new project that starts from the room plan: surfaces come from the plan
+    const p = newProject(false);
+    p.surfaces = [];
+    p.name = `${lang === "ru" ? "Проект" : "Project"} ${DB.projects.length + 1}`;
+    p.nk = null;
+    DB.projects.push(p);
+    P = p;
+    resetUndo();
+    S.tab = 0;
+    DB.cur = p.id;
+    P.plan = {
+      room: { shape: "walk", segs: [], a0: 0 },
+      walls: [],
+      H: 96,
+      items: [],
+    };
+    ptsToWalk(P.plan.room, rectPoly(0, 0, 96, 60));
+    planEnsure();
+    saveSoon();
+    S.home = false;
+    document.body.classList.remove("homeon");
+    planOpen();
+    S.plan.fresh = true;
+    return renderPlan();
+  }
   if (a === "nhStart") {
     S.nh = nhDefaults();
     return renderHome();

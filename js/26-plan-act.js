@@ -161,6 +161,9 @@ function planAct(a, arg) {
       saveSoon();
       break;
     }
+    case "plBlank":
+      V.fresh = false;
+      break;
     case "plCenterW": {
       const it = sel();
       if (it && !PL_KINDS[it.k].floor) it.c = planWall(it.wall).L / 2;
@@ -205,6 +208,7 @@ function planAct(a, arg) {
       if (pl.items.length && !confirm(pt("plTplQ"))) return;
       bkBefore(pt("plTpl"));
       planTemplate(arg);
+      V.fresh = false;
       V.sel = null;
       V.wsel = null;
       V.v = "top";
@@ -228,6 +232,7 @@ function planAct(a, arg) {
     case "plBuild": {
       bkBefore(pt("plBuild"));
       const r = planBuild();
+      pl.bh = planHash(pl);
       saveSoon();
       toast(
         "✓ " + pt("plBuilt").replace("{a}", r.a).replace("{b}", r.b),
