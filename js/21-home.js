@@ -74,7 +74,7 @@ function renderHome() {
     })
     .join("");
   if (!list.length) h += `<p class="hint">${t("hNone")}</p>`;
-  h += `</div><p class="hsec">${t("hTools")}</p><div class="htools"><button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
+  h += `</div><p class="hsec">${t("hTools")}</p><div class="htools">${P && DB.projects.includes(P) ? `<button data-act="plan">📐<span>${pt("plT")}</span></button>` : ""}<button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
   el.innerHTML = h;
   const inp = $("#hq");
   if (inp)

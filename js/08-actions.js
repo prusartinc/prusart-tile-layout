@@ -19,6 +19,7 @@ function act(a, arg, b) {
   if (/^(bk|sy)[A-Z]/.test(a)) return syncAct(a, arg);
   if (/^(bs|ms)[A-Z]/.test(a)) return kitchenAct(a, arg);
   if (/^(home|nh)/.test(a)) return homeAct(a, arg);
+  if (a === "plan" || /^pl[A-Z]/.test(a)) return planAct(a, arg);
   if (/^tex/.test(a) && a !== "texToggle") {
     if (a === "texPick") closeModal();
     return texAct(a);

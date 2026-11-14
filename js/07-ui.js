@@ -1041,6 +1041,12 @@ function onInp(e) {
     if (el.dataset.rb) renderHome();
     return;
   }
+  if (el.closest && el.closest("#plan")) {
+    planInp(k);
+    if (el.dataset.rb) renderPlan();
+    else planDraw();
+    return;
+  }
   if (inModal) {
     if (el.dataset.rb && S.reModal) S.reModal();
     else if (S.modalLive) S.modalLive();

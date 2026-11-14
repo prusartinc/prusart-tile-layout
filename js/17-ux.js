@@ -16,6 +16,7 @@ function moreMenu() {
       B("site", "👷", t("mSite"), S.site) +
       B("texToggle", "📷", t("mTex"), S.texOn) +
       B("pin", "📌", t("mPin"), S.pin !== false) +
+      B("plan", "📐", pt("plT")) +
       B("lib", "📚", t("lib")) +
       B("surfList", "▦", t("mSurfs"))
     }</div><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
