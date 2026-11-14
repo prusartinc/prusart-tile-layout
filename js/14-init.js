@@ -1,6 +1,6 @@
 "use strict";
 /* ================= init ================= */
-(function init() {
+STORE.ready.then(function init() {
   const d = load();
   const nl = (navigator.language || "en").toLowerCase();
   const defL = /^(ru|uk|be)/.test(nl) ? "ru" : "en";
@@ -46,4 +46,4 @@
   }
   saveSoon();
   showHome(true); // start on the dashboard
-})();
+});

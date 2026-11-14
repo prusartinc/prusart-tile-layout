@@ -69,9 +69,11 @@ const pd = (p) =>
 let TEXON = false,
   TXID = null,
   TXT = null;
+let DECO = null;
 function tileSVG(p, T, px) {
   const alt = (T.checker && p.q) || (patOf(T) === "pinwheel" && p.q);
   let fill = (alt ? COL2 : COL)[p.c || "full"];
+  if (DECO && DECO.has(decoKey(p, T))) fill = "#b08a4a";
   if (p.ins && T.ins && T.ins.on) fill = T.ins.col || "#c8a24a";
   else if (TXID && T === TXT) {
     const land = (T.texAR || 1) >= 1;
@@ -409,7 +411,9 @@ function surfBody(s, R, o) {
   if (LAYER === "prep") h += prepSVG(s, R, id, px, fs0);
   else {
     if (LAYER === "wire") h += prepSVG(s, R, id, px, fs0, 1);
+    DECO = s.deco && s.deco.length ? new Set(s.deco) : null;
     h += `<g opacity="${LAYER === "wire" ? 0.22 : 1}"><g clip-path="url(#cR${id})"><g${rt}>${R.main.map((p) => tileSVG(p, T, px)).join("")}</g></g>`;
+    DECO = null;
     if (R.nich.length)
       h += `<g clip-path="url(#cN${id})"><g${rt}>${R.nich.map((p) => tileSVG(p, T, px)).join("")}</g></g>`;
     if (R.nichOwn && R.nichOwn.length)
@@ -1036,7 +1040,13 @@ function draw() {
   LAYER = S.layer;
   TEXON = !!(S.client || S.texOn);
   try {
-    V = buildView(r.width, r.height, S.view, 1, overlayInsets(r));
+    V = buildView(
+      r.width,
+      r.height,
+      S.view,
+      S.site ? 1.45 : 1,
+      overlayInsets(r),
+    );
   } catch (e) {
     console.error(e);
   }

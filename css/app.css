@@ -1430,7 +1430,7 @@ body.planon #plan {
   flex-direction: column;
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 18;
   background: var(--bg);
   color: var(--ink);
   padding-top: env(safe-area-inset-top);
@@ -1591,5 +1591,292 @@ body.planon #plan {
     max-height: none;
     border-top: 0;
     border-left: 1px solid var(--line);
+  }
+}
+
+/* ===== bottom tab bar ===== */
+:root {
+  --btab: calc(58px + env(safe-area-inset-bottom));
+}
+#btab {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 19;
+  display: flex;
+  justify-content: space-around;
+  background: var(--card, #fff);
+  border-top: 1px solid var(--line);
+  padding: 4px 4px env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.06);
+}
+#btab button {
+  flex: 1;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  border: 0;
+  background: none;
+  color: var(--mute, #8a8476);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 0 6px;
+  border-radius: 12px;
+}
+#btab button span {
+  font-size: 20px;
+  line-height: 1.15;
+}
+#btab button.on {
+  color: var(--ink);
+}
+#btab button.on span {
+  transform: scale(1.08);
+}
+body {
+  padding-bottom: var(--btab);
+}
+body.nobtab #btab {
+  display: none;
+}
+body.nobtab {
+  padding-bottom: 0;
+}
+body.planon #plan {
+  bottom: var(--btab);
+  inset: 0 0 var(--btab) 0;
+}
+body.homeon #home {
+  padding-bottom: calc(30px + var(--btab));
+}
+#toast {
+  bottom: calc(18px + var(--btab));
+}
+body.nobtab #toast {
+  bottom: calc(18px + env(safe-area-inset-bottom));
+}
+.plsheet {
+  padding-bottom: 16px;
+}
+
+/* ===== grouped surface tabs ===== */
+#tabs button.grp {
+  font-weight: 700;
+  border-style: dashed;
+}
+#tabs button.grp.gon {
+  border-style: solid;
+  background: var(--ink);
+  color: var(--bg);
+}
+#tabs button.grp small {
+  opacity: 0.6;
+  font-weight: 600;
+}
+
+/* ===== settings drawer on phones ===== */
+.pcol {
+  display: block;
+  width: calc(100% + 20px);
+  margin: -10px -10px 8px;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--card, #fff);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+}
+body.pcol #panel > *:not(.pcol) {
+  display: none !important;
+}
+body.pcol #panel .pcol {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: var(--btab);
+  margin: 0;
+  width: 100%;
+  z-index: 8;
+  border-top: 1px solid var(--line);
+}
+body.pcol.pin #stage {
+  height: calc(100vh - 230px - var(--btab));
+  height: calc(100dvh - 230px - var(--btab));
+}
+
+/* ===== quick actions on a tile ===== */
+#qa {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(76px + var(--btab));
+  z-index: 61;
+  display: flex;
+  gap: 6px;
+  background: #141414;
+  padding: 6px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+#qa button {
+  border: 0;
+  background: #2a2a2a;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.plgo .btn {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== inch keypad ===== */
+#kp:empty {
+  display: none;
+}
+#kp {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background: #1b1b1b;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  -webkit-user-select: none;
+}
+#kp button {
+  border: 0;
+  border-radius: 10px;
+  background: #3a3a3a;
+  color: #fff;
+  font: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  padding: 8px 0;
+  touch-action: manipulation;
+}
+#kp button:active {
+  background: #5a5a5a;
+}
+#kp button.op {
+  background: #2b2b2b;
+  font-size: 16px;
+}
+#kp button.ok {
+  background: #a8a390;
+  color: #000;
+}
+.kpfr {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.kpfr button {
+  font-size: 14px !important;
+  padding: 7px 0 !important;
+  background: #2f2a22 !important;
+  color: #f1dfb8 !important;
+}
+.kpg {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.kpb {
+  display: grid;
+  grid-template-columns: 56px 1fr 1fr 56px;
+  gap: 6px;
+  margin-top: 6px;
+}
+body.kpon {
+  padding-bottom: 330px;
+}
+body.kpon #btab {
+  display: none;
+}
+body.kpon.planon #plan {
+  bottom: 300px;
+  inset: 0 0 300px 0;
+}
+body.kpon #modal .mbox {
+  margin-bottom: 300px;
+  max-height: calc(100vh - 320px);
+}
+.kpv {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #bbb;
+  font-size: 13px;
+  padding: 2px 4px 8px;
+}
+.kpv b {
+  color: #fff;
+  font-size: 22px;
+  margin-left: auto;
+  min-width: 2ch;
+  text-align: right;
+}
+.kpv i {
+  color: #888;
+  font-style: normal;
+  font-size: 18px;
+}
+#kp .kpg button {
+  min-height: 52px;
+}
+
+/* ===== one button system: two sizes, same corners, bigger targets on touch ===== */
+.btn {
+  border-radius: 10px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    background 0.15s,
+    transform 0.06s;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn.sm {
+  min-height: 34px;
+  border-radius: 9px;
+}
+.btn:disabled {
+  opacity: 0.45;
+}
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid #2f7fd0;
+  outline-offset: 2px;
+}
+@media (pointer: coarse) {
+  .btn {
+    min-height: 44px;
+    font-size: 14px;
+    padding: 9px 13px;
+  }
+  .btn.sm {
+    min-height: 38px;
+    font-size: 13px;
+    padding: 6px 10px;
   }
 }

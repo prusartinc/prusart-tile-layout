@@ -1,13 +1,23 @@
 "use strict";
 /* ================= backups ================= */
-/* Once a day (on open / save) a snapshot of all projects + tile library goes to a separate localStorage key.
+/* Once a day (on open / save) a snapshot of all projects + tile library goes to a separate storage key.
    The last BK_KEEP days are kept. Photos are left out of snapshots to keep them small. */
 const BKEY = "prusart-tile-layout-backups",
-  BK_KEEP = 7;
+  BK_KEEP = 7,
+  BK_OPS = 6;
+/* a safety copy right before a big change (template, rebuild from plan, wall delete, reset, delete) */
+let bkLastOp = 0;
+function bkBefore(op) {
+  if (Date.now() - bkLastOp < 60000) return; // one copy per minute is plenty
+  bkLastOp = Date.now();
+  try {
+    bkSnapshot(true, op);
+  } catch (e) {}
+}
 const dayOf = (ts) => new Date(ts).toISOString().slice(0, 10);
 function bkList() {
   try {
-    return JSON.parse(localStorage.getItem(BKEY) || "[]");
+    return JSON.parse(STORE.get(BKEY) || "[]");
   } catch (e) {
     return [];
   }
@@ -15,21 +25,33 @@ function bkList() {
 function bkStrip(o) {
   return JSON.parse(JSON.stringify(o), (k, v) => (k === "tex" ? undefined : v));
 }
-function bkSnapshot(force) {
+function bkSnapshot(force, op) {
   const L = bkList(),
-    today = dayOf(Date.now());
-  if (!force && L.length && dayOf(L[L.length - 1].t) === today) return;
+    today = dayOf(Date.now()),
+    daily = L.filter((b) => !b.op);
+  if (!force && daily.length && dayOf(daily[daily.length - 1].t) === today)
+    return;
   const snap = {
     t: Date.now(),
     n: DB.projects.length,
     d: bkStrip({ projects: DB.projects, tiles: DB.tiles || [] }),
   };
-  if (!force && L.length && dayOf(L[L.length - 1].t) === today) L.pop();
+  if (op) snap.op = op;
   L.push(snap);
-  while (L.length > BK_KEEP) L.shift();
+  // keep the last BK_KEEP daily copies and the last BK_OPS "before a big change" copies
+  const cut = (pred, max) => {
+    let k = L.filter(pred).length;
+    for (let i = 0; i < L.length && k > max; )
+      if (pred(L[i])) {
+        L.splice(i, 1);
+        k--;
+      } else i++;
+  };
+  cut((b) => !b.op, BK_KEEP);
+  cut((b) => !!b.op, BK_OPS);
   for (let i = 0; i < 3; i++) {
     try {
-      localStorage.setItem(BKEY, JSON.stringify(L));
+      STORE.set(BKEY, JSON.stringify(L));
       return;
     } catch (e) {
       L.shift(); // storage full: drop the oldest and try again
@@ -82,7 +104,7 @@ function backupsModal() {
   h += L.length
     ? `<div class="liblist">${L.map(
         (b, i) =>
-          `<div class="librow"><div><b>${fmtD(b.t)}</b><br><small>${b.n} ${t("bkProjects")}</small></div><div class="btns"><button class="btn sm" data-act="bkRestore:${L.length - 1 - i}">${t("bkRestore")}</button></div></div>`,
+          `<div class="librow"><div><b>${fmtD(b.t)}</b><br><small>${b.op ? `${t("bkBefore")}: ${esc(b.op)} · ` : ""}${b.n} ${t("bkProjects")}</small></div><div class="btns"><button class="btn sm" data-act="bkRestore:${L.length - 1 - i}">${t("bkRestore")}</button></div></div>`,
       ).join("")}</div>`
     : `<p class="hint">${t("bkNone")}</p>`;
   h += `<p style="margin-top:12px"><b>${t("bkFileT")}</b></p><p class="hint">${t("bkFileHint")}${DB.lastFile ? ` ${t("bkLastFile")} ${fmtD(DB.lastFile)}.` : ""}</p><div class="btns"><button class="btn p" data-act="bkFile">⬇ ${t("bkFile")}</button><button class="btn" data-act="bkOpen">⬆ ${t("bkOpen")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>`;
@@ -280,7 +302,7 @@ async function syncNow(manual) {
 // write DB without touching the undo history
 function saveLocal() {
   try {
-    localStorage.setItem(SKEY, JSON.stringify(DB));
+    STORE.set(SKEY, JSON.stringify(DB));
   } catch (e) {}
 }
 function syncSoon(fast) {

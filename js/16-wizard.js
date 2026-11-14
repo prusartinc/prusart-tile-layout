@@ -172,6 +172,7 @@ function stdTile(type) {
   return defTile();
 }
 function wizStart(mode, type) {
+  if (arguments[0] === "reset") bkBefore(t("qClearT").replace("?", ""));
   const s0 = mode === "reset" ? cur() : null;
   if (mode === "reset" && !s0) return;
   const f = newSurface(mode === "reset" ? s0.type : type || "wall");

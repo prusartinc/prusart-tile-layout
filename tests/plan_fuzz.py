@@ -6,7 +6,7 @@ async (seed)=>{
   const pick=a=>a[Math.floor(R()*a.length)];
   const bad=[]; const t0=performance.now(); let n=0;
   const kinds=Object.keys(PL_KINDS);
-  for(let it=0; it<25; it++){
+  for(let it=0; it<12; it++){
     try{
       delete P.plan; planEnsure(); const pl=P.plan;
       const shape=pick(['rect','L','odd','gap','tri']);

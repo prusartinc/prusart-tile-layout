@@ -37,7 +37,13 @@ they load in this order:
 | `js/19-sync.js` | Daily local backups + backup file, sync between devices through a private GitHub Gist |
 | `js/20-kitchen.js` | Kitchen backsplash by cabinets (segments, slope, gap, centering), floating shelves with bolt holes, mosaic inserts, mosaic from a sheet photo, outlet extender rings |
 | `js/21-home.js` | Home dashboard (projects, search, tools) and the new-project interview (jobs → short questions → materials → create) |
-| `js/22-plan.js` | Room plan page: top view (walls with thickness, doors with swing, windows, fixtures, cabinets, dimension chains), wall elevations, and "plan → surfaces" (floor with thresholds/toilet/cut-outs, tiled walls with openings, shower pans) |
+| `js/00-store.js` | Storage: IndexedDB with an in-memory cache (sync `STORE.get/set`), moves old localStorage data over, falls back to localStorage |
+| `js/22-plan.js` | Room plan: data model (`P.plan`), item kinds, wall geometry, tile zones, shower drain position |
+| `js/23-nav.js` | Bottom tab bar, grouped surface tabs, settings drawer on phones, quick actions on a tapped tile (joint here / center / deco) |
+| `js/24-keypad.js` | Inch keypad with fractions, voice input ("ninety six and three eighths"), typo check on lengths |
+| `js/25-plan-view.js` | Plan page, top view and wall elevations, pointer (drag, pinch zoom, pan), plan inputs |
+| `js/26-plan-act.js` | Plan actions, snapping, rotate/mirror the room, glass along the pan |
+| `js/27-plan-build.js` | Plan → surfaces, code checks, room templates, client PDF sheets |
 | `js/14-init.js` | Startup (loads last), opens the dashboard |
 | `sw.js` | Offline cache (bump `CACHE` on each deploy) |
 | `tools/bundle.py` | Makes one self-contained HTML file (for sharing as a single file) |

@@ -357,7 +357,7 @@ function migrate(p) {
 }
 function load() {
   try {
-    const d = JSON.parse(localStorage.getItem(SKEY));
+    const d = JSON.parse(STORE.get(SKEY));
     if (d && Array.isArray(d.projects)) return d;
   } catch (e) {}
   return null;
@@ -395,7 +395,7 @@ function swapP(json) {
   if (typeof S.tab === "number" && !P.surfaces[S.tab]) S.tab = 0;
   renderAll();
   try {
-    localStorage.setItem(SKEY, JSON.stringify(DB));
+    STORE.set(SKEY, JSON.stringify(DB));
   } catch (e) {}
 }
 function doUndo() {
@@ -419,7 +419,7 @@ function saveSoon() {
     DB.lang = lang;
     DB.theme = THEME;
     try {
-      localStorage.setItem(SKEY, JSON.stringify(DB));
+      STORE.set(SKEY, JSON.stringify(DB));
       S.saveErr = false;
     } catch (e) {
       // storage full or blocked: tell the user once, so nothing is lost silently

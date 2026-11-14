@@ -371,6 +371,7 @@ const I18N = {
     bkHint:
       "Раз в день приложение само сохраняет копию всех проектов на этом устройстве (последние 7 дней, без фото плитки). Если что-то пошло не так — восстанови нужный день.",
     bkProjects: "проектов",
+    bkBefore: "перед",
     bkRestore: "Восстановить",
     bkNone: "Пока нет копий — первая появится сегодня.",
     bkFileT: "Файл с копией",
@@ -1302,6 +1303,7 @@ const I18N = {
     bkHint:
       "Once a day the app saves a copy of all projects on this device (last 7 days, without tile photos). If something goes wrong, restore a day.",
     bkProjects: "projects",
+    bkBefore: "before",
     bkRestore: "Restore",
     bkNone: "No copies yet — the first one appears today.",
     bkFileT: "Backup file",

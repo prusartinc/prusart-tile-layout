@@ -17,6 +17,7 @@ function moreMenu() {
       B("texToggle", "📷", t("mTex"), S.texOn) +
       B("pin", "📌", t("mPin"), S.pin !== false) +
       B("plan", "📐", pt("plT")) +
+      B("kpToggle", "⌨", kt("kpOwn"), DB.kp !== false) +
       B("lib", "📚", t("lib")) +
       B("surfList", "▦", t("mSurfs"))
     }</div><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
@@ -80,6 +81,7 @@ function pieceInfo(it, x, y) {
   const nt = notchTxt(p, " × ");
   if (nt) m += ` · ${t("notchW")} ${nt}`;
   toast(m.replace(/^ · /, ""), false);
+  if (typeof tileQuick === "function" && !isMulti()) tileQuick(p);
 }
 
 /* stats line: tap to expand */

@@ -20,6 +20,23 @@ function act(a, arg, b) {
   if (/^(bs|ms)[A-Z]/.test(a)) return kitchenAct(a, arg);
   if (/^(home|nh)/.test(a)) return homeAct(a, arg);
   if (a === "plan" || /^pl[A-Z]/.test(a)) return planAct(a, arg);
+  if (a === "nav") return navGo(arg);
+  if (a === "kpToggle") {
+    DB.kp = DB.kp === false;
+    saveSoon();
+    return moreMenu();
+  }
+  if (a === "qa") return qaAct(arg);
+  if (a === "tgrp") {
+    S.tgrp = arg;
+    return renderTabs();
+  }
+  if (a === "pcol") {
+    S.pcol = !S.pcol;
+    renderPanel();
+    applyPin();
+    return requestAnimationFrame(() => draw());
+  }
   if (/^tex/.test(a) && a !== "texToggle") {
     if (a === "texPick") closeModal();
     return texAct(a);
@@ -334,6 +351,7 @@ function act(a, arg, b) {
       );
       break;
     case "delSurfGo":
+      bkBefore(t("del") + " " + s.name);
       commitUndo();
       closeModal();
       P.surfaces.splice(S.tab, 1);
@@ -673,6 +691,11 @@ function act(a, arg, b) {
         b.textContent = t("confirm");
         return;
       }
+      bkBefore(
+        t("del") +
+          " " +
+          ((DB.projects.find((x) => x.id === arg) || {}).name || ""),
+      );
       DB.projects = DB.projects.filter((p) => p.id !== arg);
       markDeleted(arg);
       if (P.id === arg) P = DB.projects[0];

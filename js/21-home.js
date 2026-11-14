@@ -16,6 +16,7 @@ function homeEl() {
 function showHome(on) {
   S.home = !!on;
   document.body.classList.toggle("homeon", S.home);
+  if (typeof renderBtab === "function") setTimeout(renderBtab, 0);
   if (S.home) renderHome();
   else {
     renderAll();
@@ -551,6 +552,13 @@ function homeAct(a, arg) {
     }
     DB.cur = p.id;
     saveSoon();
+    // a project with a room plan opens on the plan: it is the map of everything else
+    if (p.plan && p.plan.items && p.plan.items.length) {
+      S.home = false;
+      document.body.classList.remove("homeon");
+      renderAll();
+      return planOpen();
+    }
     return showHome(false);
   }
   if (a === "homeMenu") return homeMenu(arg);
@@ -568,6 +576,11 @@ function homeAct(a, arg) {
     return;
   }
   if (a === "homeDelGo") {
+    bkBefore(
+      t("del") +
+        " " +
+        ((DB.projects.find((x) => x.id === arg) || {}).name || ""),
+    );
     DB.projects = DB.projects.filter((x) => x.id !== arg);
     markDeleted(arg);
     if (!DB.projects.length) DB.projects.push(newProject(false));
