@@ -489,7 +489,11 @@ function surfBody(s, R, o) {
     const d = s.drain;
     if (d.type === "center")
       h += `<circle cx="${d.x}" cy="${-d.y}" r="2.125" fill="#6a6a6a" stroke="#333" stroke-width="${px(1)}"/><path d="M${d.x - 1.4} ${-d.y}H${d.x + 1.4}M${d.x} ${-d.y - 1.4}V${-d.y + 1.4}" stroke="#ccc" stroke-width="${px(1)}"/>`;
-    if (d.type === "linear") {
+    if (d.type === "linear" && d.vert) {
+      h += `<rect x="${d.x}" y="${-(d.y + d.len)}" width="${d.wid}" height="${d.len}" fill="#555" stroke="#222" stroke-width="${px(1)}"/>`;
+      for (let y = d.y + 1; y < d.y + d.len - 0.5; y += 1.5)
+        h += `<line x1="${d.x + d.wid * 0.25}" y1="${-y}" x2="${d.x + d.wid * 0.75}" y2="${-y}" stroke="#999" stroke-width="${px(1)}"/>`;
+    } else if (d.type === "linear") {
       h += `<rect x="${d.x}" y="${-(d.y + d.wid)}" width="${d.len}" height="${d.wid}" fill="#555" stroke="#222" stroke-width="${px(1)}"/>`;
       for (let x = d.x + 1; x < d.x + d.len - 0.5; x += 1.5)
         h += `<line x1="${x}" y1="${-(d.y + d.wid * 0.25)}" x2="${x}" y2="${-(d.y + d.wid * 0.75)}" stroke="#999" stroke-width="${px(1)}"/>`;

@@ -672,7 +672,7 @@ function renderPanel() {
       "pan",
       t("panSec"),
       `${CHK(t("curbOn"), "curb.on", 1)}${s.curb.on ? `<div class="grid">${F(t("curbLen"), "curb.len")}${F(t("curbW"), "curb.w")}${F(t("curbH"), "curb.h")}</div>${CHK(t("curbTrim"), "curb.trim")}` : ""}
-  <div class="grid">${SEL(t("drain"), "drain.type", ["none", "center", "linear"], 1, "s", "w2")}${d.type !== "none" ? F(t("drainX"), "drain.x") + F(t("drainY"), "drain.y") : ""}${d.type === "linear" ? F(t("drainLen"), "drain.len") + F(t("drainWid"), "drain.wid") : ""}</div>`,
+  <div class="grid">${SEL(t("drain"), "drain.type", ["none", "center", "linear"], 1, "s", "w2")}${d.type !== "none" ? F(t("drainX"), "drain.x") + F(t("drainY"), "drain.y") : ""}${d.type === "linear" ? F(t("drainLen"), "drain.len") + F(t("drainWid"), "drain.wid") : ""}</div>${d.type === "linear" ? CHK(t("drainVert"), "drain.vert", 1) : ""}`,
     );
   }
   h += SEC("res", t("results"), '<div id="res"></div>');

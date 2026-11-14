@@ -603,7 +603,7 @@ function geom(s) {
   }
   if (s.type === "pan" && s.drain.type === "linear") {
     const d = s.drain;
-    holes.push({ poly: rectPoly(d.x, d.y, d.len, d.wid), type: "drain" });
+    holes.push({ poly: d.vert ? rectPoly(d.x, d.y, d.wid, d.len) : rectPoly(d.x, d.y, d.len, d.wid), type: "drain" });
   }
   return { outer, line, region, holes, niches, bb: bboxOf(line), rb: bboxOf(region) };
 }
