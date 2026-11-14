@@ -1880,3 +1880,25 @@ button:focus-visible,
     padding: 6px 10px;
   }
 }
+.pcm {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.pcm b {
+  color: #d0342c;
+}
+/* the interface font, spelled out on its own (iOS dropped the shorthand once) */
+html,
+body {
+  font-family:
+    -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+    sans-serif;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
