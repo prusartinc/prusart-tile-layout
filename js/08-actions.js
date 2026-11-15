@@ -99,6 +99,11 @@ function act(a, arg, b) {
     case "wizBack":
       wizOpen();
       break;
+    case "opSideSw": {
+      const [a1, a2, a3] = arg.split(":");
+      opSideSw(+a1, +a2, a3);
+      break;
+    }
     case "toastUndo":
       doUndo();
       toastHide();

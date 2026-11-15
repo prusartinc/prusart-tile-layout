@@ -582,6 +582,8 @@ function surfBody(s, R, o) {
       h += `<circle cx="${dc[0]}" cy="${-dc[1]}" r="${px(24)}" fill="transparent"/></g>`;
     if (dc && S.drnDrag === s.id) h += drainDimSVG(s, dc, px, fs0);
   }
+  if (S.opDrag && S.opDrag.id === s.id && s.openings[S.opDrag.j])
+    h += opDragSVG(s, s.openings[S.opDrag.j], px, fs0);
   h += heatSVG(s, R, px, fs0);
   (s.trans || []).forEach((tr, i) => {
     const O = G.outer,

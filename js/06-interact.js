@@ -289,6 +289,7 @@ svg.addEventListener("pointermove", (e) => {
     const o = drag.s.openings[drag.op];
     o.x = Math.round((drag.opx + dx) * 8) / 8;
     o.y = Math.round((drag.opy - dy) * 8) / 8;
+    S.opDrag = { id: drag.s.id, j: drag.op };
   } else if (S.mode === "tiles" && S.layer === "tile" && canEdit() && drag.s) {
     setO(drag.s, sn(drag.ox + dx), sn(drag.oy - dy));
   } else if (S.mode === "tiles" && S.layer === "prep" && canEdit() && drag.s) {
@@ -414,6 +415,13 @@ function pEnd(e) {
     }
   }
 }
+svg.addEventListener("pointerup", (e) => {
+  if (S.opDrag) {
+    S.opDrag = null;
+    drawSoon();
+  }
+});
+svg.addEventListener("pointercancel", () => (S.opDrag = null));
 svg.addEventListener("pointerup", pEnd);
 svg.addEventListener("pointercancel", pEnd);
 svg.addEventListener(

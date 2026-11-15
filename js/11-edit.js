@@ -33,14 +33,26 @@ function editOpening(si, j) {
   if (o.type === "niche") return nicheModal(si, j);
   const pre = `surfaces.${si}.openings.${j}`,
     circ = o.shape === "circle";
-  let h = `<h3>${esc(t(o.type))} — ${esc(s.name)}</h3><div class="grid">`;
+  let h = `<h3>${esc(t(o.type))} — ${esc(s.name)}</h3>`;
+  // distances to the nearest walls (or the side the user picked)
+  const D = opDists(s, o);
+  if (D) {
+    h += `<p class="hsec">${odT(circ ? "titleC" : "titleE")}</p><div class="grid">`;
+    ["h", "v"].forEach((ax) => {
+      const k = opSide(s, o, ax, D),
+        v = D[k];
+      if (v == null) return;
+      h += `<label class="f"><span>${odT(k)} <button type="button" class="btn sm odsw" data-act="opSideSw:${si}:${j}:${ax}" title="${odT("sw")}">⇄</button></span><input data-opw="${si}:${j}:${k}" data-t="len" value="${fmtIn(v)}" autocomplete="off"></label>`;
+    });
+    h += `</div><p class="hint">${["l", "r", "b", "t"]
+      .filter((k) => D[k] != null)
+      .map((k) => `${odT(k)}: <b>${fmtIn(D[k])}″</b>`)
+      .join(" · ")}</p>`;
+  }
+  h += `<div class="grid">`;
   h += circ
-    ? F(t("cx"), pre + ".x", "len", "p") +
-      F(t("cy"), pre + ".y", "len", "p") +
-      F(t("dia"), pre + ".dia", "len", "p")
-    : F(t("fromLeft"), pre + ".x", "len", "p") +
-      F(t("fromBottom"), pre + ".y", "len", "p") +
-      F(t("width"), pre + ".w", "len", "p") +
+    ? F(t("dia"), pre + ".dia", "len", "p")
+    : F(t("width"), pre + ".w", "len", "p") +
       F(t("height"), pre + ".h", "len", "p");
   if (o.type === "niche") h += F(t("depth"), pre + ".d", "len", "p");
   h += "</div>";
@@ -48,6 +60,142 @@ function editOpening(si, j) {
   h += `<p class="hint">${t("dragOpHint")}</p><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button><button class="btn d" data-act="delOpenP:${si}:${j}">${t("del")}</button></div>`;
   modal(h);
 }
+/* ---------- opening ↔ wall distances ---------- */
+const ODT = {
+  ru: {
+    titleC: "Центр от стен",
+    titleE: "Край от стен",
+    l: "до левой стены",
+    r: "до правой стены",
+    b: "до нижней стены",
+    t: "до верхней стены",
+    sw: "считать от другой стены",
+  },
+  en: {
+    titleC: "Center from the walls",
+    titleE: "Edge from the walls",
+    l: "to left wall",
+    r: "to right wall",
+    b: "to bottom wall",
+    t: "to top wall",
+    sw: "measure from the other wall",
+  },
+};
+const odT = (k) => (ODT[lang] || ODT.en)[k] || k;
+function opCenter(o) {
+  return o.shape === "circle" || o.w == null
+    ? [+o.x, +o.y]
+    : [+o.x + +o.w / 2, +o.y + +o.h / 2];
+}
+// distance along a ray from p in direction (dx,dy) to the first outline edge
+function rayToPoly(poly, p, dx, dy) {
+  let best = Infinity;
+  for (let i = 0; i < poly.length; i++) {
+    const a = poly[i],
+      b = poly[(i + 1) % poly.length],
+      ex = b[0] - a[0],
+      ey = b[1] - a[1],
+      den = dx * ey - dy * ex;
+    if (Math.abs(den) < 1e-9) continue;
+    const t = ((a[0] - p[0]) * ey - (a[1] - p[1]) * ex) / den,
+      u = ((a[0] - p[0]) * dy - (a[1] - p[1]) * dx) / den;
+    if (t > 1e-6 && u >= -1e-6 && u <= 1 + 1e-6 && t < best) best = t;
+  }
+  return isFinite(best) ? best : null;
+}
+// center (round) or near edge (rectangle) to the wall in each direction
+function opDists(s, o) {
+  let poly;
+  try {
+    poly = outerPoly(s);
+  } catch (e) {
+    return null;
+  }
+  if (!poly || poly.length < 3) return null;
+  const c = opCenter(o),
+    hw = o.shape === "circle" || o.w == null ? 0 : +o.w / 2,
+    hh = o.shape === "circle" || o.h == null ? 0 : +o.h / 2,
+    r = (d, k) => (d == null ? null : Math.round((d - k) * 16) / 16);
+  return {
+    l: r(rayToPoly(poly, c, -1, 0), hw),
+    r: r(rayToPoly(poly, c, 1, 0), hw),
+    b: r(rayToPoly(poly, c, 0, -1), hh),
+    t: r(rayToPoly(poly, c, 0, 1), hh),
+  };
+}
+// which wall a value is measured from: the user's pick, else the nearest one
+function opSide(s, o, ax, D) {
+  const pick = o.ref && o.ref[ax],
+    A = ax === "h" ? ["l", "r"] : ["b", "t"];
+  if (pick && D[pick] != null) return pick;
+  if (D[A[0]] == null) return A[1];
+  if (D[A[1]] == null) return A[0];
+  return D[A[0]] <= D[A[1]] ? A[0] : A[1];
+}
+function opSideSw(si, j, ax) {
+  const s = P.surfaces[si],
+    o = s && s.openings[j];
+  if (!o) return;
+  const D = opDists(s, o),
+    cur = opSide(s, o, ax, D),
+    A = ax === "h" ? ["l", "r"] : ["b", "t"];
+  o.ref = Object.assign({}, o.ref, { [ax]: cur === A[0] ? A[1] : A[0] });
+  saveSoon();
+  editOpening(si, j);
+}
+function opwInp(e) {
+  const el = e.target;
+  if (!el.dataset || !el.dataset.opw) return;
+  const [si, j, k] = el.dataset.opw.split(":"),
+    s = P.surfaces[+si],
+    o = s && s.openings[+j];
+  if (!o) return;
+  const v = parseLen(el.value);
+  if (!isFinite(v) || v < 0) return el.classList.add("bad");
+  el.classList.remove("bad");
+  const D = opDists(s, o);
+  if (!D || D[k] == null) return;
+  const sh = v - D[k]; // how far the item must move away from that wall
+  if (k === "l") o.x = +o.x + sh;
+  if (k === "r") o.x = +o.x - sh;
+  if (k === "b") o.y = +o.y + sh;
+  if (k === "t") o.y = +o.y - sh;
+  o.x = Math.round(o.x * 16) / 16;
+  o.y = Math.round(o.y * 16) / 16;
+  // remember the wall the user typed against
+  o.ref = Object.assign({}, o.ref, {
+    [k === "l" || k === "r" ? "h" : "v"]: k,
+  });
+  changed();
+  if (e.type === "change") {
+    editOpening(+si, +j);
+    if (!isMulti()) renderPanel();
+  }
+}
+// live distance lines while an opening is dragged
+function opDragSVG(s, o, px, fs0) {
+  const D = opDists(s, o);
+  if (!D) return "";
+  const c = opCenter(o),
+    hw = o.shape === "circle" || o.w == null ? 0 : +o.w / 2,
+    hh = o.shape === "circle" || o.h == null ? 0 : +o.h / 2;
+  let h = "";
+  ["h", "v"].forEach((ax) => {
+    const k = opSide(s, o, ax, D),
+      d = D[k];
+    if (d == null) return;
+    const dir = { l: [-1, 0], r: [1, 0], b: [0, -1], t: [0, 1] }[k],
+      x1 = c[0] + dir[0] * hw,
+      y1 = c[1] + dir[1] * hh,
+      x2 = x1 + dir[0] * d,
+      y2 = y1 + dir[1] * d;
+    h += `<line x1="${x1}" y1="${-y1}" x2="${x2}" y2="${-y2}" stroke="#d0342c" stroke-width="${px(1.6)}" stroke-dasharray="${px(4)} ${px(3)}"/>`;
+    h += `<text x="${(x1 + x2) / 2}" y="${-(y1 + y2) / 2}" font-size="${px(14 * (fs0 || 1))}" text-anchor="middle" dominant-baseline="central" fill="#d0342c" font-weight="800" font-family="${FONT}" paint-order="stroke" stroke="#fff" stroke-width="${px(4)}">${fmtIn(d)}″</text>`;
+  });
+  return h;
+}
+document.addEventListener("input", opwInp);
+document.addEventListener("change", opwInp);
 $("#mbody").addEventListener("input", onInp);
 $("#mbody").addEventListener("change", onInp);
 $("#mbody").addEventListener("keydown", (e) => {
