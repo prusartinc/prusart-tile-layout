@@ -2,6 +2,7 @@
 /* ================= room plan: actions ================= */
 /* ---------- actions ---------- */
 function planAct(a, arg) {
+  if (a === "plDrSw") return plDrSw(arg);
   const pl = P.plan,
     V = S.plan;
   const sel = () => pl.items.find((x) => x.id === V.sel);

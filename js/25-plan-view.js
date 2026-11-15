@@ -144,10 +144,7 @@ function planSheet() {
         it.dl = +it.w / 2;
         it.db = +it.dp / 2;
       }
-      if (it.drn === "point" || it.drn === "center")
-        h +=
-          F(pt("plDl"), p + "dl", "len", "p") +
-          F(pt("plDb"), p + "db", "len", "p");
+      if (it.drn === "point" || it.drn === "center") h += pldrFields(it);
       if (it.drn === "linear")
         h +=
           SEL(
@@ -161,10 +158,12 @@ function planSheet() {
           ) +
           F(pt("plLoff"), p + "loff", "len", "p") +
           F(pt("plLlen"), p + "llen", "len", "p");
-      if (it.drn === "point")
-        h += `<p class="hint" style="grid-column:1/-1">${pt("plDhint")
-          .replace("{r}", fmt(+it.w - +it.dl))
-          .replace("{f}", fmt(+it.dp - +it.db))}</p>`;
+      if (it.drn === "point" || it.drn === "center") {
+        const D = pldrDists(it);
+        h += `<p class="hint" style="grid-column:1/-1">${["l", "r", "b", "f"]
+          .map((k) => `${pldrLab(D, k)}: <b>${fmtIn(D[k])}″</b>`)
+          .join(" · ")}</p>`;
+      }
     }
     if (K.tzh != null) {
       h += `</div>${CHK(pt("plTz"), p + "tz", 1, "p")}`;
@@ -1620,5 +1619,85 @@ function plvInp(e) {
   if (e.type === "change") renderPlan();
   else planDraw();
 }
+/* shower drain on the plan: distance from the two nearest sides, switchable */
+function pldrDists(it) {
+  const off = refOff(wallLayers()),
+    W = planWall(it.wall),
+    e = planItemX(it, W),
+    wall = { b: true, l: e[0] <= 1, r: e[1] >= W.L - 1, f: false },
+    raw = {
+      l: +it.dl,
+      r: +it.w - +it.dl,
+      b: +it.db,
+      f: +it.dp - +it.db,
+    },
+    D = { wall };
+  for (const k in raw)
+    D[k] = Math.round((raw[k] + (wall[k] ? off : 0)) * 16) / 16;
+  return D;
+}
+function pldrSide(it, ax, D) {
+  const A = ax === "h" ? ["l", "r"] : ["b", "f"],
+    pick = it.dside && it.dside[ax];
+  if (A.includes(pick)) return pick;
+  return D[A[0]] <= D[A[1]] ? A[0] : A[1];
+}
+function pldrLab(D, k) {
+  const ru = lang === "ru";
+  if (k === "f") return ru ? "до бордюра / входа" : "to curb / entry";
+  if (D.wall[k])
+    return ru
+      ? { l: "от левой стены", r: "от правой стены", b: "от задней стены" }[k]
+      : { l: "from left wall", r: "from right wall", b: "from back wall" }[k];
+  return ru
+    ? { l: "до левого края", r: "до правого края" }[k]
+    : { l: "to left edge", r: "to right edge" }[k];
+}
+function pldrFields(it) {
+  const D = pldrDists(it);
+  return ["h", "v"]
+    .map((ax) => {
+      const k = pldrSide(it, ax, D);
+      return `<label class="f"><span>${pldrLab(D, k)} <button type="button" class="btn sm odsw" data-act="plDrSw:${it.id}:${ax}">⇄</button></span><input data-pldr="${it.id}:${k}" data-t="len" value="${fmtIn(D[k])}" autocomplete="off"></label>`;
+    })
+    .join("");
+}
+function plDrSw(arg) {
+  const [id, ax] = arg.split(":"),
+    it = P.plan.items.find((x) => x.id === id);
+  if (!it) return;
+  const A = ax === "h" ? ["l", "r"] : ["b", "f"],
+    k = pldrSide(it, ax, pldrDists(it));
+  it.dside = Object.assign({}, it.dside, { [ax]: k === A[0] ? A[1] : A[0] });
+  saveSoon();
+  renderPlan();
+}
+function pldrInp(e) {
+  const el = e.target;
+  if (!el.dataset || !el.dataset.pldr) return;
+  const [id, k] = el.dataset.pldr.split(":"),
+    it = P.plan.items.find((x) => x.id === id);
+  if (!it) return;
+  const v = parseLen(el.value);
+  if (!isFinite(v) || v < 0) return el.classList.add("bad");
+  el.classList.remove("bad");
+  const D = pldrDists(it),
+    raw = v - (D.wall[k] ? refOff(wallLayers()) : 0);
+  if (k === "l") it.dl = raw;
+  if (k === "r") it.dl = +it.w - raw;
+  if (k === "b") it.db = raw;
+  if (k === "f") it.db = +it.dp - raw;
+  it.dl = Math.max(1, Math.min(+it.w - 1, Math.round(it.dl * 16) / 16));
+  it.db = Math.max(1, Math.min(+it.dp - 1, Math.round(it.db * 16) / 16));
+  if (it.drn === "center") it.drn = "point";
+  it.dside = Object.assign({}, it.dside, {
+    [k === "l" || k === "r" ? "h" : "v"]: k,
+  });
+  saveSoon();
+  if (e.type === "change") renderPlan();
+  else planDraw();
+}
+document.addEventListener("input", pldrInp);
+document.addEventListener("change", pldrInp);
 document.addEventListener("input", plvInp);
 document.addEventListener("change", plvInp);
