@@ -63,6 +63,37 @@ const SHT = {
     shPanL: "Поддон у края",
     shBase: "Основа уклона",
     shRecessL: "Опускание",
+    pSys: "Система поддона",
+    ps_mudliner: "Раствор + liner 40 mil (pre-slope)",
+    ps_mudkerdi: "Раствор + KERDI",
+    ps_hbclassic: "HYDRO-BLOK Classic",
+    ps_hblow: "HYDRO-BLOK Low-Profile",
+    ps_hbss: "HYDRO-BLOK Single Slope + ebbe INNI",
+    ps_hbssthin: "HYDRO-BLOK Thin Single Slope + INNI",
+    ps_scht: "Schluter KERDI-SHOWER-T / TS",
+    ps_schtt: "Schluter KERDI-SHOWER-TT (тонкий)",
+    ps_schlt: "Schluter KERDI-SHOWER-LT",
+    ps_schlts: "Schluter KERDI-SHOWER-LTS (KERDI-LINE)",
+    ps_tray: "Другой готовый поддон",
+    pModel: "Модель / размер",
+    pPick: "Выбери модель — подставятся размер поддона и толщины.",
+    pModelInfo: "По краю {g}″, у трапа {h}″ (над черновым).",
+    pDrainEst: "У трапа — расчётно по уклону 1/4″ на фут.",
+    pPan: "Поддон",
+    pPre: "Pre-slope",
+    pLiner: "Liner",
+    pBed: "Раствор",
+    pBedS: "Раствор с уклоном",
+    pPreMin: "Pre-slope у трапа",
+    pLinerT: "Liner (40 mil = 0.04)",
+    pBedT: "Раствор над liner",
+    pAtDrain: "у трапа (готово)",
+    pCurbAbove: "Бордюр над готовым полом",
+    offC: "смещённый трап",
+    pMemNote_k: "Сверху KERDI — мембрана стоит в «Основании (пироге)» поддона.",
+    pMemNote_l: "Гидроизоляция — liner внутри раствора, сверху мембраны нет.",
+    pMemNote_p:
+      "Готовый поддон уже водонепроницаем — отдельной мембраны в «пироге» нет.",
   },
   en: {
     shType: "Shower",
@@ -117,9 +148,214 @@ const SHT = {
     shPanL: "Pan at edge",
     shBase: "Slope base",
     shRecessL: "Drop",
+    pSys: "Pan system",
+    ps_mudliner: "Mud + 40 mil liner (pre-slope)",
+    ps_mudkerdi: "Mud + KERDI",
+    ps_hbclassic: "HYDRO-BLOK Classic",
+    ps_hblow: "HYDRO-BLOK Low-Profile",
+    ps_hbss: "HYDRO-BLOK Single Slope + ebbe INNI",
+    ps_hbssthin: "HYDRO-BLOK Thin Single Slope + INNI",
+    ps_scht: "Schluter KERDI-SHOWER-T / TS",
+    ps_schtt: "Schluter KERDI-SHOWER-TT (thin)",
+    ps_schlt: "Schluter KERDI-SHOWER-LT",
+    ps_schlts: "Schluter KERDI-SHOWER-LTS (KERDI-LINE)",
+    ps_tray: "Other prefab tray",
+    pModel: "Model / size",
+    pPick: "Pick a model — the pan size and thicknesses fill in.",
+    pModelInfo: "{g}″ at the edge, {h}″ at the drain (above subfloor).",
+    pDrainEst: "At the drain — estimated from a 1/4″ per foot slope.",
+    pPan: "Pan",
+    pPre: "Pre-slope",
+    pLiner: "Liner",
+    pBed: "Mortar bed",
+    pBedS: "Sloped mortar bed",
+    pPreMin: "Pre-slope at the drain",
+    pLinerT: "Liner (40 mil = 0.04)",
+    pBedT: "Mortar over the liner",
+    pAtDrain: "at the drain (finished)",
+    pCurbAbove: "Curb above the finished floor",
+    offC: "offset drain",
+    pMemNote_k: "KERDI on top — the membrane is in the pan's Build-up.",
+    pMemNote_l:
+      "Waterproofing is the liner inside the mortar; no membrane on top.",
+    pMemNote_p:
+      "The prefab pan is waterproof already — no extra membrane in the Build-up.",
   },
 };
 const sht = (k) => (SHT[lang] || SHT.en)[k] || k;
+
+/* ---------- shower pan systems we build with ----------
+   Thicknesses above the subfloor, inches. g = at the perimeter, h = at the drain.
+   HYDRO-BLOK: 2022 catalog (Classic / Low-Profile center drain, Single Slope with the ebbe INNI linear drain).
+   Schluter: KERDI-SHOWER tray table (T / TS / TT / LT / LTS), perimeter heights as published. */
+const PAN_SYS = {
+  mudliner: { k: "mud2", mem: "none" }, // pre-slope, 40 mil liner, mortar bed
+  mudkerdi: { k: "mud1", mem: "kerdi" }, // one sloped mortar bed, KERDI on top
+  hbclassic: {
+    k: "pre",
+    mem: "none",
+    brand: "HYDRO-BLOK Classic",
+    drain: "center",
+  },
+  hblow: {
+    k: "pre",
+    mem: "none",
+    brand: "HYDRO-BLOK Low-Profile",
+    drain: "center",
+  },
+  hbss: {
+    k: "pre",
+    mem: "none",
+    brand: "HYDRO-BLOK Single Slope + ebbe INNI",
+    drain: "linear",
+  },
+  hbssthin: {
+    k: "pre",
+    mem: "none",
+    brand: "HYDRO-BLOK Thin Single Slope + ebbe INNI",
+    drain: "linear",
+  },
+  scht: {
+    k: "pre",
+    mem: "none",
+    brand: "Schluter KERDI-SHOWER-T / TS",
+    drain: "center",
+  },
+  schtt: {
+    k: "pre",
+    mem: "none",
+    brand: "Schluter KERDI-SHOWER-TT (thin)",
+    drain: "center",
+  },
+  schlt: {
+    k: "pre",
+    mem: "none",
+    brand: "Schluter KERDI-SHOWER-LT",
+    drain: "center",
+  },
+  schlts: {
+    k: "pre",
+    mem: "none",
+    brand: "Schluter KERDI-SHOWER-LTS (KERDI-LINE)",
+    drain: "linear",
+  },
+  tray: { k: "tray", mem: "none" }, // any other foam tray: thickness typed in
+};
+// [model id, width, depth, perimeter g, drain h (null = from the slope), note]
+const PAN_MODELS = {
+  hbclassic: [
+    ["3636", 36, 36, 1.5, 1],
+    ["3648", 36, 48, 1.5, 1],
+    ["3660", 36, 60, 1.5, 1],
+    ["3672", 36, 72, 1.5, 1],
+    ["3672o", 36, 72, 2, 1.5, "off"],
+    ["4848", 48, 48, 1.5, 1],
+    ["4860", 48, 60, 1.5, 1],
+    ["4872", 48, 72, 1.5, 1],
+    ["4884", 48, 84, 2, 1.5],
+    ["6060", 60, 60, 1.5, 1],
+    ["6072", 60, 72, 1.5, 1],
+    ["6084", 60, 84, 2, 1.5],
+    ["7272", 72, 72, 1.5, 1],
+  ],
+  hblow: [
+    ["3636", 36, 36, 1, 0.75],
+    ["3648", 36, 48, 1, 0.75],
+    ["3660", 36, 60, 1, 0.75],
+    ["3672", 36, 72, 1, 0.75],
+    ["3672o", 36, 72, 1.25, 1, "off"],
+    ["4848", 48, 48, 1, 0.75],
+    ["4860", 48, 60, 1, 0.75],
+    ["4872", 48, 72, 1, 0.75],
+    ["4884", 48, 84, 1.25, 1],
+    ["6060", 60, 60, 1, 0.75],
+    ["6072", 60, 72, 1, 0.75],
+    ["6084", 60, 84, 1.25, 1],
+    ["7272", 72, 72, 1, 0.75],
+  ],
+  hbss: [
+    ["3660", 36, 60, 2.25, 1.25],
+    ["6036", 60, 36, 1.75, 0.75],
+    ["4872", 48, 72, 2.5, 1.5],
+    ["7248", 72, 48, 2, 1],
+  ],
+  hbssthin: [
+    ["3660", 36, 60, 1.5, 1.25],
+    ["6036", 60, 36, 1, 0.75],
+    ["4872", 48, 72, 1.75, 1.5],
+    ["7248", 72, 48, 1.25, 1],
+  ],
+  scht: [
+    ["KST965/1525", 38, 60, 1.125, null],
+    ["KST1220/1525", 48, 60, 1.09375, null],
+    ["KST1220/1830", 48, 72, 1.25, null],
+    ["KST1525", 60, 60, 1.1875, null],
+    ["KST1830", 72, 72, 1.25, null],
+    ["KST965/1525S", 38, 60, 1.125, null, "off"],
+  ],
+  schtt: [
+    ["KST965/810BF", 32, 38, 0.90625, null],
+    ["KST915/1220BF", 36, 48, 1, null],
+    ["KST915BF", 36, 36, 0.875, null],
+    ["KST965BF", 38, 38, 0.90625, null],
+    ["KST1220BF", 48, 48, 1, null],
+    ["KST965NA/BF", 38, 38, 1.03125, null, "neo"],
+  ],
+  schlt: [
+    ["KSLT1000", 39, 39, 1.25, null],
+    ["KSLT1220", 48, 48, 1.375, null],
+    ["KSLT1395", 55, 55, 1.4375, null],
+  ],
+  schlts: [
+    ["KSLT1000S", 39, 39, 1.65625, null],
+    ["KSLT1220S", 48, 48, 1.8125, null],
+    ["KSLT1395S", 55, 55, 2, null],
+    ["KSLT915/1395S", 36, 55, 2, null],
+    ["KSLT915/1830S", 36, 72, 2.3125, null],
+    ["KSLT965/1930S", 38, 76, 2.375, null],
+    ["KSLT1930/965S", 76, 38, 1.625, null],
+  ],
+};
+const CURBS = [
+  ["hb", "HYDRO-BLOK Curb", 3.5, 4],
+  ["hbmini", "HYDRO-BLOK Mini Curb", 2, 2.5],
+  ["kerdisc", "Schluter KERDI-BOARD-SC", 4.5, 6],
+];
+const panModel = (s) =>
+  (PAN_MODELS[s.psys] || []).find((m) => m[0] === s.pmodel) || null;
+const modelName = (m) =>
+  `${m[1]}″ × ${m[2]}″${m[0].match(/^K/) ? " · " + m[0] : ""}${m[5] === "off" ? " · " + sht("offC") : m[5] === "neo" ? " · neo-angle" : ""}`;
+
+/* pick a model: the pan takes its size, drain kind and center */
+function panApplyModel(s) {
+  const m = panModel(s),
+    sy = PAN_SYS[s.psys];
+  if (!m || !sy) return;
+  s.w = m[1];
+  s.h = m[2];
+  if (sy.drain === "linear") {
+    const len = Math.max(12, s.w - 1);
+    s.drain = Object.assign(s.drain || {}, {
+      type: "linear",
+      vert: false,
+      len,
+      wid: 2.75,
+      x: (s.w - len) / 2,
+      y: s.h - 1 - 2.75,
+    });
+  } else {
+    s.drain = Object.assign(s.drain || {}, {
+      type: "center",
+      x: s.w / 2,
+      y: s.h / 2,
+    });
+    if (m[5] === "off") s.drain.y = s.h * 0.25; // off-center: set the real spot with the fields below
+  }
+  if (s.panShape !== "cut") {
+    s.shape = "rect";
+    s.segs = polyToSegs(rectPoly(0, 0, s.w, s.h));
+  }
+}
 
 /* ---------- defaults / migration ---------- */
 function panNorm(s) {
@@ -131,6 +367,15 @@ function panNorm(s) {
   if (!s.pw) s.pw = { b: true, l: true, r: true, f: false };
   if (!s.wl) s.wl = { prep: null, fin: null };
   if (!s.cb) s.cb = { m: "tray", tray: 1.5, min: 0.75, slope: 0.25 };
+  if (s.cb.pre == null)
+    Object.assign(s.cb, { pre: 0.5, liner: 0.04, bed: 0.75 });
+  if (!s.psys)
+    s.psys =
+      s.cb.m === "mortar"
+        ? "mudkerdi"
+        : s.stack && s.stack.under === "kerdi"
+          ? "mudkerdi"
+          : "tray";
   if (s.panType === "curbless" && s.curb) s.curb.on = false;
   // a shower floor always has a membrane: give older pans one once (the user can still change it)
   if (!s.memDef) {
@@ -278,11 +523,53 @@ function panCalc(s) {
       ...rectPoly(0, 0, w, h).map((q) => Math.hypot(q[0] - c[0], q[1] - c[1])),
     );
   }
-  const fall = (run / 12) * (+cb.slope || 0.25),
-    base = cb.m === "mortar" ? (+cb.min || 0.75) + fall : +cb.tray || 1.5,
-    edge = base + pan.total,
+  const slope = +cb.slope || 0.25,
+    fall = (run / 12) * slope,
+    sy = PAN_SYS[s.psys] || PAN_SYS.tray,
+    m = panModel(s);
+  let base, atDrain, parts;
+  if (sy.k === "mud2") {
+    // pre-slope (the fall) + 40 mil liner + an even mortar bed on top
+    const pre = +cb.pre || 0,
+      li = +cb.liner || 0.04,
+      bed = +cb.bed || 0.75;
+    base = pre + fall + li + bed;
+    atDrain = pre + li + bed;
+    parts = [
+      { n: sht("pPre"), t: pre + fall, c: "#d9d4c7" },
+      { n: sht("pLiner"), t: li, c: "#3a6ea5" },
+      { n: sht("pBed"), t: bed, c: "#cfc8b8" },
+    ];
+  } else if (sy.k === "mud1") {
+    const mn = +cb.min || 0.75;
+    base = mn + fall;
+    atDrain = mn;
+    parts = [{ n: sht("pBedS"), t: base, c: "#d9d4c7" }];
+  } else if (sy.k === "pre" && m) {
+    base = m[3];
+    atDrain = m[4] != null ? m[4] : Math.max(0.375, base - fall);
+    parts = [{ n: sht("pPan"), t: base, c: "#e9b35c" }];
+  } else {
+    base = +cb.tray || 1.5;
+    atDrain = Math.max(0.25, base - fall);
+    parts = [{ n: sht("shBase"), t: base, c: "#d9d4c7" }];
+  }
+  const edge = base + pan.total,
     recess = edge - fl.total;
-  return { floor, fl, pan, run, fall, base, edge, recess };
+  return {
+    floor,
+    fl,
+    pan,
+    run,
+    fall,
+    base,
+    atDrain,
+    parts,
+    edge,
+    recess,
+    sy,
+    m,
+  };
 }
 function panCalcSVG(R) {
   // two stacks side by side, aligned on the finished floor line; the shower side drops by the recess
@@ -312,10 +599,30 @@ function panCalcSVG(R) {
     `<rect x="30" y="${fy}" width="110" height="18" fill="#c9a77a" stroke="#555" stroke-width=".6"/>`;
   const [ph, py] = lay(pL, 180, fin, 110);
   const bh = R.base * k;
-  h +=
-    ph +
-    `<rect x="180" y="${py}" width="110" height="${bh.toFixed(1)}" fill="#d9d4c7" stroke="#555" stroke-width=".6"/>`;
-  h += `<text x="235" y="${(py + bh / 2).toFixed(1)}" font-size="9" text-anchor="middle" dominant-baseline="central" font-family="${FONT}">${esc(sht("shBase"))} ${fmtIn(R.base)}″</text>`;
+  h += ph;
+  {
+    let yy = py;
+    R.parts
+      .slice()
+      .reverse()
+      .forEach((pp) => {
+        const hh = Math.max(1.5, pp.t * k);
+        h += `<rect x="180" y="${yy.toFixed(1)}" width="110" height="${hh.toFixed(1)}" fill="${pp.c}" stroke="#555" stroke-width=".6"/>`;
+        yy += hh;
+      });
+  }
+  {
+    let yy = py;
+    R.parts
+      .slice()
+      .reverse()
+      .forEach((pp) => {
+        const hh = Math.max(1.5, pp.t * k);
+        if (hh > 11)
+          h += `<text x="235" y="${(yy + hh / 2).toFixed(1)}" font-size="9" text-anchor="middle" dominant-baseline="central" font-family="${FONT}">${esc(pp.n)} ${fmtIn(pp.t)}″</text>`;
+        yy += hh;
+      });
+  }
   const sy = py + bh;
   h += `<rect x="180" y="${sy}" width="110" height="18" fill="#c9a77a" stroke="#555" stroke-width=".6"/>`;
   h += `<text x="85" y="${top - 12}" font-size="11" text-anchor="middle" font-weight="700" font-family="${FONT}">${esc(sht("shFloorL"))} ${fmtIn(R.fl.total)}″</text>`;
@@ -367,19 +674,46 @@ function panSection(s) {
     });
     h += `</div>`;
   }
-  // curbless calculation
+  // the pan system and its layers (both with a curb and curbless)
+  const R = panCalc(s),
+    sy = PAN_SYS[s.psys] || PAN_SYS.tray;
+  h += `<p class="hsec">${sht("pSys")}</p><div class="grid">${SEL(sht("pSys"), "psys", Object.keys(PAN_SYS), 1, "s", "w2", (o) => sht("ps_" + o))}`;
+  if (sy.k === "pre") {
+    const ms = PAN_MODELS[s.psys] || [];
+    h += `<label class="f w2"><span>${sht("pModel")}</span><select data-k="pmodel" data-sc="s" data-rb="1"><option value="">—</option>${ms
+      .map(
+        (m) =>
+          `<option value="${esc(m[0])}" ${m[0] === s.pmodel ? "selected" : ""}>${esc(modelName(m))}</option>`,
+      )
+      .join("")}</select></label>`;
+  } else if (sy.k === "mud2")
+    h +=
+      F(sht("pPreMin"), "cb.pre") +
+      F(sht("pLinerT"), "cb.liner") +
+      F(sht("pBedT"), "cb.bed") +
+      F(sht("shSlope"), "cb.slope");
+  else if (sy.k === "mud1")
+    h += F(sht("shMinDrain"), "cb.min") + F(sht("shSlope"), "cb.slope");
+  else h += F(sht("shTrayH"), "cb.tray") + F(sht("shSlope"), "cb.slope");
+  h += `</div>`;
+  if (sy.k === "pre" && R.m)
+    h += `<p class="hint">${sht("pModelInfo").replace("{g}", fmtIn(R.m[3])).replace("{h}", fmtIn(R.atDrain))}${R.m[4] == null ? " " + sht("pDrainEst") : ""}</p>`;
+  if (sy.k === "pre" && !R.m) h += `<p class="note">${sht("pPick")}</p>`;
+  h += `<p class="hint">${sht("pMemNote_" + (sy.mem === "kerdi" ? "k" : sy.k === "mud2" ? "l" : "p"))}</p>`;
+  if (s.panType === "curb")
+    h += `<div class="btns">${CURBS.map((c) => `<button class="btn sm" data-act="curbPreset:${c[0]}">${esc(c[1])} ${fmtIn(c[2])}×${fmtIn(c[3])}</button>`).join("")}</div>`;
+  h += `<p class="hsec">${sht("shCalc")}</p>`;
+  h += panCalcSVG(R);
+  h += `<div class="pcm"><div>${sht("shFloorFin")}: <b>${fmtIn(R.fl.total)}″</b></div><div>${sht("shPanEdge")}: <b>${fmtIn(R.edge)}″</b> · ${sht("pAtDrain")}: <b>${fmtIn(R.atDrain + R.pan.total)}″</b></div><div>${sht("shRun")}: ${fmtIn(R.run)}″ · ${sht("shFall")}: ${fmtIn(R.fall)}″</div>`;
   if (s.panType === "curbless") {
-    const R = panCalc(s);
-    h += `<p class="hsec">${sht("shCalc")}</p><div class="grid">${SEL(sht("shMethod"), "cb.m", ["tray", "mortar"], 1, "s", "w2", (o) => sht("m_" + o))}${s.cb.m === "tray" ? F(sht("shTrayH"), "cb.tray") : F(sht("shMinDrain"), "cb.min") + F(sht("shSlope"), "cb.slope")}</div>`;
-    h += panCalcSVG(R);
-    h += `<div class="pcm"><div>${sht("shFloorFin")}: <b>${fmtIn(R.fl.total)}″</b></div><div>${sht("shPanEdge")}: <b>${fmtIn(R.edge)}″</b></div><div>${sht("shRun")}: ${fmtIn(R.run)}″ · ${sht("shFall")}: ${fmtIn(R.fall)}″</div>`;
     if (R.recess > 0.03)
       h += `<div style="font-size:16px">${sht("shRecess")} <b>${fmtIn(R.recess)}″</b></div>`;
     else if (R.recess < -0.03)
       h += `<div style="font-size:16px">${sht("shRaise")} <b>${fmtIn(-R.recess)}″</b></div>`;
     else h += `<div>✓ ${sht("shFlush")}</div>`;
-    h += `</div><p class="hint">${R.floor ? sht("shFloorSrc").replace("{n}", esc(R.floor.name)) : sht("shNoFloor")}</p>`;
-  }
+  } else if (s.curb)
+    h += `<div>${sht("pCurbAbove")}: <b>${fmtIn(Math.max(0, +s.curb.h - R.edge + R.fl.total))}″</b></div>`;
+  h += `</div><p class="hint">${R.floor ? sht("shFloorSrc").replace("{n}", esc(R.floor.name)) : sht("shNoFloor")}</p>`;
   return h;
 }
 function optLenS(label, k, v, auto) {
@@ -416,8 +750,59 @@ document.addEventListener("change", pnvInp);
       else if (s.curb && s.curb.on === false && s.panTypeWas === "curbless")
         s.curb.on = true;
       s.panTypeWas = s.panType;
+      if (s.psys !== s.psysWas) {
+        const sy = PAN_SYS[s.psys];
+        if (sy) {
+          s.stack = s.stack || {};
+          s.stack.under = sy.mem;
+        }
+        if (!(PAN_MODELS[s.psys] || []).some((m) => m[0] === s.pmodel))
+          s.pmodel = "";
+        s.psysWas = s.psys;
+      }
+      if (s.pmodel !== s.pmodelWas) {
+        if (s.pmodel) panApplyModel(s);
+        s.pmodelWas = s.pmodel;
+      }
       panApplyShape(s);
+      panToPlan(s);
     }
     return ch.apply(this, arguments);
   };
+}
+
+/* a pan built from the room plan: edits made on the pan page go back to the plan item,
+   so the next "update from the plan" keeps them */
+function panToPlan(s) {
+  const m = /^it(.+)$/.exec(s.fromPlan || "");
+  if (!m || !P.plan) return;
+  const it = P.plan.items.find((x) => x.id === m[1]);
+  if (!it) return;
+  it.w = +s.w;
+  it.dp = +s.h;
+  it.cl = s.panType === "curbless";
+  it.psh = s.panShape === "cut" ? "cut" : "rect";
+  it.pcut = Object.assign({}, s.pcut || {});
+  const d = s.drain || {},
+    w = +s.w,
+    h = +s.h;
+  if (d.type === "linear") {
+    it.drn = "linear";
+    it.llen = +d.len;
+    if (d.vert) {
+      const left = +d.x < w / 2;
+      it.lside = left ? "left" : "right";
+      it.loff = left ? +d.x : w - +d.x - (+d.wid || 2.75);
+    } else {
+      const back = +d.y > h / 2;
+      it.lside = back ? "back" : "front";
+      it.loff = back ? h - +d.y - (+d.wid || 2.75) : +d.y;
+    }
+  } else if (d.type === "center") {
+    const centered =
+      Math.abs(+d.x - w / 2) < 0.05 && Math.abs(+d.y - h / 2) < 0.05;
+    it.drn = centered ? "center" : "point";
+    it.dl = +d.x;
+    it.db = h - +d.y;
+  }
 }

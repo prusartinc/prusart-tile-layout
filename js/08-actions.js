@@ -21,6 +21,18 @@ function act(a, arg, b) {
   if (/^(home|nh)/.test(a)) return homeAct(a, arg);
   if (a === "plan" || /^pl[A-Z]/.test(a)) return planAct(a, arg);
   if (a === "nav") return navGo(arg);
+  if (a === "curbPreset") {
+    const c = CURBS.find((x) => x[0] === arg),
+      s2 = cur();
+    if (c && s2 && s2.curb) {
+      s2.curb.w = c[2];
+      s2.curb.h = c[3];
+      s2.curb.on = true;
+      changed();
+      renderPanel();
+    }
+    return;
+  }
   if (a === "kpToggle") {
     DB.kp = DB.kp === false;
     saveSoon();
