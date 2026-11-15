@@ -292,6 +292,44 @@ function plText(x, y, s, size, o = {}) {
   return `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${size.toFixed(2)}" text-anchor="middle" dominant-baseline="central" fill="${o.fill || PLC.dim}" font-weight="${o.fw || 700}" font-family="${FONT}" paint-order="stroke" stroke="${o.bg || "#fff"}" stroke-width="${(size * 0.28).toFixed(2)}"${rot}>${esc(s)}</text>`;
 }
 /* dimension line from p to q (screen coords), text above */
+/* label box of a dimension (axis-aligned box around the rotated text), for overlap checks */
+function plDimBox(p, q, label, k, off) {
+  const dx = q[0] - p[0],
+    dy = q[1] - p[1],
+    L = Math.hypot(dx, dy) || 1,
+    ux = dx / L,
+    uy = dy / L,
+    nx = -uy,
+    ny = ux;
+  if (!label || L <= 9 * k) return null;
+  const fs = Math.min(11 * k, (L / Math.max(3, label.length * 0.62)) * 1.05);
+  if (fs <= 6.5 * k) return null;
+  const cx = (p[0] + q[0]) / 2 + nx * (off + 7 * k),
+    cy = (p[1] + q[1]) / 2 + ny * (off + 7 * k),
+    tl = label.length * fs * 0.58,
+    th = fs * 0.9,
+    hw = (Math.abs(ux) * tl + Math.abs(nx) * th) / 2,
+    hh = (Math.abs(uy) * tl + Math.abs(ny) * th) / 2;
+  return { x0: cx - hw, x1: cx + hw, y0: cy - hh, y1: cy + hh };
+}
+/* a dimension that moves further out when its number would sit on another one */
+function plDimFree(p, q, label, k, off, taken) {
+  let o = off;
+  for (let i = 0; i < 4; i++) {
+    const b = plDimBox(p, q, label, k, o);
+    if (
+      !b ||
+      !taken.some(
+        (t2) => b.x0 < t2.x1 && b.x1 > t2.x0 && b.y0 < t2.y1 && b.y1 > t2.y0,
+      )
+    ) {
+      if (b) taken.push(b);
+      return plDim(p, q, label, k, o);
+    }
+    o += Math.sign(off || 1) * 14 * k;
+  }
+  return plDim(p, q, label, k, o);
+}
 function plDim(p, q, label, k, off) {
   const dx = q[0] - p[0],
     dy = q[1] - p[1],
@@ -426,6 +464,7 @@ function planTopSVG(W0, H0) {
     .forEach(
       (it) => (h += planItemTop(it, pts, k, !PLPRINT && it.id === V.sel)),
     );
+  const taken = [];
   // dimensions outside each wall: chain of item edges + overall
   for (let i = 0; i < n; i++) {
     const W = planWall(i, pts),
@@ -456,19 +495,21 @@ function planTopSVG(W0, H0) {
     if (S2.length > 2)
       for (let j = 0; j < S2.length - 1; j++)
         if (S2[j + 1] - S2[j] > 0.05)
-          h += plDim(
+          h += plDimFree(
             base(S2[j]),
             base(S2[j + 1]),
             fmt(S2[j + 1] - S2[j]),
             k,
             sideSign * 12 * k,
+            taken,
           );
-    h += plDim(
+    h += plDimFree(
       base(0),
       base(W.L),
       fmt(W.L),
       k,
       sideSign * (S2.length > 2 ? 26 : 12) * k,
+      taken,
     );
   }
   // code checks

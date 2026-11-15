@@ -257,20 +257,45 @@ function planLongest(pts) {
 }
 
 /* glass along the shower pan's front edge, door swinging out of the shower */
+function planGlassSeg(it, A, B, inside) {
+  // put a glass item on segment A–B; its door swings away from the point "inside" (the pan)
+  it.x = (A[0] + B[0]) / 2;
+  it.y = (A[1] + B[1]) / 2;
+  it.ang =
+    Math.round(((Math.atan2(B[1] - A[1], B[0] - A[0]) * 180) / Math.PI) * 100) /
+    100;
+  it.w = Math.round(Math.hypot(B[0] - A[0], B[1] - A[1]) * 16) / 16;
+  const G = planGlassEnds(it),
+    toIn = (inside[0] - it.x) * G.n[0] + (inside[1] - it.y) * G.n[1];
+  it.dsn = toIn > 0 ? -1 : 1;
+}
 function planGlassToPan(it, sh) {
   if (!it || !sh) return;
-  const W = planWall(sh.wall),
-    a1 = plAt(W, +sh.c - sh.w / 2, +sh.dp),
-    b1 = plAt(W, +sh.c + sh.w / 2, +sh.dp);
-  it.x = (a1[0] + b1[0]) / 2;
-  it.y = (a1[1] + b1[1]) / 2;
-  it.ang =
-    Math.round(
-      ((Math.atan2(b1[1] - a1[1], b1[0] - a1[0]) * 180) / Math.PI) * 100,
-    ) / 100;
-  it.w = +sh.w;
-  const G = planGlassEnds(it);
-  it.dsn = G.n[0] * W.nin[0] + G.n[1] * W.nin[1] > 0 ? 1 : -1;
+  const pl = P.plan,
+    F = planFoot(sh),
+    ctr = [
+      F.reduce((m, q) => m + q[0], 0) / F.length,
+      F.reduce((m, q) => m + q[1], 0) / F.length,
+    ];
+  it.gp = sh.id;
+  // drop the other glass panels made for this pan earlier
+  pl.items = pl.items.filter(
+    (x) => !(x.k === "glass" && x.gp === sh.id && x.id !== it.id),
+  );
+  if (sh.psh !== "cut") {
+    planGlassSeg(it, F[3], F[2], ctr); // the front edge (entry), see planFoot order
+    return;
+  }
+  // neo-angle: door in the angled panel, fixed glass along the rest of the front
+  const fl = (sh.pcut || {}).at !== "fr",
+    front = [F[0], F[1]],
+    cutS = fl ? [F[4], F[0]] : [F[1], F[2]];
+  planGlassSeg(it, cutS[0], cutS[1], ctr);
+  it.door = "a";
+  it.dw = Math.min(24, Math.max(12, it.w - 1));
+  const fix = planNew("glass", null, 0, { door: "none", gp: sh.id });
+  planGlassSeg(fix, front[0], front[1], ctr);
+  pl.items.push(fix);
 }
 
 /* ---------- snapping along a wall: corners, wall center, neighbours' edges, toilet 15"/16" ---------- */

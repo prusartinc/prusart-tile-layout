@@ -106,11 +106,16 @@ function planBuild() {
           dia: 5,
           face: "auto",
         });
-      } else if ((it.k === "tub" || it.k === "shower") && axis(W)) {
+      } else if (it.k === "tub" || it.k === "shower") {
+        // cut the floor along the real outline (a pan with a cut corner, a tub on an angled wall)
+        const ft = planFoot(it, pts);
         f.openings.push(
           Object.assign(
             { id: uid(), pl: 1, type: "cutout", shape: "rect", trim: false },
-            bbo(planFoot(it, pts)),
+            bbo(ft),
+            axis(W) && ft.length === 4
+              ? {}
+              : { pts: ft.map((q) => [q[0], q[1]]) },
           ),
         );
       } else if (

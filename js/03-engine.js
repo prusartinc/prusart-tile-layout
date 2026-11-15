@@ -680,6 +680,8 @@ function geom(s) {
     let poly;
     if (o.shape === "circle")
       poly = circlePoly(o.x, o.y, Math.max(0.05, (+o.dia || 1) / 2));
+    else if (Array.isArray(o.pts) && o.pts.length > 2)
+      poly = o.pts.map((q) => [+q[0], +q[1]]);
     else {
       const e = o.trim && TRIMMABLE[o.type] ? sw : 0;
       poly = rectPoly(o.x - e, o.y - e, o.w + 2 * e, o.h + 2 * e);

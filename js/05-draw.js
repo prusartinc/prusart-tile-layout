@@ -525,6 +525,16 @@ function surfBody(s, R, o) {
       );
       continue;
     }
+    if (Array.isArray(op.pts) && op.pts.length > 2) {
+      // a cut-out with a real outline (pan with a cut corner, tub on an angled wall)
+      h += `<path d="${pd(op.pts)}" fill="url(#ht${id})" stroke="#5a4129" stroke-width="${px(1.3)}"/>`;
+      h += lbl(
+        { x0: op.x, x1: op.x + op.w, y0: op.y, y1: op.y + op.h },
+        `${t(op.type)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
+        Math.max(op.w * 1.6, +px(120)),
+      );
+      continue;
+    }
     const e = op.trim && TRIMMABLE[op.type] ? sw : 0;
     if (op.type === "window" || op.type === "cutout")
       h += `<rect x="${op.x}" y="${-(op.y + op.h)}" width="${op.w}" height="${op.h}" fill="url(#ht${id})"/>`;

@@ -86,7 +86,7 @@ function newSurface(type, name) {
     zlink: false,
     segs: null,
     stack: {
-      under: type === "floor" ? "ditra" : "none",
+      under: type === "floor" ? "ditra" : type === "pan" ? "kerdi" : "none",
       under2: "none",
       ub: null,
       tb: null,

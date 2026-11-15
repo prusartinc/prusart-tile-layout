@@ -132,6 +132,12 @@ function panNorm(s) {
   if (!s.wl) s.wl = { prep: null, fin: null };
   if (!s.cb) s.cb = { m: "tray", tray: 1.5, min: 0.75, slope: 0.25 };
   if (s.panType === "curbless" && s.curb) s.curb.on = false;
+  // a shower floor always has a membrane: give older pans one once (the user can still change it)
+  if (!s.memDef) {
+    s.memDef = 1;
+    s.stack = s.stack || {};
+    if (!s.stack.under || s.stack.under === "none") s.stack.under = "kerdi";
+  }
 }
 
 /* ---------- wall layers: framing → prep face → finished tile ---------- */
