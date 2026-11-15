@@ -497,6 +497,43 @@ function drainSet(s, side, val) {
   }
 }
 
+/* drain center to each side, measured to the chosen reference where there is a wall */
+function drainDists(s) {
+  const off = refOff(wallLayers(s)),
+    c = drainCenter(s),
+    w = +s.w,
+    h = +s.h,
+    v = { l: c[0], r: w - c[0], b: h - c[1], f: c[1] },
+    o = {};
+  for (const k in v) o[k] = Math.round((v[k] + (s.pw[k] ? off : 0)) * 16) / 16;
+  return o;
+}
+// the side a distance is given from: the user's pick, else the nearest one
+function drainSide(s, ax, D) {
+  const A = ax === "h" ? ["l", "r"] : ["b", "f"],
+    pick = s.dside && s.dside[ax];
+  if (A.includes(pick)) return pick;
+  return D[A[0]] <= D[A[1]] ? A[0] : A[1];
+}
+function drainLab(s, k) {
+  if (s.pw[k])
+    return sht({ l: "sideL", r: "sideR", b: "sideB", f: "sideF" }[k]);
+  if (k === "f") return sht("shToCurb");
+  return (
+    lang === "ru"
+      ? { l: "до левого края", r: "до правого края", b: "до заднего края" }
+      : { l: "to left edge", r: "to right edge", b: "to back edge" }
+  )[k];
+}
+function drnSideSw(ax) {
+  const s = cur();
+  if (!s || s.type !== "pan") return;
+  const A = ax === "h" ? ["l", "r"] : ["b", "f"],
+    k = drainSide(s, ax, drainDists(s));
+  s.dside = Object.assign({}, s.dside, { [ax]: k === A[0] ? A[1] : A[0] });
+  saveSoon();
+  renderPanel();
+}
 /* live distances from the drain center to the pan walls (shown while dragging) */
 function drainDimSVG(s, c, px, fs0) {
   panNorm(s);
@@ -510,8 +547,8 @@ function drainDimSVG(s, c, px, fs0) {
       f: [c[0], 0, c[1]],
     };
   let o = "";
-  ["b", "l", "r", "f"].forEach((k) => {
-    if (!s.pw[k] && k !== "f") return;
+  const DD = drainDists(s);
+  [drainSide(s, "h", DD), drainSide(s, "v", DD)].forEach((k) => {
     const [x2, y2, v] = seg[k],
       val = v + (s.pw[k] ? off : 0),
       mx = (c[0] + x2) / 2,
@@ -704,20 +741,15 @@ function panSection(s) {
   h += `<p class="hsec">${sht("shWalls")}</p><div class="grid">${["b", "l", "r", "f"].map((k) => CHK(sht("sw_" + k), "pw." + k, 1)).join("")}</div>`;
   h += `<div class="grid">${SEL(sht("dref"), "dref", ["frame", "prep", "finish"], 1, "p", "w2", (o) => sht("dr_" + o))}${optLenS(sht("shWallLay"), "wl.prep", s.wl.prep, L.autoPrep)}${optLenS(sht("shWallFin"), "wl.fin", s.wl.fin, L.autoFin)}</div>`;
   if (d.type !== "none") {
-    const c = drainCenter(s),
-      w = +s.w,
-      hh = +s.h,
-      val = { l: c[0], r: w - c[0], b: hh - c[1], f: c[1] },
-      nm = { l: "sideL", r: "sideR", b: "sideB", f: "sideF" };
+    const D = drainDists(s);
     h += `<p class="hsec">${sht("shDrainFrom")}</p><p class="hint">${sht("shDragHint")}</p><div class="grid">`;
-    ["b", "l", "r", "f"].forEach((k) => {
-      if (!s.pw[k] && k !== "f") return;
-      const isW = s.pw[k],
-        v = val[k] + (isW ? off : 0),
-        lab = isW ? sht(nm[k]) : sht("shToCurb");
-      h += `<label class="f"><span>${lab}</span><input data-pnv="${k}" data-t="len" value="${fmtIn(v)}" autocomplete="off"></label>`;
+    ["h", "v"].forEach((ax) => {
+      const k = drainSide(s, ax, D);
+      h += `<label class="f"><span>${drainLab(s, k)} <button type="button" class="btn sm odsw" data-act="drnSideSw:${ax}" title="${odT("sw")}">⇄</button></span><input data-pnv="${k}" data-t="len" value="${fmtIn(D[k])}" autocomplete="off"></label>`;
     });
-    h += `</div>`;
+    h += `</div><p class="hint">${["l", "r", "b", "f"]
+      .map((k) => `${drainLab(s, k)}: <b>${fmtIn(D[k])}″</b>`)
+      .join(" · ")}</p>`;
   }
   // the pan system and its layers (both with a curb and curbless)
   const R = panCalc(s),
@@ -778,6 +810,10 @@ function pnvInp(e) {
   }
   el.classList.remove("bad");
   drainSet(s, el.dataset.pnv, v);
+  const kk = el.dataset.pnv;
+  s.dside = Object.assign({}, s.dside, {
+    [kk === "l" || kk === "r" ? "h" : "v"]: kk,
+  });
   changed();
   if (e.type === "change") renderPanel();
 }
