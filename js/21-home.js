@@ -51,11 +51,16 @@ function homeThumb(p) {
     })
     .join("")}</div>`;
 }
+// an untouched empty project (the one the app keeps after the last project is deleted)
+function projBlank(p) {
+  return !!(p && p.blank && !p.plan && !p.client && !p.addr);
+}
 function renderHome() {
   const el = homeEl();
   if (S.nh && S.nh.step) return renderInterview();
   const q = (S.hq || "").toLowerCase();
-  const list = [...DB.projects]
+  const shown = DB.projects.filter((p) => !projBlank(p));
+  const list = [...shown]
     .sort((a, b) => (b.updated || 0) - (a.updated || 0))
     .filter(
       (p) =>
@@ -71,19 +76,20 @@ function renderHome() {
   const sy = DB.sync && DB.sync.on;
   let h = `<div class="hhead"><div class="hbrand">${($("header .brand svg") || {}).outerHTML || ""}<div><b>PrusArt Inc</b><small>${t("app")}</small></div></div><div class="hhb"><button data-act="lang">${lang === "ru" ? "EN" : "RU"}</button><button data-act="homeTheme">${THEME === "dark" ? "☀︎" : "☾"}</button></div></div>`;
   h += `<div class="hwrap">`;
-  if (P && DB.projects.includes(P))
+  if (P && DB.projects.includes(P) && !projBlank(P))
     h += `<button class="hcont" data-act="homeOpen:${P.id}"><span>${t("hContinue")}</span><b>${esc(P.name)}</b><small>${esc(P.client || "")}</small><i>→</i></button>`;
   h += `<button class="hnew" data-act="nhStart"><span>＋</span><div><b>${t("newProj")}</b><small>${t("hNewHint")}</small></div></button>`;
   h += `<button class="hnew hnew2" data-act="homeNewPlan"><span>📐</span><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
   h += `<div class="hsearch"><input id="hq" type="search" placeholder="🔎 ${t("hSearch")}" value="${esc(S.hq || "")}"></div>`;
-  h += `<p class="hsec">${t("projects")} · ${DB.projects.length}</p><div class="hgrid">`;
+  h += `<p class="hsec">${t("projects")} · ${shown.length}</p><div class="hgrid">`;
   h += list
     .map((p) => {
       const st = projStats(p);
       return `<div class="hcard ${P && p.id === P.id ? "on" : ""}"><button class="hopen" data-act="homeOpen:${p.id}">${homeThumb(p)}<div class="hinfo"><b>${esc(p.name)}</b><small>${esc([p.client, p.addr].filter(Boolean).join(" · "))}</small><span>${st.w ? `${st.w} ${t("hWalls")}` : ""}${st.w && st.f ? " · " : ""}${st.f ? `${st.f} ${t("hFloors")}` : ""} · ${Math.round(st.sf)} sf · ${fmtD(p.updated)}</span></div></button><button class="hplan" data-act="homePlan:${p.id}" title="${pt("plT")}">📐</button><button class="hmore" data-act="homeMenu:${p.id}">⋯</button></div>`;
     })
     .join("");
-  if (!list.length) h += `<p class="hint">${t("hNone")}</p>`;
+  if (!list.length)
+    h += `<p class="hint">${shown.length ? t("hNone") : lang === "ru" ? "Проектов пока нет — создай новый выше." : "No projects yet — start a new one above."}</p>`;
   h += `</div><p class="hsec">${t("hTools")}</p><div class="htools"><button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
   el.innerHTML = h;
   const inp = $("#hq");
@@ -102,8 +108,9 @@ function renderHome() {
 function homeMenu(id) {
   const p = DB.projects.find((x) => x.id === id);
   if (!p) return;
+  S.__hp = p; // before the modal, so its fields show this project's name/client/address
   modal(
-    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="homePlan:${p.id}">📐 ${pt("plT")}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button>${DB.projects.length > 1 ? `<button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button>` : ""}</div>`,
+    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="homePlan:${p.id}">📐 ${pt("plT")}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button><button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button></div>`,
   );
   S.__hp = p;
 }
@@ -587,7 +594,12 @@ function homeAct(a, arg) {
     );
     DB.projects = DB.projects.filter((x) => x.id !== arg);
     markDeleted(arg);
-    if (!DB.projects.length) DB.projects.push(newProject(false));
+    if (!DB.projects.length) {
+      // the app always needs one open project: keep an empty one, hidden from the list
+      const np = newProject(false);
+      np.blank = true;
+      DB.projects.push(np);
+    }
     if (!DB.projects.includes(P)) {
       P = DB.projects[0];
       resetUndo();

@@ -959,6 +959,7 @@ function renderAll() {
   });
 }
 function changed() {
+  if (P && P.blank) delete P.blank; // the kept-empty project becomes a real one once edited
   draw();
   if (S.tab === "tot") renderTot();
   else renderRes();
