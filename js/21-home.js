@@ -14,6 +14,8 @@ function homeEl() {
   return el;
 }
 function showHome(on) {
+  // an undo offer belongs to the screen it came from
+  if (typeof toastHide === "function") toastHide();
   S.home = !!on;
   document.body.classList.toggle("homeon", S.home);
   if (typeof renderBtab === "function") setTimeout(renderBtab, 0);

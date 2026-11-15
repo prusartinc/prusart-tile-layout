@@ -348,5 +348,30 @@ function toast(msg, undo = true) {
   el.innerHTML = `<span>${esc(msg)}</span>${undo ? `<button data-act="toastUndo">↶ ${t("undoW")}</button>` : ""}`;
   el.classList.add("on");
   clearTimeout(toastT);
-  toastT = setTimeout(() => el.classList.remove("on"), 5000);
+  toastUntil = Date.now() + 5000;
+  toastT = setTimeout(toastHide, 5000);
 }
+let toastUntil = 0;
+function toastHide() {
+  clearTimeout(toastT);
+  const el = $("#toast");
+  if (el) el.classList.remove("on");
+}
+// tap the message itself to close it
+document.addEventListener("click", (e) => {
+  const el = $("#toast");
+  if (
+    el &&
+    e.target.closest &&
+    e.target.closest("#toast") &&
+    !e.target.closest("button")
+  )
+    toastHide();
+});
+// iOS pauses timers in the background: on return, close a toast that has run out
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && Date.now() > toastUntil) toastHide();
+});
+window.addEventListener("pageshow", () => {
+  if (Date.now() > toastUntil) toastHide();
+});

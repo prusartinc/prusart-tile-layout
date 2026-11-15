@@ -855,12 +855,26 @@ body.client #sbar {
   align-items: center;
   font-size: 14px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
-  transition: transform 0.25s;
+  transition:
+    transform 0.25s,
+    opacity 0.25s,
+    visibility 0s 0.25s;
   z-index: 60;
   max-width: calc(100vw - 24px);
+  /* hidden: fully off-screen and not tappable (a fixed % shift left it peeking above the tab bar) */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 #toast.on {
   transform: translate(-50%, 0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    transform 0.25s,
+    opacity 0.25s,
+    visibility 0s;
 }
 #toast button {
   background: #a8a390;
@@ -1942,5 +1956,15 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.grid.flash{animation:flashg 1.4s ease}
-@keyframes flashg{0%,40%{background:rgba(208,52,44,.18)}100%{background:transparent}}
+.grid.flash {
+  animation: flashg 1.4s ease;
+}
+@keyframes flashg {
+  0%,
+  40% {
+    background: rgba(208, 52, 44, 0.18);
+  }
+  100% {
+    background: transparent;
+  }
+}

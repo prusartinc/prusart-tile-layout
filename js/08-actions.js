@@ -101,7 +101,7 @@ function act(a, arg, b) {
       break;
     case "toastUndo":
       doUndo();
-      $("#toast").classList.remove("on");
+      toastHide();
       break;
     case "tab":
       S.tab = +arg;
