@@ -1902,15 +1902,22 @@ select,
 textarea {
   font-family: inherit;
 }
+/* plan button sits under the ⋯ in the same right column, so it never covers the title */
 .hplan {
   position: absolute;
-  right: 42px;
-  top: 8px;
+  right: 6px;
+  bottom: 8px;
   width: 34px;
   height: 34px;
-  border: 0;
-  background: none;
-  font-size: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 17px;
+  line-height: 1;
+  padding: 0;
+}
+.hcard .hopen {
+  min-height: 94px;
 }
 .hnew.hnew2 {
   background: var(--card, #fff);
