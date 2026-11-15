@@ -80,6 +80,7 @@ svg.addEventListener(
     const tc = e.touches[0];
     if (
       (e.target && e.target.closest && e.target.closest("[data-vx]")) ||
+      (e.target && e.target.closest && e.target.closest("[data-drn]")) ||
       S.pickConn ||
       connAt(tc.clientX, tc.clientY) ||
       (S.mode === "tiles" && canEdit() && hitAt(tc.clientX, tc.clientY))
@@ -111,6 +112,26 @@ function startDrag(x, y, target, pt) {
           pos: s.pos ? { x: +s.pos.x || 0, y: +s.pos.y || 0 } : null,
           pan: [S.view.panX, S.view.panY],
         },
+        s: null,
+        op: null,
+        px: S.view.panX,
+        py: S.view.panY,
+        upp: S.upp,
+        moved: false,
+      };
+      S.vbLock = { vb: S.vb.slice(), upp: S.upp };
+      return true;
+    }
+  }
+  const dnEl =
+    target && target.closest && !S.ptEdit ? target.closest("[data-drn]") : null;
+  if (dnEl && canEdit()) {
+    const s = P.surfaces[+dnEl.dataset.drn];
+    if (s && s.drain) {
+      drag = {
+        x,
+        y,
+        drn: { s, c: drainCenter(s) },
         s: null,
         op: null,
         px: S.view.panX,
@@ -214,6 +235,40 @@ svg.addEventListener("pointermove", (e) => {
     drawSoon();
     return;
   }
+  if (drag.drn) {
+    const q = drag.drn,
+      s = q.s,
+      d = s.drain,
+      r8 = (v) => Math.round(v * 8) / 8,
+      w = +s.w,
+      h = +s.h;
+    let cx = r8(q.c[0] + dx),
+      cy = r8(q.c[1] - dy);
+    // snap to the middle of the pan
+    const tol = 8 * drag.upp;
+    if (Math.abs(cx - w / 2) < tol) cx = w / 2;
+    if (Math.abs(cy - h / 2) < tol) cy = h / 2;
+    cx = Math.max(1, Math.min(w - 1, cx));
+    cy = Math.max(1, Math.min(h - 1, cy));
+    if (d.type === "linear") {
+      const ln = +d.len || 0,
+        wd = +d.wid || 2.75,
+        cl = (v, a) => Math.max(0, Math.min(a, v));
+      if (d.vert) {
+        d.y = cl(cy - ln / 2, h - ln);
+        d.x = cl(cx - wd / 2, w - wd);
+      } else {
+        d.x = cl(cx - ln / 2, w - ln);
+        d.y = cl(cy - wd / 2, h - wd);
+      }
+    } else {
+      d.x = cx;
+      d.y = cy;
+    }
+    S.drnDrag = s.id;
+    drawSoon();
+    return;
+  }
   if (drag.vx) {
     vxMove(drag.vx, dx, -dy, 10 * drag.upp);
     drawSoon();
@@ -262,6 +317,16 @@ function pEnd(e) {
   if (ptrs.size === 0 && drag) {
     const d = drag;
     drag = null;
+    if (d.drn) {
+      S.vbLock = null;
+      S.drnDrag = null;
+      if (d.moved) {
+        changed();
+        renderPanel();
+      } else if (!cancel) drainFocus();
+      draw();
+      return;
+    }
     if (d.vx) {
       S.vbLock = null;
       if (d.moved) {

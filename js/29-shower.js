@@ -35,6 +35,8 @@ const SHT = {
     shWallLay: "Стена: основа (board)",
     shWallFin: "Стена: клей + плитка",
     shDrainFrom: "Центр трапа от стен",
+    shDragHint:
+      "Положение трапа: впиши расстояния ниже или тащи трап пальцем на чертеже (тап по трапу — сюда).",
     shFromW: "от стены",
     sideB: "от задней стены",
     sideL: "от левой стены",
@@ -121,6 +123,8 @@ const SHT = {
     shWallLay: "Wall: prep (board)",
     shWallFin: "Wall: thinset + tile",
     shDrainFrom: "Drain center from the walls",
+    shDragHint:
+      "Drain position: type the distances below or drag the drain on the drawing (tap it to jump here).",
     shFromW: "from the",
     sideB: "from the back wall",
     sideL: "from the left wall",
@@ -493,6 +497,47 @@ function drainSet(s, side, val) {
   }
 }
 
+/* live distances from the drain center to the pan walls (shown while dragging) */
+function drainDimSVG(s, c, px, fs0) {
+  panNorm(s);
+  const off = refOff(wallLayers(s)),
+    w = +s.w,
+    h = +s.h,
+    seg = {
+      l: [0, c[1], c[0]],
+      r: [w, c[1], w - c[0]],
+      b: [c[0], h, h - c[1]],
+      f: [c[0], 0, c[1]],
+    };
+  let o = "";
+  ["b", "l", "r", "f"].forEach((k) => {
+    if (!s.pw[k] && k !== "f") return;
+    const [x2, y2, v] = seg[k],
+      val = v + (s.pw[k] ? off : 0),
+      mx = (c[0] + x2) / 2,
+      my = (c[1] + y2) / 2;
+    o += `<line x1="${c[0]}" y1="${-c[1]}" x2="${x2}" y2="${-y2}" stroke="#d0342c" stroke-width="${px(1.5)}" stroke-dasharray="${px(4)} ${px(3)}"/>`;
+    o += `<text x="${mx}" y="${-my}" font-size="${px(13 * (fs0 || 1))}" text-anchor="middle" dominant-baseline="central" fill="#d0342c" font-weight="800" font-family="${FONT}" paint-order="stroke" stroke="#fff" stroke-width="${px(4)}">${fmtIn(val)}″</text>`;
+  });
+  return o;
+}
+/* tap the drain on the drawing: open the pan section at the drain fields */
+function drainFocus() {
+  S.open.add("pan");
+  renderPanel();
+  setTimeout(() => {
+    const e = document.querySelector("#panel [data-pnv]");
+    if (e) {
+      e.scrollIntoView({ block: "center", behavior: "smooth" });
+      const lab = e.closest(".grid");
+      if (lab) {
+        lab.classList.add("flash");
+        setTimeout(() => lab.classList.remove("flash"), 1400);
+      }
+    }
+  }, 60);
+}
+
 /* ---------- curbless build-up ---------- */
 function panCalc(s) {
   panNorm(s);
@@ -664,7 +709,7 @@ function panSection(s) {
       hh = +s.h,
       val = { l: c[0], r: w - c[0], b: hh - c[1], f: c[1] },
       nm = { l: "sideL", r: "sideR", b: "sideB", f: "sideF" };
-    h += `<p class="hsec">${sht("shDrainFrom")}</p><div class="grid">`;
+    h += `<p class="hsec">${sht("shDrainFrom")}</p><p class="hint">${sht("shDragHint")}</p><div class="grid">`;
     ["b", "l", "r", "f"].forEach((k) => {
       if (!s.pw[k] && k !== "f") return;
       const isW = s.pw[k],
@@ -743,7 +788,8 @@ document.addEventListener("change", pnvInp);
 {
   const ch = changed;
   changed = function () {
-    const s = typeof cur === "function" ? cur() : null;
+    // while the plan page is open, edits belong to the plan: don't push the pan back over it
+    const s = typeof cur === "function" && !S.plan ? cur() : null;
     if (s && s.type === "pan") {
       panNorm(s);
       if (s.panType === "curbless") s.curb.on = false;

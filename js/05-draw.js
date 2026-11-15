@@ -562,7 +562,11 @@ function surfBody(s, R, o) {
     );
   }
   if (s.type === "pan") {
-    const d = s.drain;
+    const d = s.drain,
+      dsi = P.surfaces.indexOf(s),
+      dc = d.type !== "none" ? drainCenter(s) : null,
+      dEd = dc && canEdit() && !S.client;
+    if (dEd) h += `<g data-drn="${dsi}" style="cursor:move">`;
     if (d.type === "center")
       h += `<circle cx="${d.x}" cy="${-d.y}" r="2.125" fill="#6a6a6a" stroke="#333" stroke-width="${px(1)}"/><path d="M${d.x - 1.4} ${-d.y}H${d.x + 1.4}M${d.x} ${-d.y - 1.4}V${-d.y + 1.4}" stroke="#ccc" stroke-width="${px(1)}"/>`;
     if (d.type === "linear" && d.vert) {
@@ -574,6 +578,9 @@ function surfBody(s, R, o) {
       for (let x = d.x + 1; x < d.x + d.len - 0.5; x += 1.5)
         h += `<line x1="${x}" y1="${-(d.y + d.wid * 0.25)}" x2="${x}" y2="${-(d.y + d.wid * 0.75)}" stroke="#999" stroke-width="${px(1)}"/>`;
     }
+    if (dEd)
+      h += `<circle cx="${dc[0]}" cy="${-dc[1]}" r="${px(24)}" fill="transparent"/></g>`;
+    if (dc && S.drnDrag === s.id) h += drainDimSVG(s, dc, px, fs0);
   }
   h += heatSVG(s, R, px, fs0);
   (s.trans || []).forEach((tr, i) => {

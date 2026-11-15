@@ -1935,3 +1935,5 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.grid.flash{animation:flashg 1.4s ease}
+@keyframes flashg{0%,40%{background:rgba(208,52,44,.18)}100%{background:transparent}}

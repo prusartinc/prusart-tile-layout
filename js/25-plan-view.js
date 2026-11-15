@@ -140,7 +140,11 @@ function planSheet() {
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
       h += `</div><p class="hsec">${pt("plDrain")}</p><div class="grid2">${SEL(pt("plDrain"), p + "drn", ["center", "point", "linear"], 1, "p", "", (o) => pt("drn_" + o))}`;
-      if (it.drn === "point")
+      if (it.drn === "center") {
+        it.dl = +it.w / 2;
+        it.db = +it.dp / 2;
+      }
+      if (it.drn === "point" || it.drn === "center")
         h +=
           F(pt("plDl"), p + "dl", "len", "p") +
           F(pt("plDb"), p + "db", "len", "p");
@@ -1435,6 +1439,9 @@ function planInp(k) {
     pl.walls[+mw[1]].tileH = +pl.H || 96;
   if (m) {
     const it = pl.items[+m[1]];
+    // typing a distance on a centered drain makes it off-center
+    if (it && (m[2] === "dl" || m[2] === "db") && it.drn === "center")
+      it.drn = "point";
     if (it && m[2] === "wall") {
       it.wall = +it.wall;
       const W = planWall(it.wall),
