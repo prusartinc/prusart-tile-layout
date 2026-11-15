@@ -104,11 +104,72 @@ function backupsModal() {
   h += L.length
     ? `<div class="liblist">${L.map(
         (b, i) =>
-          `<div class="librow"><div><b>${fmtD(b.t)}</b><br><small>${b.op ? `${t("bkBefore")}: ${esc(b.op)} · ` : ""}${b.n} ${t("bkProjects")}</small></div><div class="btns"><button class="btn sm" data-act="bkRestore:${L.length - 1 - i}">${t("bkRestore")}</button></div></div>`,
-      ).join("")}</div>`
+          `<div class="librow"><div><b>${fmtD(b.t)}</b><br><small>${b.op ? `${t("bkBefore")}: ${esc(b.op)} · ` : ""}${b.n} ${t("bkProjects")}</small></div><div class="btns"><button class="btn sm" data-act="bkRestore:${L.length - 1 - i}">${t("bkRestore")}</button><button class="btn sm d" data-act="bkDel:${L.length - 1 - i}" title="${bkT("del")}">🗑</button></div></div>`,
+      ).join(
+        "",
+      )}</div>${L.length > 1 ? `<div class="btns"><button class="btn sm d" data-act="bkDelAll">🗑 ${bkT("delAll")} (${L.length})</button></div>` : ""}`
     : `<p class="hint">${t("bkNone")}</p>`;
   h += `<p style="margin-top:12px"><b>${t("bkFileT")}</b></p><p class="hint">${t("bkFileHint")}${DB.lastFile ? ` ${t("bkLastFile")} ${fmtD(DB.lastFile)}.` : ""}</p><div class="btns"><button class="btn p" data-act="bkFile">⬇ ${t("bkFile")}</button><button class="btn" data-act="bkOpen">⬆ ${t("bkOpen")}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>`;
   modal(h);
+}
+/* deleting backups */
+const BKT = {
+  ru: {
+    del: "Удалить копию",
+    delQ: "Удалить эту копию?",
+    delAll: "Удалить все",
+    delAllQ: "Удалить все резервные копии?",
+    delMsg: "Восстановить её потом будет нельзя. Сами проекты не меняются.",
+    delAllMsg:
+      "Все копии в приложении будут удалены, вернуть их будет нельзя. Сами проекты не меняются. Новая ежедневная копия появится при следующем сохранении.",
+    deleted: "Копия удалена",
+    deletedAll: "Копии удалены",
+  },
+  en: {
+    del: "Delete copy",
+    delQ: "Delete this copy?",
+    delAll: "Delete all",
+    delAllQ: "Delete all backup copies?",
+    delMsg: "It can't be restored afterwards. Your projects are not changed.",
+    delAllMsg:
+      "All in-app copies will be deleted and can't be brought back. Your projects are not changed. A new daily copy appears on the next save.",
+    deleted: "Copy deleted",
+    deletedAll: "Copies deleted",
+  },
+};
+const bkT = (k) => (BKT[lang] || BKT.en)[k] || k;
+function bkSave(L) {
+  try {
+    STORE.set(BKEY, JSON.stringify(L));
+  } catch (e) {}
+}
+function bkDelAsk(ts) {
+  const b = ts === "all" ? null : bkList()[+ts];
+  if (ts !== "all" && !b) return backupsModal();
+  const fmtD = new Date(b ? b.t : 0).toLocaleString(
+    lang === "ru" ? "ru-RU" : "en-US",
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    },
+  );
+  modal(
+    ts === "all"
+      ? `<h3>${bkT("delAllQ")}</h3><p>${bkT("delAllMsg")}</p><div class="btns"><button class="btn d" data-act="bkDelGo:all">🗑 ${bkT("delAll")}</button><button class="btn" data-act="bkModal">${t("cancel")}</button></div>`
+      : `<h3>${bkT("delQ")}</h3><p><b>${fmtD}</b></p><p>${bkT("delMsg")}</p><div class="btns"><button class="btn d" data-act="bkDelGo:${ts}">🗑 ${t("del")}</button><button class="btn" data-act="bkModal">${t("cancel")}</button></div>`,
+  );
+}
+function bkDelGo(ts) {
+  if (ts === "all") {
+    bkSave([]);
+    bkLastOp = Date.now(); // don't immediately recreate a "before" copy
+  } else {
+    const L = bkList();
+    L.splice(+ts, 1);
+    bkSave(L);
+  }
+  backupsModal();
+  toast(bkT(ts === "all" ? "deletedAll" : "deleted"), false);
 }
 function bkRestore(i) {
   const b = bkList()[i];
@@ -335,6 +396,9 @@ async function syncAct(a, arg) {
   if (a === "bkFile") return backupFile();
   if (a === "bkOpen") return bkOpenFile();
   if (a === "bkRestore") return bkRestore(+arg);
+  if (a === "bkDel") return bkDelAsk(arg);
+  if (a === "bkDelAll") return bkDelAsk("all");
+  if (a === "bkDelGo") return bkDelGo(arg);
   if (a === "bkRestoreGo") {
     const b = bkList()[+arg];
     return b && bkApply(b.d);
