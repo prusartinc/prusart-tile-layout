@@ -3,6 +3,8 @@
 /* ---------- actions ---------- */
 function planAct(a, arg) {
   if (a === "plDrSw") return plDrSw(arg);
+  // plan buttons do nothing once the plan page is closed (stale taps)
+  if (!S.plan && a !== "plan") return;
   const pl = P.plan,
     V = S.plan;
   const sel = () => pl.items.find((x) => x.id === V.sel);

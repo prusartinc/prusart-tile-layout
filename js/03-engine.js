@@ -789,6 +789,7 @@ function compute(s) {
   const empty = {
     ...X,
     err: true,
+    profs: {},
     main: [],
     nich: [],
     all: [],

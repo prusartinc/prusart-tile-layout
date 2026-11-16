@@ -42,11 +42,11 @@ function editOpening(si, j) {
       const k = opSide(s, o, ax, D),
         v = D[k];
       if (v == null) return;
-      h += `<label class="f"><span>${odT(k)} <button type="button" class="btn sm odsw" data-act="opSideSw:${si}:${j}:${ax}" title="${odT("sw")}">⇄</button></span><input data-opw="${si}:${j}:${k}" data-t="len" value="${fmtIn(v)}" autocomplete="off"></label>`;
+      h += `<label class="f"><span>${odL(s, k)} <button type="button" class="btn sm odsw" data-act="opSideSw:${si}:${j}:${ax}" title="${odT("sw")}">⇄</button></span><input data-opw="${si}:${j}:${k}" data-t="len" value="${fmtIn(v)}" autocomplete="off"></label>`;
     });
     h += `</div><p class="hint">${["l", "r", "b", "t"]
       .filter((k) => D[k] != null)
-      .map((k) => `${odT(k)}: <b>${fmtIn(D[k])}″</b>`)
+      .map((k) => `${odL(s, k)}: <b>${fmtIn(D[k])}″</b>`)
       .join(" · ")}</p>`;
   }
   h += `<div class="grid">`;
@@ -81,7 +81,24 @@ const ODT = {
     sw: "measure from the other wall",
   },
 };
+const ODW = {
+  ru: {
+    l: "до левого угла",
+    r: "до правого угла",
+    b: "от пола",
+    t: "до потолка",
+  },
+  en: {
+    l: "to left corner",
+    r: "to right corner",
+    b: "from floor",
+    t: "to ceiling",
+  },
+};
 const odT = (k) => (ODT[lang] || ODT.en)[k] || k;
+// labels depend on the surface: on a wall the sides are corners, floor and ceiling
+const odL = (s, k) =>
+  s && s.type === "wall" ? (ODW[lang] || ODW.en)[k] : odT(k);
 function opCenter(o) {
   return o.shape === "circle" || o.w == null
     ? [+o.x, +o.y]
@@ -128,6 +145,8 @@ function opSide(s, o, ax, D) {
   const pick = o.ref && o.ref[ax],
     A = ax === "h" ? ["l", "r"] : ["b", "t"];
   if (pick && D[pick] != null) return pick;
+  // on a wall, heights are measured from the floor unless chosen otherwise
+  if (s && s.type === "wall" && ax === "v" && D.b != null) return "b";
   if (D[A[0]] == null) return A[1];
   if (D[A[1]] == null) return A[0];
   return D[A[0]] <= D[A[1]] ? A[0] : A[1];

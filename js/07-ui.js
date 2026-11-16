@@ -857,6 +857,11 @@ function renderRes() {
     return;
   }
   const T = R.T;
+  // nothing to count (zero tile size, empty outline…): say so instead of crashing
+  if (R.err || !R.stack) {
+    el.innerHTML = `<div class="warnbox">${lang === "ru" ? "Нечего считать: проверь размер плитки и размеры поверхности." : "Nothing to count: check the tile size and the surface size."}</div>`;
+    return;
+  }
   let h = kpis(R, T);
   if (R.bad) h += `<div class="warnbox">${R.bad} ${t("sliverWarn")}</div>`;
   if (R.ledger) {
@@ -880,7 +885,7 @@ function renderRes() {
             `<div class="hint" style="color:var(--ink)">${esc(stripTxt(x))}</div>`,
         )
         .join("");
-  Object.keys(R.profs).forEach((k) => {
+  Object.keys(R.profs || {}).forEach((k) => {
     const lf2 = R.profs[k];
     h += `<p style="margin:10px 0 4px"><b>Schluter ${esc(k)}</b>: ${fmt(lf2)} = ${(lf2 / 12).toFixed(1)} ft → ${Math.ceil(lf2 / 98.5)} ${t("sticks")}</p>`;
   });
@@ -896,7 +901,7 @@ function renderTot() {
   const g = {};
   const pf = {};
   rows.forEach(({ R }) => {
-    for (const k in R.profs) pf[k] = (pf[k] || 0) + R.profs[k];
+    for (const k in R.profs || {}) pf[k] = (pf[k] || 0) + R.profs[k];
     for (const k in R.nb) {
       g[k] = g[k] || { k, need: 0, perBox: 0 };
       g[k].need += R.nb[k];
@@ -986,7 +991,12 @@ function onInp(e) {
     const raw = String(el.value).trim(),
       neg = ty === "slen" && /^[-−]/.test(raw);
     v = parseLen(neg ? raw.replace(/^[-−]\s*/, "") : raw);
-    if (!isFinite(v) || v < 0) {
+    // sizes that can't be zero: tile, surface, opening width/height/diameter
+    const pos =
+      /^(tile\.(w|h|w2|h2)|w|h|(surfaces\.\d+\.)?openings\.\d+\.(w|h|dia))$/.test(
+        k,
+      );
+    if (!isFinite(v) || v < 0 || (pos && v < 0.25)) {
       el.classList.add("bad");
       return;
     }

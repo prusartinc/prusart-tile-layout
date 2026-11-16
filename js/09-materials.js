@@ -249,7 +249,7 @@ function materials() {
   const pf = {};
   P.surfaces.forEach((s2) => {
     const R2 = compute(s2);
-    for (const k in R2.profs) pf[k] = (pf[k] || 0) + R2.profs[k];
+    for (const k in R2.profs || {}) pf[k] = (pf[k] || 0) + R2.profs[k];
   });
   Object.keys(pf).forEach((k) =>
     rows.push([
