@@ -25,6 +25,8 @@ function hitAt(cx, cy) {
       if (o.shape === "circle") {
         if (Math.hypot(lx - o.x, ly - o.y) <= o.dia / 2 + tol)
           return { it, op: j };
+      } else if (Array.isArray(o.pts) && o.pts.length > 2) {
+        if (pip(o.pts, lx, ly)) return { it, op: j };
       } else if (
         lx >= o.x - tol &&
         lx <= o.x + o.w + tol &&
@@ -285,7 +287,16 @@ svg.addEventListener("pointermove", (e) => {
     drawSoon();
     return;
   }
-  if (S.mode === "tiles" && canEdit() && drag.s && drag.op != null) {
+  if (
+    S.mode === "tiles" &&
+    canEdit() &&
+    drag.s &&
+    drag.op != null &&
+    drag.s.openings[drag.op].pi
+  ) {
+    // a pan / tub cut-out follows the pan itself: nothing to drag here
+    return;
+  } else if (S.mode === "tiles" && canEdit() && drag.s && drag.op != null) {
     const o = drag.s.openings[drag.op];
     o.x = Math.round((drag.opx + dx) * 8) / 8;
     o.y = Math.round((drag.opy - dy) * 8) / 8;

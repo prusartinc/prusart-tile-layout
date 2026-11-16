@@ -848,6 +848,8 @@ document.addEventListener("change", pnvInp);
       }
       panApplyShape(s);
       panToPlan(s);
+      // the floor's cut-out for this pan follows right away
+      if (typeof planCutSync === "function") planCutSync();
     }
     return ch.apply(this, arguments);
   };
@@ -860,6 +862,16 @@ function panToPlan(s) {
   if (!m || !P.plan) return;
   const it = P.plan.items.find((x) => x.id === m[1]);
   if (!it) return;
+  // a pan against a wall end stays against it when its width changes
+  if (Math.abs(+it.w - +s.w) > 1e-6) {
+    try {
+      const W = planWall(it.wall),
+        e = planItemX(it, W),
+        nw = +s.w;
+      if (e[0] <= 1) it.c = e[0] + nw / 2;
+      else if (e[1] >= W.L - 1) it.c = e[1] - nw / 2;
+    } catch (er) {}
+  }
   it.w = +s.w;
   it.dp = +s.h;
   it.cl = s.panType === "curbless";

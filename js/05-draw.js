@@ -530,7 +530,7 @@ function surfBody(s, R, o) {
       h += `<path d="${pd(op.pts)}" fill="url(#ht${id})" stroke="#5a4129" stroke-width="${px(1.3)}"/>`;
       h += lbl(
         { x0: op.x, x1: op.x + op.w, y0: op.y, y1: op.y + op.h },
-        `${t(op.type)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
+        `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
         Math.max(op.w * 1.6, +px(120)),
       );
       continue;
@@ -557,7 +557,7 @@ function surfBody(s, R, o) {
     h += `<rect x="${op.x}" y="${-(op.y + op.h)}" width="${op.w}" height="${op.h}" fill="${op.type === "noheat" ? "rgba(29,95,168,.07)" : op.type === "warm" ? "rgba(224,123,0,.10)" : "none"}" stroke="${op.type === "noheat" ? "#1d5fa8" : op.type === "warm" ? "#e07b00" : "#5a4129"}" stroke-width="${px(1.3)}" ${op.type === "niche" || op.type === "noheat" || op.type === "warm" ? `stroke-dasharray="${px(5)} ${px(3)}"` : ""}/>`;
     h += lbl(
       { x0: op.x - e, x1: op.x + op.w + e, y0: op.y - e, y1: op.y + op.h + e },
-      `${t(op.type)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
+      `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
       Math.max(op.w * 1.6, +px(120)),
     );
   }

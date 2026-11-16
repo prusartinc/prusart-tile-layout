@@ -31,9 +31,10 @@ function editOpening(si, j) {
     o = s && s.openings[j];
   if (!o) return;
   if (o.type === "niche") return nicheModal(si, j);
+  if (o.pi) return linkedCutModal(s, o);
   const pre = `surfaces.${si}.openings.${j}`,
     circ = o.shape === "circle";
-  let h = `<h3>${esc(t(o.type))} — ${esc(s.name)}</h3>`;
+  let h = `<h3>${esc(opName(o))} — ${esc(s.name)}</h3>`;
   // distances to the nearest walls (or the side the user picked)
   const D = opDists(s, o);
   if (D) {
@@ -666,4 +667,35 @@ function transStart(s, tr) {
     setO(s, nx < 0 ? cx : cx - lw, cy - lh / 2);
   } else return false;
   return true;
+}
+
+/* a floor cut-out that belongs to a shower pan / tub: it is changed through the pan or the plan */
+function linkedCutModal(s, o) {
+  const ru = lang === "ru",
+    panS = P.surfaces.find((x) => x.fromPlan === "it" + o.pi),
+    D = opDists(s, o);
+  let h = `<h3>${esc(opName(o))} — ${esc(s.name)}</h3>`;
+  h += `<p>${fmtIn(o.w)}″ × ${fmtIn(o.h)}″${o.pts ? (ru ? " · по форме поддона" : " · follows the pan's shape") : ""}</p>`;
+  if (D)
+    h += `<p class="hint">${["l", "r", "b", "t"]
+      .filter((k) => D[k] != null)
+      .map((k) => `${odT(k)}: <b>${fmtIn(D[k])}″</b>`)
+      .join(" · ")}</p>`;
+  h += `<p class="hint">${
+    ru
+      ? "Этот вырез — сам " +
+        (o.pk === "tub" ? "ванна" : "поддон") +
+        ": он меняется вместе с ним. Размер, форму и место меняй " +
+        (panS ? "на странице поддона или " : "") +
+        "на плане — плитка пола подстроится сама."
+      : "This cut-out is the " +
+        (o.pk === "tub" ? "tub" : "pan") +
+        " itself and changes with it. Change its size, shape and place " +
+        (panS ? "on the pan's page or " : "") +
+        "on the plan — the floor tile follows."
+  }</p><div class="btns">`;
+  if (panS)
+    h += `<button class="btn p" data-act="goSurf:${P.surfaces.indexOf(panS)}">${ru ? "Открыть поддон" : "Open the pan"}</button>`;
+  h += `<button class="btn" data-act="goPlanItem:${o.pi}">${ru ? "Открыть на плане" : "Open on the plan"}</button><button class="btn" data-act="closeModal">${t("close")}</button></div>`;
+  modal(h);
 }

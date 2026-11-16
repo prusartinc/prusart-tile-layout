@@ -99,6 +99,23 @@ function act(a, arg, b) {
     case "wizBack":
       wizOpen();
       break;
+    case "goSurf":
+      closeModal();
+      if (S.plan) planClose();
+      showHome(false);
+      if (typeof navGo === "function") navGo("lay");
+      S.tab = +arg;
+      renderAll();
+      break;
+    case "goPlanItem":
+      closeModal();
+      showHome(false);
+      act("plan");
+      if (S.plan) {
+        S.plan.sel = arg;
+        renderPlan();
+      }
+      break;
     case "drnSideSw":
       drnSideSw(arg);
       break;

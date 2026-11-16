@@ -367,6 +367,10 @@ function plDim(p, q, label, k, off) {
 function planDraw() {
   const box = $("#plsvg");
   if (!box || !S.plan) return;
+  // a pan / tub moved or reshaped on the plan: the floor cut-out follows now
+  try {
+    if (typeof planCutSync === "function") planCutSync();
+  } catch (e) {}
   const W0 = box.clientWidth || 360,
     H0 = box.clientHeight || 360;
   box.innerHTML =

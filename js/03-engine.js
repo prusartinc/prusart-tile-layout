@@ -804,7 +804,8 @@ function prep(s) {
       L,
       P: clipConvex(regionL, L),
       bb: bboxOf(L),
-      type: h.type,
+      type:
+        h.o && h.o.pk ? (h.o.pk === "shower" ? "panCut" : "tubCut") : h.type,
       o: h.o,
     };
   });

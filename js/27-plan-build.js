@@ -108,16 +108,7 @@ function planBuild() {
         });
       } else if (it.k === "tub" || it.k === "shower") {
         // cut the floor along the real outline (a pan with a cut corner, a tub on an angled wall)
-        const ft = planFoot(it, pts);
-        f.openings.push(
-          Object.assign(
-            { id: uid(), pl: 1, type: "cutout", shape: "rect", trim: false },
-            bbo(ft),
-            axis(W) && ft.length === 4
-              ? {}
-              : { pts: ft.map((q) => [q[0], q[1]]) },
-          ),
-        );
+        f.openings.push(planCutOf(it, pts));
       } else if (
         ["vanity", "cab", "fridge", "range"].includes(it.k) &&
         axis(W)
@@ -763,4 +754,74 @@ async function planPdf() {
   modal(
     `<h3>${t("pdfReady")}</h3><p class="hint">${esc(PDF.name)} · ${PDF.n} ${t("pagesN")}</p><div class="btns" style="flex-direction:column"><button class="btn p w" data-act="sharePdf">${t("sharePdf")}</button><a class="btn w" style="text-align:center;text-decoration:none" href="${url}" download="${esc(PDF.name)}" target="_blank">${t("dlPdf")}</a><button class="btn w" data-act="closeModal">${t("close")}</button></div>`,
   );
+}
+
+/* ---------- the floor's cut-out for a shower pan / tub follows that item live ---------- */
+// the cut-out for one plan item, in floor coordinates (same frame as the plan)
+function planCutOf(it, pts, keep) {
+  const ft = planFoot(it, pts || planPts()),
+    q = bboxOf(ft),
+    rect =
+      ft.length === 4 &&
+      ft.every((a, i) => {
+        const b = ft[(i + 1) % 4];
+        return Math.abs(a[0] - b[0]) < 1e-6 || Math.abs(a[1] - b[1]) < 1e-6;
+      });
+  const o = Object.assign(keep || { id: uid() }, {
+    pl: 1,
+    type: "cutout",
+    shape: "rect",
+    trim: false,
+    pk: it.k, // "shower" | "tub": shown as the pan / tub, not a plain cut-out
+    pi: it.id,
+    x: q.x0,
+    y: q.y0,
+    w: q.x1 - q.x0,
+    h: q.y1 - q.y0,
+  });
+  if (rect) delete o.pts;
+  else o.pts = ft.map((v) => [v[0], v[1]]);
+  return o;
+}
+// re-fit every linked cut-out to its pan / tub; returns true when something moved
+function planCutSync() {
+  const pl = P && P.plan;
+  if (!pl || !pl.items) return false;
+  const f = P.surfaces.find((x) => x.fromPlan === "floor");
+  if (!f) return false;
+  let pts;
+  try {
+    pts = planPts();
+  } catch (e) {
+    return false;
+  }
+  const items = pl.items.filter((i) => i.k === "shower" || i.k === "tub");
+  let moved = false;
+  f.openings.forEach((o) => {
+    if (!o.pl || o.type !== "cutout") return;
+    let it = o.pi && items.find((i) => i.id === o.pi);
+    // older projects: find the item by where the cut-out sits
+    if (!it && !o.pi)
+      it = items.find((i) => {
+        const b = bboxOf(planFoot(i, pts));
+        return (
+          Math.abs(b.x0 - o.x) < 3 &&
+          Math.abs(b.y0 - o.y) < 3 &&
+          Math.abs(b.x1 - b.x0 - o.w) < 3 &&
+          Math.abs(b.y1 - b.y0 - o.h) < 3
+        );
+      });
+    if (!it) return;
+    const before = JSON.stringify([o.x, o.y, o.w, o.h, o.pts, o.pk]);
+    planCutOf(it, pts, o);
+    if (JSON.stringify([o.x, o.y, o.w, o.h, o.pts, o.pk]) !== before)
+      moved = true;
+  });
+  return moved;
+}
+// its name on the drawing, in dialogs and on tiles
+function opName(o) {
+  if (o && o.pk === "shower") return t("panCut");
+  if (o && o.pk === "tub") return t("tubCut");
+  return t(o.type);
 }
