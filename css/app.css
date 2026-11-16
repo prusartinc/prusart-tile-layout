@@ -2189,3 +2189,7 @@ body.site .mbox {
   padding: 8px 12px;
   font-size: 14px;
 }
+.glrow{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:8px 0}
+.glsh{display:flex;align-items:center;gap:8px;margin:6px 0}
+.glsh span{flex:1;color:var(--mut);font-size:14px}
+.glsh b{min-width:46px;text-align:center}

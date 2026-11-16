@@ -12,6 +12,7 @@ function moreMenu() {
       (single
         ? B("cutSheet", "✂", lang === "ru" ? "Лист резки" : "Cut list")
         : "") +
+      (single ? B("glSet", "⊹", glt("title"), !DB.glOff) : "") +
       B("nums", "#", t("mNums"), S.nums) +
       B("labels", "Aa", t("mLabels"), S.labels) +
       B("fit", "⤢", t("mFit")) +

@@ -622,6 +622,11 @@ function act(a, arg, b) {
       draw();
       if (!$("#modal").hidden && arg !== "x") closeModal();
       break;
+    case "glToggle":
+    case "glShift":
+    case "glSet":
+      glAct(a, arg);
+      break;
     case "tipOk":
       tipOk(arg);
       break;

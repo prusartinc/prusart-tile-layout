@@ -653,6 +653,14 @@ function surfBody(s, R, o) {
     h += `<line x1="${x0 - +px(6)}" x2="${x1 + +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1 + +px(8)}" y="${y}" font-size="${px(10 * o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;
   }
   h += `<path class="lbE" d="${pd(G.line || G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
+  // the layout line to keep while setting (single surface view)
+  if (
+    !o.title &&
+    LAYER !== "prep" &&
+    LAYER !== "wire" &&
+    typeof glSVG === "function"
+  )
+    h += glSVG(s, R, px, fs0);
   if (!o.noDims) h += cornerSVG(s, G, px, fs0, o);
   if (s.bs && s.bs.on && !o.title) h += bsLabels(s, px);
   // pieces ticked off in the cut list: soft green with a check
