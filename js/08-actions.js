@@ -622,6 +622,30 @@ function act(a, arg, b) {
       draw();
       if (!$("#modal").hidden && arg !== "x") closeModal();
       break;
+    case "tipOk":
+      tipOk(arg);
+      break;
+    case "shareLink":
+      closeModal();
+      shareLink();
+      break;
+    case "shSave":
+      shareSave();
+      break;
+    case "phots":
+    case "phView":
+    case "phDel":
+    case "phDelGo":
+      photoAct(a, arg);
+      break;
+    case "matCopy":
+      matCopy();
+      break;
+    case "cutDone":
+    case "cutReset":
+    case "cutCard":
+      cutAct(a, arg);
+      break;
     case "cutSheet":
       cutSheetModal();
       break;

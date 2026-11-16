@@ -461,15 +461,26 @@ function surfBody(s, R, o) {
     if (q.b)
       h += `<rect x="0" y="${-sw}" width="${s.w}" height="${sw}" ${TR}/>`;
   }
-  const lbl = (B, txt, maxW, col) => {
-    const f = Math.min(+px(10.5 * fs0), maxW / (txt.length * 0.56));
+  const lbl = (B, txt, maxW, col, inside) => {
+    // big cut-outs (pan, tub, window…) carry their name inside, where it can't drift away
+    const bw = B.x1 - B.x0,
+      bh = B.y1 - B.y0,
+      fin = inside
+        ? Math.min(+px(10.5 * fs0), (bw * 0.9) / (txt.length * 0.56), bh * 0.5)
+        : 0,
+      useIn = inside && fin >= +px(6);
+    const f = useIn
+      ? fin
+      : Math.min(+px(10.5 * fs0), maxW / (txt.length * 0.56));
     if (f < +px(6)) return "";
     const g = +px(4 * fs0),
       wt = f * txt.length * 0.56,
       cx = (B.x0 + B.x1) / 2,
       cy = (B.y0 + B.y1) / 2,
       x = cx,
-      y = -B.y1 - g;
+      y = useIn ? -cy + f * 0.35 : -B.y1 - g;
+    if (useIn)
+      return `<text class="lbC" x="${x}" y="${y}" font-size="${f.toFixed(3)}" text-anchor="middle" fill="${col || PAL.lab}" font-weight="700" font-family="${FONT}" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(2.5)}" pointer-events="none">${esc(txt)}</text>`;
     const alt = [
       [B.x0 + wt / 2, y],
       [B.x1 - wt / 2, y],
@@ -532,6 +543,8 @@ function surfBody(s, R, o) {
         { x0: op.x, x1: op.x + op.w, y0: op.y, y1: op.y + op.h },
         `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
         Math.max(op.w * 1.6, +px(120)),
+        null,
+        true,
       );
       continue;
     }
@@ -559,6 +572,8 @@ function surfBody(s, R, o) {
       { x0: op.x - e, x1: op.x + op.w + e, y0: op.y - e, y1: op.y + op.h + e },
       `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
       Math.max(op.w * 1.6, +px(120)),
+      null,
+      op.type === "cutout" || op.type === "window",
     );
   }
   if (s.type === "pan") {
@@ -626,8 +641,18 @@ function surfBody(s, R, o) {
     h += `<line x1="${x0 - +px(6)}" x2="${x1 + +px(6)}" y1="${y}" y2="${y}" stroke="#d0342c" stroke-width="${px(1.4)}" stroke-dasharray="${px(7)} ${px(4)}"/><text x="${x1 + +px(8)}" y="${y}" font-size="${px(10 * o.fs)}" dominant-baseline="central" fill="#d0342c" font-weight="700" font-family="${FONT}">ledger ${fmt(R.ledger.y)}</text>`;
   }
   h += `<path class="lbE" d="${pd(G.line || G.outer)}" fill="none" stroke="${PAL.ink}" stroke-width="${px(1.7)}"/>`;
-  h += cornerSVG(s, G, px, fs0, o);
+  if (!o.noDims) h += cornerSVG(s, G, px, fs0, o);
   if (s.bs && s.bs.on && !o.title) h += bsLabels(s, px);
+  // pieces ticked off in the cut list: soft green with a check
+  if (s.cutDone && LAYER !== "prep" && LAYER !== "wire") {
+    const Tk = R.T;
+    for (const p of R.all) {
+      if (p.full || !s.cutDone[decoKey(p, Tk)] || !p.C) continue;
+      const W = R.toW ? p.C.map(R.toW) : p.C,
+        bb2 = bboxOf(W);
+      h += `<path d="${pd(W)}" fill="rgba(76,175,80,.32)" stroke="#2e7d32" stroke-width="${px(1.2)}" pointer-events="none"/><text x="${bb2.x0 + +px(9)}" y="${-bb2.y1 + +px(12)}" font-size="${px(12 * fs0)}" text-anchor="middle" fill="#2e7d32" font-weight="900" pointer-events="none">✓</text>`;
+    }
+  }
   // cut labels
   const sheet = T.sheet && T.sheet.on;
   if (
@@ -731,7 +756,7 @@ function surfBody(s, R, o) {
       h += `<text class="lbD" x="${xl - +px(5)}" y="${ym}" font-size="${f}" text-anchor="middle" fill="${dimC}" font-weight="600" font-family="${FONT}" transform="rotate(-90 ${xl - +px(5)} ${ym})" paint-order="stroke" stroke="${PAL.bg}" stroke-width="${px(3)}" ${dimKey(s, "h")}>${fmt(bb.y1 - bb.y0)}</text>`;
     }
   }
-  if (s.shape === "walk" && !bsOn) {
+  if (s.shape === "walk" && !bsOn && !o.noDims) {
     const wk = walkPoly(s);
     wk.edges.forEach((e2, i) => {
       const mx = (e2[0][0] + e2[1][0]) / 2,
@@ -758,7 +783,7 @@ function surfBody(s, R, o) {
     }
   }
   if (o.title)
-    h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-bb.y1 - +px(10 * fs0)}" font-size="${Math.min(+px(13 * fs0), (bb.x1 - bb.x0) / ((s.name.length + 2) * 0.62)).toFixed(3)}" text-anchor="middle" fill="${PAL.ink}" font-weight="700" font-family="${FONT}">${esc(s.name)}${isLinked(s) ? " 🔗" : ""}</text>`;
+    h += `<text class="lbD" x="${(bb.x0 + bb.x1) / 2}" y="${-bb.y1 - +px((o.noDims ? 10 : 36) * fs0)}" font-size="${Math.min(+px(13 * fs0), (bb.x1 - bb.x0) / ((s.name.length + 2) * 0.62)).toFixed(3)}" text-anchor="middle" fill="${PAL.ink}" font-weight="700" font-family="${FONT}">${esc(s.name)}${isLinked(s) ? " 🔗" : ""}</text>`;
   return h;
 }
 
@@ -774,6 +799,13 @@ function allWallItems() {
     return it;
   });
 }
+// a plan pan drawn in its own spot inside the floor (Whole floor): no extra sizes or title on top
+const nestedPan = (s) =>
+  s.type === "pan" &&
+  !s.posUser &&
+  /^it/.test(s.fromPlan || "") &&
+  !!s.pos &&
+  (+s.pos.x || +s.pos.y);
 const isMulti = () => S.tab === "all" || S.tab === "floor";
 function floorItems() {
   return P.surfaces
@@ -847,7 +879,7 @@ function buildViewItems(Wpx, Hpx, v, fs, items, all, ins) {
   }
   let body = `<rect x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" fill="${PAL.bg}"/>`;
   items.forEach((it, i) => {
-    body += `<g transform="translate(${it.dx} ${-it.dy})">${surfBody(it.s, it.R, { upp, fs, id: "s" + i, m: all ? m * 0.6 : m, dimV: !all, title: !!all })}</g>`;
+    body += `<g transform="translate(${it.dx} ${-it.dy})">${surfBody(it.s, it.R, { upp, fs, id: "s" + i, m: all ? m * 0.6 : m, dimV: !all, title: !!all && !nestedPan(it.s), noDims: all === "floor" && nestedPan(it.s) })}</g>`;
     it.x0 = it.R.G.bb.x0 + it.dx;
     it.x1 = it.R.G.bb.x1 + it.dx;
   });

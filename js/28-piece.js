@@ -245,8 +245,56 @@ function pieceCard(it, p) {
     svg += `<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(b[0])}" y2="${Y(b[1])}" stroke="#d0342c" stroke-width="3" stroke-linecap="round"/>`;
   });
   // side lengths: label outside each edge (right of a counter-clockwise edge = outside)
-  const lbl = (x, y, txt, col, sz = 13) =>
-    `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" text-anchor="middle" dominant-baseline="central" font-weight="700" fill="${col}" font-family="${FONT}" paint-order="stroke" stroke="#fff" stroke-width="3.5">${esc(txt)}</text>`;
+  // labels are collected first and placed at the end so they never sit on each other
+  const LB = [];
+  const lbl = (x, y, txt, col, sz = 13, fixed) => {
+    LB.push({ x, y, txt: String(txt), col, sz, fixed });
+    return "";
+  };
+  const placeLabels = () => {
+    const boxes = [],
+      bx = (q) => {
+        const w = q.txt.length * q.sz * 0.58 + 4,
+          h = q.sz + 3;
+        return {
+          l: q.x - w / 2,
+          r: q.x + w / 2,
+          t: q.y - h / 2,
+          b: q.y + h / 2,
+        };
+      },
+      hit = (a) =>
+        boxes.some((b) => a.l < b.r && a.r > b.l && a.t < b.b && a.b > b.t);
+    let out = "";
+    // corner letters and fixed labels first, then the rest find free room
+    LB.sort((a, b) => (b.fixed ? 1 : 0) - (a.fixed ? 1 : 0));
+    for (const q of LB) {
+      const tries = [[0, 0]];
+      for (let d = 7; d <= 42; d += 7)
+        tries.push(
+          [0, d],
+          [0, -d],
+          [d, 0],
+          [-d, 0],
+          [d, d],
+          [-d, -d],
+          [d, -d],
+          [-d, d],
+        );
+      let best = tries[0];
+      for (const [dx, dy] of tries) {
+        const c = { ...q, x: q.x + dx, y: q.y + dy };
+        if (!hit(bx(c))) {
+          best = [dx, dy];
+          break;
+        }
+      }
+      const c = { ...q, x: q.x + best[0], y: q.y + best[1] };
+      boxes.push(bx(c));
+      out += `<text x="${c.x.toFixed(1)}" y="${c.y.toFixed(1)}" font-size="${c.sz}" text-anchor="middle" dominant-baseline="central" font-weight="700" fill="${c.col}" font-family="${FONT}" paint-order="stroke" stroke="#fff" stroke-width="3.5">${esc(c.txt)}</text>`;
+    }
+    return out;
+  };
   pts.forEach((a, i) => {
     const b = pts[(i + 1) % n],
       L = Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -275,7 +323,7 @@ function pieceCard(it, p) {
     ["D", 0, H, -1, -1],
   ].forEach(
     ([c, s2, t2, dx, dy]) =>
-      (svg += lbl(X(s2) + dx * 13, Y(t2) + dy * 13, c, "#6b665c", 14)),
+      (svg += lbl(X(s2) + dx * 13, Y(t2) + dy * 13, c, "#6b665c", 14, true)),
   );
   // marks on the tile edges
   marks.forEach((m) => {
@@ -332,6 +380,7 @@ function pieceCard(it, p) {
       11,
     );
   });
+  svg += placeLabels();
   svg += `</svg>`;
 
   const tileName = `${fmtIn(W)}×${fmtIn(H)}`;

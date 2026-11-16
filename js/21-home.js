@@ -110,7 +110,7 @@ function homeMenu(id) {
   if (!p) return;
   S.__hp = p; // before the modal, so its fields show this project's name/client/address
   modal(
-    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="homePlan:${p.id}">📐 ${pt("plT")}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button><button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button></div>`,
+    `<h3>${esc(p.name)}</h3><div class="grid">${F(t("projName"), `__hp.name`, "text", "x", "w2")}${F(t("hClient"), `__hp.client`, "text", "x", "w2")}${F(t("hAddr"), `__hp.addr`, "text", "x", "w2")}</div><div class="btns"><button class="btn p" data-act="homeSave">${t("done")}</button><button class="btn" data-act="homePlan:${p.id}">📐 ${pt("plT")}</button><button class="btn" data-act="homePhotos:${p.id}">📷 ${lang === "ru" ? "Фото" : "Photos"}</button><button class="btn" data-act="dupProj:${p.id}">${t("dup")}</button><button class="btn d" data-act="homeDel:${p.id}">${t("del")}</button></div>`,
   );
   S.__hp = p;
 }
@@ -551,6 +551,14 @@ function buildKitchen(K, tileFn) {
 }
 function homeAct(a, arg) {
   if (a === "home") return showHome(true);
+  if (a === "homePhotos") {
+    const p = DB.projects.find((x) => x.id === arg);
+    if (!p) return;
+    closeModal();
+    if (p !== P) homeAct("homeOpen", arg);
+    if (S.plan) planClose();
+    return photosModal();
+  }
   if (a === "homeOpen") {
     const p = DB.projects.find((x) => x.id === arg);
     if (!p) return;

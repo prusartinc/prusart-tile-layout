@@ -176,6 +176,9 @@ function renderStat() {
   el.innerHTML = sheet
     ? `<span>${t("sheets")} <b>${R.sheets}</b></span><span>${t("order")} <b>${R.order}</b></span><span>${t("area")} <b>${sq(R.area)}</b></span>`
     : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
+  // narrow pieces: say so and offer the one-tap fix
+  if (!sheet && R.bad && canEdit() && !S.client)
+    el.innerHTML += `<button class="btn sm warnfix" data-act="auto">⚠ ${lang === "ru" ? "Узких кусков: " + R.bad + " — подобрать раскладку" : "Narrow pieces: " + R.bad + " — fix the layout"}</button>`;
   el.innerHTML +=
     `<span class="more">${S.statX ? "▴" : "▾"}</span>` +
     (S.statX ? statDetails(R, cur()) : "");
@@ -1001,6 +1004,7 @@ function onInp(e) {
       return;
     }
     if (neg) v = -v;
+    if (/^pos\.[xy]$/.test(k) && cur()) cur().posUser = true;
     el.classList.remove("bad");
   } else if (ty === "num") {
     v = parseFloat(String(el.value).replace(",", "."));

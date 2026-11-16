@@ -900,3 +900,49 @@ function panToPlan(s) {
     it.db = h - +d.y;
   }
 }
+
+/* keep pan ↔ plan ↔ floor in step on every redraw (outside the plan page):
+   the pan surface is where its size and shape are set, so it leads */
+function panPlanSync() {
+  if (!P || !P.plan || S.plan) return;
+  const items = (P.plan.items || []).filter((i) => i.k === "shower");
+  if (!items.length) return;
+  const pans = P.surfaces.filter((x) => x.type === "pan");
+  // an older pan made by hand next to a single plan shower: link them
+  const free = pans.filter((x) => !/^it/.test(x.fromPlan || ""));
+  const unlinked = items.filter(
+    (i) => !pans.some((x) => x.fromPlan === "it" + i.id),
+  );
+  if (free.length === 1 && unlinked.length === 1)
+    free[0].fromPlan = "it" + unlinked[0].id;
+  // tie old floor cut-outs to their item while they still match it
+  planCutSync();
+  pans.forEach((s) => {
+    if (!/^it/.test(s.fromPlan || "")) return;
+    panNorm(s);
+    panToPlan(s);
+  });
+  planCutSync();
+  // in "Whole floor" the pan sits in its own spot in the room (when it faces the same way)
+  const f = P.surfaces.find((x) => x.fromPlan === "floor");
+  if (f)
+    pans.forEach((s) => {
+      if (s.posUser || !/^it/.test(s.fromPlan || "")) return;
+      const o = f.openings.find((q) => q.pi === s.fromPlan.slice(2));
+      if (!o || Math.abs(o.w - s.w) > 0.01 || Math.abs(o.h - s.h) > 0.01)
+        return;
+      const fp = f.pos || { x: 0, y: 0 };
+      s.pos = { x: +fp.x + o.x, y: +fp.y + o.y };
+    });
+}
+{
+  const ra = renderAll;
+  renderAll = function () {
+    try {
+      panPlanSync();
+    } catch (e) {
+      console.error(e);
+    }
+    return ra.apply(this, arguments);
+  };
+}

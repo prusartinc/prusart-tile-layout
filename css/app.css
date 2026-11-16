@@ -1968,3 +1968,224 @@ textarea {
     background: transparent;
   }
 }
+#stat .warnfix {
+  margin: 4px 0 0;
+  flex-basis: 100%;
+  border-color: #d0342c;
+  color: #d0342c;
+  font-weight: 700;
+}
+.cutprog {
+  position: relative;
+  background: var(--line);
+  border-radius: 8px;
+  height: 26px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+.cutprog b {
+  position: relative;
+  z-index: 1;
+  line-height: 26px;
+  padding: 0 10px;
+  font-size: 14px;
+}
+.cutprog span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #6fbf73;
+}
+.cutl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cutr {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+.cutr .cutck {
+  flex: 0 0 40px;
+  min-height: 40px;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 20px;
+  font-weight: 800;
+  color: #2e7d32;
+}
+.cutr.ok .cutck {
+  background: #dff0df;
+  border-color: #6fbf73;
+}
+.cutr .cutb {
+  flex: 1;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  padding: 6px 10px;
+  font-size: 15px;
+  color: inherit;
+}
+.cutr .cutb .no {
+  color: #b4441b;
+}
+.cutr .cutb .nt {
+  color: var(--mut);
+  font-size: 13px;
+}
+.cutr.ok .cutb {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+.supin {
+  margin-top: 4px;
+  width: 100%;
+  max-width: 240px;
+  font-size: 14px;
+  padding: 4px 8px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+.phadd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 10px;
+  cursor: pointer;
+}
+.phgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+.phth {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--card);
+  color: inherit;
+  text-align: left;
+}
+.phth img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.phth span {
+  display: block;
+  font-size: 12px;
+  padding: 4px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.phbig {
+  display: block;
+  max-width: 100%;
+  max-height: 55vh;
+  margin: 0 auto 10px;
+  border-radius: 10px;
+}
+#shbar {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  top: calc(env(safe-area-inset-top) + 6px);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #141414;
+  color: #fff;
+  border-radius: 12px;
+  padding: 8px 10px 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+#shbar .btn {
+  background: #f1eee7;
+  color: #141414;
+}
+
+/* ---- design pass: quieter secondary tools, a softer drawing in the dark, a bigger site mode ---- */
+#tools button[data-act="undo"],
+#tools button[data-act="redo"],
+#tools button[data-act="fit"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  opacity: 0.8;
+}
+[data-theme="dark"] #svg {
+  filter: brightness(0.88) contrast(1.04);
+}
+body.site #tools button {
+  min-height: 52px;
+  min-width: 52px;
+  font-size: 19px;
+}
+body.site #stat {
+  font-size: 19px;
+}
+body.site #stat b {
+  font-size: 21px;
+}
+body.site #btab button {
+  font-size: 15px;
+  min-height: 64px;
+}
+body.site #pad button {
+  min-width: 56px;
+  min-height: 56px;
+  font-size: 22px;
+}
+body.site .mbox .btn {
+  min-height: 52px;
+  font-size: 18px;
+}
+body.site .mbox {
+  font-size: 18px;
+}
+/* one-time tips */
+.tip {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  z-index: 19; /* above the plan page (18), under dialogs (20) */
+  background: #1d5fa8;
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
+  line-height: 1.35;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.28);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.tip b {
+  display: block;
+  margin-bottom: 2px;
+}
+.tip button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 9px;
+  background: #fff;
+  color: #1d5fa8;
+  font-weight: 800;
+  padding: 8px 12px;
+  font-size: 14px;
+}

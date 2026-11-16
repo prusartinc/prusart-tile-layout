@@ -237,6 +237,7 @@ function nudgeS(s, dir) {
   const d = S.step;
   if (zoneMode()) {
     const p = (s.pos = s.pos || { x: 0, y: 0 });
+    s.posUser = true; // placed by hand: don't snap it back into the room
     if (dir === "l") p.x = +p.x - d;
     if (dir === "r") p.x = +p.x + d;
     if (dir === "u") p.y = +p.y + d;

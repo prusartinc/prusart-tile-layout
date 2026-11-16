@@ -9,6 +9,9 @@ function moreMenu() {
   modal(
     `<h3>${t("moreT")}</h3><div class="mmgrid">${
       (single ? B("rotate", "⟲", t("mRotate")) : "") +
+      (single
+        ? B("cutSheet", "✂", lang === "ru" ? "Лист резки" : "Cut list")
+        : "") +
       B("nums", "#", t("mNums"), S.nums) +
       B("labels", "Aa", t("mLabels"), S.labels) +
       B("fit", "⤢", t("mFit")) +
@@ -17,6 +20,8 @@ function moreMenu() {
       B("texToggle", "📷", t("mTex"), S.texOn) +
       B("pin", "📌", t("mPin"), S.pin !== false) +
       B("plan", "📐", pt("plT")) +
+      B("phots", "📷", lang === "ru" ? "Фото" : "Photos") +
+      B("shareLink", "🔗", lang === "ru" ? "Ссылка клиенту" : "Client link") +
       B("kpToggle", "⌨", kt("kpOwn"), DB.kp !== false) +
       B("lib", "📚", t("lib")) +
       B("surfList", "▦", t("mSurfs"))
@@ -102,9 +107,33 @@ function statDetails(R, s) {
 }
 
 /* section chips on top of the side panel (phones): open one section and jump to it */
+// the section that matters most for each kind of surface comes first
+function secKey(s) {
+  if (!s) return null;
+  if (s.type === "pan") return "pan";
+  if (s.type === "wall")
+    return s.openings && s.openings.length ? "open" : "layout";
+  return "layout";
+}
 function secChips() {
-  const ds = [...document.querySelectorAll("#panel details[data-sec]")];
+  let ds = [...document.querySelectorAll("#panel details[data-sec]")];
   if (ds.length < 3) return;
+  const s = !isMulti() && typeof cur === "function" ? cur() : null,
+    key = secKey(s);
+  // first visit of a surface in this session: open its key section
+  S.secSeen = S.secSeen || new Set();
+  if (s && key && !S.secSeen.has(s.id)) {
+    S.secSeen.add(s.id);
+    const d = ds.find((x) => x.dataset.sec === key);
+    if (d && !d.open) {
+      d.open = true;
+      S.open.add(key);
+    }
+  }
+  if (key) {
+    const k = ds.findIndex((x) => x.dataset.sec === key);
+    if (k > 0) ds = [ds[k]].concat(ds.filter((_, i) => i !== k));
+  }
   const nav = document.createElement("div");
   nav.className = "secnav";
   nav.innerHTML = ds
@@ -157,7 +186,8 @@ function siteToggle() {
 }
 
 /* hooks */
-$("#stat").addEventListener("click", () => {
+$("#stat").addEventListener("click", (e) => {
+  if (e.target.closest && e.target.closest("[data-act]")) return;
   if (isMulti() || S.layer === "prep") return;
   S.statX = !S.statX;
   renderStat();

@@ -284,6 +284,7 @@ svg.addEventListener("pointermove", (e) => {
       12 * drag.upp,
     );
     drag.s.pos = { x: p[0], y: p[1] };
+    drag.s.posUser = true;
     drawSoon();
     return;
   }

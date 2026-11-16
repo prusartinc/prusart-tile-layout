@@ -318,23 +318,167 @@ function materials() {
   });
   return rows;
 }
+/* materials grouped by supplier: each line remembers where it is bought (shared by all projects) */
+const supKey = (name) =>
+  String(name)
+    .replace(/\s+\d.*$/, "")
+    .trim()
+    .toLowerCase();
+function supOf(name) {
+  DB.sup = DB.sup || {};
+  return DB.sup[supKey(name)] || "";
+}
 function renderMat() {
   const el = $("#mat");
   if (!el) return;
-  const rows = materials();
-  el.innerHTML = `<table><tr><th>${t("matItem")}</th><th class="n">${t("matQty")}</th></tr>${rows.map((r) => `<tr><td>${esc(r[0])}${r[2] ? `<br><small style="color:var(--mut)">${esc(r[2])}</small>` : ""}</td><td class="n"><b>${esc(r[1])}</b></td></tr>`).join("")}</table><p class="hint">${t("matNoteAll")}</p>`;
+  const rows = materials(),
+    ru = lang === "ru",
+    none = ru ? "Поставщик не указан" : "No supplier set";
+  DB.sup = DB.sup || {};
+  const known = [...new Set(Object.values(DB.sup).filter(Boolean))].sort();
+  const groups = {};
+  rows.forEach((r, i) => {
+    const g = supOf(r[0]) || none;
+    (groups[g] = groups[g] || []).push([r, i]);
+  });
+  const order = Object.keys(groups).sort((a, b) =>
+    a === none ? 1 : b === none ? -1 : a.localeCompare(b),
+  );
+  let h = `<datalist id="supl">${known.map((k) => `<option value="${esc(k)}">`).join("")}</datalist>`;
+  order.forEach((g) => {
+    h += `<p class="hsec" style="margin-top:10px">🏬 ${esc(g)}</p><table><tr><th>${t("matItem")}</th><th class="n">${t("matQty")}</th></tr>${groups[
+      g
+    ]
+      .map(
+        ([r, i]) =>
+          `<tr><td>${esc(r[0])}${r[2] ? `<br><small style="color:var(--mut)">${esc(r[2])}</small>` : ""}<br><input class="supin" list="supl" data-sup="${esc(r[0])}" value="${esc(supOf(r[0]))}" placeholder="${ru ? "где купить…" : "supplier…"}" autocomplete="off"></td><td class="n"><b>${esc(r[1])}</b></td></tr>`,
+      )
+      .join("")}</table>`;
+  });
+  h += `<div class="btns"><button class="btn" data-act="matCopy">📋 ${ru ? "Скопировать заказ по поставщикам" : "Copy order by supplier"}</button></div><p class="hint">${t("matNoteAll")}</p>`;
+  el.innerHTML = h;
+}
+document.addEventListener("change", (e) => {
+  const el = e.target;
+  if (!el.dataset || el.dataset.sup == null) return;
+  DB.sup = DB.sup || {};
+  const v = el.value.trim();
+  if (v) DB.sup[supKey(el.dataset.sup)] = v;
+  else delete DB.sup[supKey(el.dataset.sup)];
+  saveSoon();
+  renderMat();
+});
+function matCopy() {
+  const rows = materials(),
+    ru = lang === "ru",
+    none = ru ? "Поставщик не указан" : "No supplier set",
+    groups = {};
+  rows.forEach((r) => {
+    const g = supOf(r[0]) || none;
+    (groups[g] = groups[g] || []).push(r);
+  });
+  const txt =
+    `${P.name || ""}${P.addr ? " — " + P.addr : ""}\n\n` +
+    Object.keys(groups)
+      .map(
+        (g) =>
+          `${g}:\n` + groups[g].map((r) => `• ${r[0]} — ${r[1]}`).join("\n"),
+      )
+      .join("\n\n");
+  const done = () => toast(ru ? "Заказ скопирован" : "Order copied", false);
+  try {
+    navigator.clipboard.writeText(txt).then(done, () => {
+      modal(
+        `<h3>${ru ? "Заказ" : "Order"}</h3><textarea style="width:100%;height:50vh">${esc(txt)}</textarea><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
+      );
+    });
+  } catch (e) {
+    modal(
+      `<h3>${ru ? "Заказ" : "Order"}</h3><textarea style="width:100%;height:50vh">${esc(txt)}</textarea><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
+    );
+  }
 }
 
 /* ================= cut sheet modal ================= */
+/* offcuts: a straight strip left from one cut can become another cut piece.
+   Only clean one-way cuts are paired (the strip keeps one factory edge for the joint side). */
+function offcutPlan(R) {
+  const kerf = 0.125,
+    one = (p) =>
+      p.k === "r" &&
+      !p.full &&
+      !p.notch &&
+      !p.taper &&
+      !p.taperW &&
+      !p.hl &&
+      !p.niche &&
+      p.cutX !== p.cutY;
+  const cuts = R.all.filter(one);
+  // leftovers: what is left of the tile beside each cut piece
+  const left = cuts.map((p) => ({
+    from: p,
+    w: p.cutX ? p.lw - p.cw - kerf : p.lw,
+    h: p.cutY ? p.lh - p.ch - kerf : p.lh,
+  }));
+  const used = new Map(), // receiver -> source
+    srcUsed = new Set(), // pieces whose leftover is taken: they come from a whole tile
+    pairs = [];
+  // biggest needs first, smallest leftover that fits
+  [...cuts]
+    .sort((a, b) => b.cw * b.ch - a.cw * a.ch)
+    .forEach((q) => {
+      if (used.has(q) || srcUsed.has(q)) return;
+      let best = null;
+      left.forEach((L) => {
+        // a source must itself be cut from a whole tile
+        if (L.from === q || used.has(L.from)) return;
+        const fits =
+          (L.w + 1e-6 >= q.cw && L.h + 1e-6 >= q.ch) ||
+          (L.h + 1e-6 >= q.cw && L.w + 1e-6 >= q.ch && q.cw === q.ch);
+        if (
+          fits &&
+          L.w > 0.5 &&
+          L.h > 0.5 &&
+          (!best || L.w * L.h < best.w * best.h)
+        )
+          best = L;
+      });
+      if (!best) return;
+      pairs.push({ q, from: best.from, rest: [best.w, best.h] });
+      used.set(q, best.from);
+      srcUsed.add(best.from);
+      // the rest of that strip stays available
+      if (best.w >= best.h) best.w -= q.cw + kerf;
+      else best.h -= q.ch + kerf;
+    });
+  return pairs;
+}
 function cutSheetModal() {
   if (!R) return;
-  const s = cur();
-  const g = cutSheet(R);
-  let h = `<h3>${t("cutSheet")} — ${esc(s.name)}</h3><p class="hint">${esc(tileDesc(R.T))} · ${t("grout")} ${fmt(+R.T.g)} · ${t("gapNote")} (${fmt(+P.edgeGap)})</p>`;
+  const s = cur(),
+    T = R.T,
+    ru = lang === "ru";
+  s.cutDone = s.cutDone || {};
+  const g = cutSheet(R),
+    pairs = offcutPlan(R),
+    fromOf = new Map(pairs.map((x) => [x.q, x.from]));
+  const all = g.reduce((a, gr) => a.concat(gr.items), []),
+    done = all.filter((p) => s.cutDone[decoKey(p, T)]).length;
+  let h = `<h3>✂ ${t("cutSheet")} — ${esc(s.name)}</h3><p class="hint">${esc(tileDesc(T))} · ${t("grout")} ${fmt(+T.g)} · ${t("gapNote")} (${fmt(+P.edgeGap)})</p>`;
+  h += `<div class="cutprog"><b>${ru ? "Нарезано" : "Cut"} ${done} ${ru ? "из" : "of"} ${all.length}</b><span style="width:${all.length ? (100 * done) / all.length : 0}%"></span></div>`;
+  if (pairs.length)
+    h += `<p class="hint">♻ ${ru ? `${pairs.length} шт. режь из обрезков других кусков (отмечено ♻ ниже) — «Плиток нужно» уже это учитывает.` : `Cut ${pairs.length} pieces from other pieces' offcuts (marked ♻ below) — "Tiles needed" already counts on it.`}</p>`;
   h += g
     .map(
       (gr) =>
-        `<p style="margin:12px 0 4px"><b>${esc(gr.label)}</b>${gr.full ? ` · ${t("fullN")}: ${gr.full}` : ""}</p><table>${gr.items.map((p) => `<tr><td style="width:44px;color:#b4441b;font-weight:800">#${p.no}</td><td><span class="sw" style="background:${COL[p.c]}"></span><b>${esc(pieceSize(p))}</b></td><td style="color:var(--mut)">${esc(pieceNote(p))}</td></tr>`).join("")}</table>`,
+        `<p style="margin:12px 0 4px"><b>${esc(gr.label)}</b>${gr.full ? ` · ${t("fullN")}: ${gr.full}` : ""}</p><div class="cutl">${gr.items
+          .map((p) => {
+            const k = decoKey(p, T),
+              ok = !!s.cutDone[k],
+              fr = fromOf.get(p);
+            return `<div class="cutr ${ok ? "ok" : ""}"><button class="cutck" data-act="cutDone:${k}" aria-label="done">${ok ? "✓" : ""}</button><button class="cutb" data-act="cutCard:${p.no}"><b class="no">#${p.no}</b> <span class="sw" style="background:${COL[p.c]}"></span><b>${esc(pieceSize(p))}</b> <span class="nt">${esc(pieceNote(p))}${fr ? ` · ♻ ${ru ? "из остатка" : "from offcut of"} #${fr.no}` : ""}</span></button></div>`;
+          })
+          .join("")}</div>`,
     )
     .join("");
   if (R.drill.length)
@@ -346,6 +490,30 @@ function cutSheetModal() {
             `<div class="dl">${d.p && d.p.no ? "#" + d.p.no + " — " : d.p ? t("fullTile") + " — " : ""}${drillTxt(d)}</div>`,
         )
         .join("");
-  h += `<div class="btns">${S.nums ? "" : `<button class="btn p" data-act="nums">${t("showNums")}</button>`}<button class="btn" data-act="closeModal">${t("close")}</button></div>`;
+  h += `<div class="btns">${S.nums ? "" : `<button class="btn p" data-act="nums">${t("showNums")}</button>`}${done ? `<button class="btn" data-act="cutReset">${ru ? "Снять отметки" : "Clear marks"}</button>` : ""}<button class="btn" data-act="closeModal">${t("close")}</button></div>`;
   modal(h);
+}
+function cutAct(a, arg) {
+  const s = cur();
+  if (!s || !R) return;
+  if (a === "cutDone") {
+    s.cutDone = s.cutDone || {};
+    if (s.cutDone[arg]) delete s.cutDone[arg];
+    else s.cutDone[arg] = 1;
+    saveSoon();
+    drawSoon();
+    const y = $("#mbody") ? $("#mbody").scrollTop : 0;
+    cutSheetModal();
+    if ($("#mbody")) $("#mbody").scrollTop = y;
+  }
+  if (a === "cutReset") {
+    s.cutDone = {};
+    saveSoon();
+    drawSoon();
+    cutSheetModal();
+  }
+  if (a === "cutCard") {
+    const p = R.all.find((x) => String(x.no) === String(arg));
+    if (p) pieceCard({ s }, p);
+  }
 }
