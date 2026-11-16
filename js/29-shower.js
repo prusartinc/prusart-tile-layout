@@ -929,10 +929,12 @@ function panPlanSync() {
     pans.forEach((s) => {
       if (s.posUser || !/^it/.test(s.fromPlan || "")) return;
       const o = f.openings.find((q) => q.pi === s.fromPlan.slice(2));
-      if (!o || Math.abs(o.w - s.w) > 0.01 || Math.abs(o.h - s.h) > 0.01)
-        return;
+      if (!o) return;
+      const cw = +o.cw || 0;
+      if (Math.abs(o.w - s.w) > 0.01 || Math.abs(o.h - cw - s.h) > 0.01) return;
       const fp = f.pos || { x: 0, y: 0 };
-      s.pos = { x: +fp.x + o.x, y: +fp.y + o.y };
+      // the pan's front is its bottom here; the curb strip sits below it
+      s.pos = { x: +fp.x + o.x, y: +fp.y + o.y + cw };
     });
 }
 {

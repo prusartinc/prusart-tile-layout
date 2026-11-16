@@ -390,7 +390,19 @@ function surfBody(s, R, o) {
   const curbOn = s.type === "pan" && s.curb.on;
   if (curbOn) {
     const c = s.curb;
-    h += `<rect x="0" y="0" width="${c.len}" height="${c.w}" fill="#dcd5c8" stroke="#6b665e" stroke-width="${px(1)}"/><text x="${c.len / 2}" y="${c.w / 2}" font-size="${Math.min(+px(11 * fs0), c.w * 0.7)}" text-anchor="middle" dominant-baseline="central" fill="#4d4840" font-family="${FONT}">Curb ${fmt(c.w)} × ${fmt(c.h)}</text>`;
+    // the curb runs along the pan's front edge (y = 0), starting at its left end
+    let cx0 = 0,
+      cx1 = +s.w;
+    try {
+      const op = outerPoly(s),
+        fr = op.filter((q) => Math.abs(q[1]) < 1e-6).map((q) => q[0]);
+      if (fr.length >= 2) {
+        cx0 = Math.min(...fr);
+        cx1 = Math.max(...fr);
+      }
+    } catch (e) {}
+    const cl = Math.min(+c.len || cx1 - cx0, cx1 - cx0);
+    h += `<rect x="${cx0}" y="0" width="${cl}" height="${c.w}" fill="#dcd5c8" stroke="#6b665e" stroke-width="${px(1)}"/><text x="${cx0 + cl / 2}" y="${c.w / 2}" font-size="${Math.min(+px(11 * fs0), c.w * 0.7)}" text-anchor="middle" dominant-baseline="central" fill="#4d4840" font-family="${FONT}">Curb ${fmt(c.w)} × ${fmt(c.h)}</text>`;
   }
   if (LAYER !== "prep" && LAYER !== "wire")
     h += `<path d="${pd(G.region)}${hD}" fill-rule="evenodd" fill="${PAL.grout}"/>`;
@@ -541,7 +553,7 @@ function surfBody(s, R, o) {
       h += `<path d="${pd(op.pts)}" fill="url(#ht${id})" stroke="#5a4129" stroke-width="${px(1.3)}"/>`;
       h += lbl(
         { x0: op.x, x1: op.x + op.w, y0: op.y, y1: op.y + op.h },
-        `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
+        `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h - (+op.cw || 0))}${+op.cw ? " + " + (lang === "ru" ? "бордюр " : "curb ") + fmtIn(op.cw) : ""}`,
         Math.max(op.w * 1.6, +px(120)),
         null,
         true,
@@ -570,7 +582,7 @@ function surfBody(s, R, o) {
     h += `<rect x="${op.x}" y="${-(op.y + op.h)}" width="${op.w}" height="${op.h}" fill="${op.type === "noheat" ? "rgba(29,95,168,.07)" : op.type === "warm" ? "rgba(224,123,0,.10)" : "none"}" stroke="${op.type === "noheat" ? "#1d5fa8" : op.type === "warm" ? "#e07b00" : "#5a4129"}" stroke-width="${px(1.3)}" ${op.type === "niche" || op.type === "noheat" || op.type === "warm" ? `stroke-dasharray="${px(5)} ${px(3)}"` : ""}/>`;
     h += lbl(
       { x0: op.x - e, x1: op.x + op.w + e, y0: op.y - e, y1: op.y + op.h + e },
-      `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h)}`,
+      `${opName(op)} ${fmtIn(op.w)}×${fmtIn(op.h - (+op.cw || 0))}${+op.cw ? " + " + (lang === "ru" ? "бордюр " : "curb ") + fmtIn(op.cw) : ""}`,
       Math.max(op.w * 1.6, +px(120)),
       null,
       op.type === "cutout" || op.type === "window",

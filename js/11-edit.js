@@ -676,7 +676,7 @@ function linkedCutModal(s, o) {
     panS = P.surfaces.find((x) => x.fromPlan === "it" + o.pi),
     D = opDists(s, o);
   let h = `<h3>${esc(opName(o))} — ${esc(s.name)}</h3>`;
-  h += `<p>${fmtIn(o.w)}″ × ${fmtIn(o.h)}″${o.pts ? (ru ? " · по форме поддона" : " · follows the pan's shape") : ""}</p>`;
+  h += `<p>${fmtIn(o.w)}″ × ${fmtIn(o.h - (+o.cw || 0))}″${+o.cw ? (ru ? " + бордюр " : " + curb ") + fmtIn(o.cw) + "″" : ""}${o.pts ? (ru ? " · по форме поддона" : " · follows the pan's shape") : ""}</p>`;
   if (D)
     h += `<p class="hint">${["l", "r", "b", "t"]
       .filter((k) => D[k] != null)

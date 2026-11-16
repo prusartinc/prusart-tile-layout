@@ -758,8 +758,17 @@ async function planPdf() {
 
 /* ---------- the floor's cut-out for a shower pan / tub follows that item live ---------- */
 // the cut-out for one plan item, in floor coordinates (same frame as the plan)
+// the curb that sits in front of this shower's pan, if it has one (curbless: none)
+function planCurbOf(it) {
+  if (it.k !== "shower") return null;
+  const pan = P.surfaces.find((x) => x.fromPlan === "it" + it.id);
+  if (!pan || pan.panType === "curbless" || !pan.curb || !pan.curb.on)
+    return null;
+  return { w: +pan.curb.w || 0, len: +pan.curb.len || +it.w };
+}
 function planCutOf(it, pts, keep) {
-  const ft = planFoot(it, pts || planPts()),
+  const curb = planCurbOf(it),
+    ft = planFoot(it, pts || planPts(), curb),
     q = bboxOf(ft),
     rect =
       ft.length === 4 &&
@@ -774,6 +783,7 @@ function planCutOf(it, pts, keep) {
     trim: false,
     pk: it.k, // "shower" | "tub": shown as the pan / tub, not a plain cut-out
     pi: it.id,
+    cw: curb ? curb.w : 0, // curb strip included in front
     x: q.x0,
     y: q.y0,
     w: q.x1 - q.x0,

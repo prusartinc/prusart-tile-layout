@@ -542,7 +542,8 @@ function planGlassEnds(it) {
     n: [-u[1], u[0]],
   };
 }
-function planFoot(it, pts) {
+// curb: { w, len } — a shower with a curb also takes the curb's strip in front of the pan
+function planFoot(it, pts, curb) {
   const K = PL_KINDS[it.k];
   if (K.glass) {
     const g = planGlassEnds(it),
@@ -564,7 +565,7 @@ function planFoot(it, pts) {
     w = +it.w / 2,
     d0 = K.inwall ? -W.th : 0,
     d1 = K.inwall ? 0 : it.k === "niche" ? -(+it.dp || 0) : +it.dp || 0;
-  if (it.k === "shower" && it.psh === "cut") {
+  if (it.k === "shower" && (it.psh === "cut" || (curb && +curb.w > 0))) {
     const pc = it.pcut || { at: "fl", a: 12, b: 12 },
       wd = +it.w,
       dp = +it.dp || 0,
@@ -572,22 +573,51 @@ function planFoot(it, pts) {
       b = Math.max(1, Math.min(dp - 1, +pc.b || 12)),
       // pan coordinates: x from the left as seen facing the back wall, y from the front (entry)
       P2 = (x, y) => plAt(W, W.flip ? c + w - x : c - w + x, dp - y),
-      Q =
-        pc.at === "fr"
+      Q0 =
+        it.psh !== "cut"
           ? [
               [0, 0],
-              [wd - a, 0],
-              [wd, b],
-              [wd, dp],
-              [0, dp],
-            ]
-          : [
-              [a, 0],
               [wd, 0],
               [wd, dp],
               [0, dp],
-              [0, b],
-            ];
+            ]
+          : pc.at === "fr"
+            ? [
+                [0, 0],
+                [wd - a, 0],
+                [wd, b],
+                [wd, dp],
+                [0, dp],
+              ]
+            : [
+                [a, 0],
+                [wd, 0],
+                [wd, dp],
+                [0, dp],
+                [0, b],
+              ];
+    let Q = Q0;
+    if (curb && +curb.w > 0) {
+      // the front edge runs along y = 0 (left to right); the curb sits on it from its left end
+      const i = Q0.findIndex(
+          (q, k) =>
+            Math.abs(q[1]) < 1e-9 &&
+            Math.abs(Q0[(k + 1) % Q0.length][1]) < 1e-9,
+        ),
+        R0 = Q0.slice(i).concat(Q0.slice(0, i)), // front edge first
+        x1 = R0[0][0],
+        x2 = R0[1][0],
+        cx1 = Math.min(x2, x1 + (+curb.len || wd)),
+        cw = +curb.w;
+      Q = [
+        [x1, 0],
+        [x1, -cw],
+        [cx1, -cw],
+        [cx1, 0],
+      ];
+      if (cx1 < x2 - 1e-9) Q.push([x2, 0]);
+      Q = Q.concat(R0.slice(2));
+    }
     return Q.map((q) => P2(q[0], q[1]));
   }
   if (it.k === "niche")
