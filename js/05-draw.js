@@ -664,7 +664,7 @@ function surfBody(s, R, o) {
         tx =
           (p.arc
             ? "◠ "
-            : p.cutX || p.cutY || (p.ax && !p.hl)
+            : p.ax && (p.cutX || p.cutY || !p.hl)
               ? "L "
               : p.hl
                 ? "⊙ "

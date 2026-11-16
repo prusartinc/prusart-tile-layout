@@ -17,9 +17,15 @@ const PCT = {
     pcTaper: "Клин: ширина с одного конца → с другого.",
     pcTri: "Срезан угол плитки.",
     pcNotch: "Вырез угла (L).",
-    pcHoles: "Есть отверстия — см. отметки на чертеже.",
+    pcHoles: "Есть отверстия — где сверлить/вырезать, см. ниже.",
     pcHow:
       "Красное — линия реза. Отметь точки на краях плитки от букв-углов и соедини.",
+    pcHolesT: "Отверстия в плитке",
+    pcCtr: "центр",
+    pcEdge: "ближний край",
+    pcFromSide: "от стороны",
+    pcOut: "за краем плитки",
+    pcSize: "размер",
   },
   en: {
     pcTitle: "Tile",
@@ -34,9 +40,15 @@ const PCT = {
     pcTaper: "Taper: width at one end → the other.",
     pcTri: "A corner of the tile is cut off.",
     pcNotch: "Corner notch (L).",
-    pcHoles: "Has holes — see the drawing.",
+    pcHoles: "Has holes — where to drill/cut is listed below.",
     pcHow:
       "Red is the cut line. Mark the points on the tile edges from the lettered corners and join them.",
+    pcHolesT: "Holes in the tile",
+    pcCtr: "center",
+    pcEdge: "near edge",
+    pcFromSide: "from side",
+    pcOut: "past the tile edge",
+    pcSize: "size",
   },
 };
 const pct = (k) => (PCT[lang] || PCT.en)[k] || k;
@@ -58,13 +70,31 @@ function pieceGeom(p) {
     W = p.lw;
     H = p.lh;
   }
-  let pts = (p.C || []).map((q) => [
+  const tf0 = (q) => [
     (q[0] - o[0]) * u[0] + (q[1] - o[1]) * u[1],
     (q[0] - o[0]) * v[0] + (q[1] - o[1]) * v[1],
-  ]);
+  ];
+  let pts = (p.C || []).map(tf0);
+  let holes = (p.hin || []).map((h) => {
+    const L = h.L.map(tf0),
+      round = h.o && h.o.shape === "circle";
+    const c = [
+      L.reduce((m, q) => m + q[0], 0) / L.length,
+      L.reduce((m, q) => m + q[1], 0) / L.length,
+    ];
+    return {
+      type: h.type,
+      round,
+      c,
+      r: round ? Math.hypot(L[0][0] - c[0], L[0][1] - c[1]) : 0,
+      L,
+    };
+  });
   // keep the long side horizontal on the card
   if (H > W + 1e-6) {
-    pts = pts.map(([s, t]) => [t, W - s]);
+    const rot = ([s, t]) => [t, W - s];
+    pts = pts.map(rot);
+    holes = holes.map((h) => ({ ...h, c: rot(h.c), L: h.L.map(rot) }));
     [W, H] = [H, W];
   }
   // clean: snap to the tile edges, drop repeated points, counter-clockwise
@@ -167,7 +197,25 @@ function pieceGeom(p) {
     d = ((d * 180) / Math.PI + 360) % 360;
     return 360 - d > 180 ? d : 360 - d;
   });
-  return { W, H, pts: Pg, cut, marks, ang, g };
+  // where each hole goes: from the nearest corner, along the two sides
+  holes.forEach((h) => {
+    const b = bboxOf(h.L),
+      cx = h.round ? h.c[0] : b.x0 + (b.x1 - b.x0) / 2,
+      cy = h.round ? h.c[1] : b.y0 + (b.y1 - b.y0) / 2,
+      left = cx <= W / 2,
+      low = cy <= H / 2;
+    h.corner = low ? (left ? "A" : "B") : left ? "D" : "C";
+    // round: to the center; others: to the near edge of the hole
+    h.dx = h.round ? (left ? cx : W - cx) : left ? b.x0 : W - b.x1;
+    h.dy = h.round ? (low ? cy : H - cy) : low ? b.y0 : H - b.y1;
+    h.sx = left ? "AD" : "BC"; // dx is measured from this side
+    h.sy = low ? "AB" : "DC";
+    h.bw = b.x1 - b.x0;
+    h.bh = b.y1 - b.y0;
+    h.left = left;
+    h.low = low;
+  });
+  return { W, H, pts: Pg, cut, marks, ang, g, holes };
 }
 
 function pieceCard(it, p) {
@@ -235,6 +283,38 @@ function pieceCard(it, p) {
       y = Y(m.q[1]);
     svg += `<circle cx="${x}" cy="${y}" r="4.5" fill="#d0342c"/>`;
   });
+  // holes: outline, and dashed lines to the two nearest sides with the distances
+  (G.holes || []).forEach((hh) => {
+    const vis = clipConvex(hh.L, rectPoly(0, 0, W, H));
+    if (vis.length >= 3)
+      svg += `<polygon points="${P2(vis)}" fill="#fff" stroke="#d0342c" stroke-width="2"/>`;
+    const ax = hh.round
+      ? hh.c
+      : [
+          hh.left ? bboxOf(hh.L).x0 : bboxOf(hh.L).x1,
+          hh.low ? bboxOf(hh.L).y0 : bboxOf(hh.L).y1,
+        ];
+    if (hh.round)
+      svg += `<path d="M${X(ax[0]) - 5} ${Y(ax[1])}H${X(ax[0]) + 5}M${X(ax[0])} ${Y(ax[1]) - 5}V${Y(ax[1]) + 5}" stroke="#d0342c" stroke-width="1.5"/>`;
+    const ex = hh.left ? 0 : W,
+      ey = hh.low ? 0 : H;
+    svg += `<line x1="${X(ax[0])}" y1="${Y(ax[1])}" x2="${X(ex)}" y2="${Y(ax[1])}" stroke="#d0342c" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    svg += `<line x1="${X(ax[0])}" y1="${Y(ax[1])}" x2="${X(ax[0])}" y2="${Y(ey)}" stroke="#d0342c" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    svg += lbl(
+      (X(ax[0]) + X(ex)) / 2,
+      Y(ax[1]) - 9,
+      fmtIn(hh.dx) + "″",
+      "#d0342c",
+      12,
+    );
+    svg += lbl(
+      X(ax[0]) + 16,
+      (Y(ax[1]) + Y(ey)) / 2,
+      fmtIn(hh.dy) + "″",
+      "#d0342c",
+      12,
+    );
+  });
   // non-square angles
   G.ang.forEach((a, i) => {
     if (Math.abs(a - 90) < 1 || Math.abs(a - 180) < 1) return;
@@ -271,10 +351,20 @@ function pieceCard(it, p) {
         )
         .join("")}</div>`;
     }
+    if ((G.holes || []).length) {
+      const val = (v) =>
+        v < -0.01 ? `${fmtIn(-v)}″ ${pct("pcOut")}` : `<b>${fmtIn(v)}″</b>`;
+      h += `<p class="hsec" style="margin-top:10px">${pct("pcHolesT")}</p><div class="pcm">${G.holes
+        .map(
+          (hh) =>
+            `<div><b>${esc(t(hh.type))}</b> ${hh.round ? "⌀" + fmtIn(2 * hh.r) + "″" : pct("pcSize") + " " + fmtIn(hh.bw) + "×" + fmtIn(hh.bh) + "″"}: ${hh.round ? pct("pcCtr") : pct("pcEdge")} — ${val(hh.dx)} ${pct("pcFromSide")} ${hh.sx}, ${val(hh.dy)} ${pct("pcFromSide")} ${hh.sy} (${pct("pcFrom")} <b>${hh.corner}</b>)</div>`,
+        )
+        .join("")}</div>`;
+    }
     const notes = [];
     if (p.taper || p.taperW) notes.push(pct("pcTaper"));
     if (p.notch && p.ax) notes.push(pct("pcNotch"));
-    else if (p.notch && !p.hl) notes.push(pct("pcTri"));
+    else if (p.notch && !p.ax) notes.push(pct("pcTri"));
     if (p.hl) notes.push(pct("pcHoles"));
     if (G.g > 0 && !p.hl)
       notes.push(pct("pcGap").replace("{g}", fmtIn(G.g) + "″"));

@@ -260,8 +260,9 @@ function cellBox(C, holes, x0, y0, x1, y1) {
     xs.add(q[0]);
     ys.add(q[1]);
   });
+  const cell = rectPoly(x0, y0, x1 - x0, y1 - y0);
   holes.forEach((h) =>
-    h.L.forEach((v) => {
+    h.L.concat(clipConvex(h.L, cell)).forEach((v) => {
       if (v[0] > x0 && v[0] < x1) xs.add(v[0]);
       if (v[1] > y0 && v[1] < y1) ys.add(v[1]);
     }),
@@ -381,12 +382,14 @@ function pieces(region, holes, T, niche, bot) {
     )
       continue;
     const tp = t.poly || rectPoly(t.x0, t.y0, t.lw, t.lh);
-    const C = clipConvex(region, tp);
+    let C = clipConvex(region, tp);
     if (C.length < 3) continue;
     let a = polyArea(C);
     if (a < 0.02) continue;
     let hit = false,
-      hl = null;
+      hl = null,
+      hin = null,
+      gone = false;
     for (const h of holes) {
       const hb = h.bb;
       if (
@@ -398,16 +401,32 @@ function pieces(region, holes, T, niche, bot) {
       ) {
         const hp = clipConvex(h.P, tp);
         const ha = polyArea(hp);
-        if (ha > 1e-3) {
-          a -= ha;
-          hit = true;
-          (hl = hl || []).push(h.type);
+        if (ha <= 1e-3) continue;
+        // a cut-out that comes in over the piece's edge (pan, tub, cabinet…) is a cut of the
+        // piece's outline, not a hole: trim the outline so the piece gets real cut sizes
+        const round = h.o && h.o.shape === "circle";
+        const inside = h.L.every((q) => pip(C, q[0], q[1]));
+        if (!round && !inside) {
+          const L = polyDiff(C, h.L),
+            outer = L.filter((q) => sArea(q) > 0);
+          if (!L.length) {
+            gone = true;
+            break;
+          }
+          if (outer.length === 1 && L.length === 1) {
+            C = outer[0];
+            a = polyArea(C);
+            continue;
+          }
         }
+        a -= ha;
+        hit = true;
+        (hl = hl || []).push(h.type);
+        (hin = hin || []).push(h);
       }
     }
-    if (a < 0.02) continue;
-    const b = hit ? cellBox(C, holes, t.x0, t.y0, x1, y1) : bboxOf(C);
-    if (!b) continue;
+    if (gone || a < 0.02) continue;
+    const b = (hit && cellBox(C, holes, t.x0, t.y0, x1, y1)) || bboxOf(C);
     const ta = t.poly ? polyArea(t.poly) : t.lw * t.lh,
       bw = b.x1 - b.x0,
       bh = b.y1 - b.y0,
@@ -475,6 +494,13 @@ function pieces(region, holes, T, niche, bot) {
       niche: !!niche,
       hl,
       C,
+      hin: hin
+        ? hin.map((h) => ({
+            type: h.type,
+            o: h.o,
+            L: h.L,
+          }))
+        : null,
       ax: C.every((q, i) => {
         const r2 = C[(i + 1) % C.length];
         return Math.abs(q[0] - r2[0]) < 1e-6 || Math.abs(q[1] - r2[1]) < 1e-6;
@@ -765,7 +791,15 @@ function prep(s) {
     toW = a ? (p) => rotP(p, O, a) : (p) => p;
   const regionL = G.region.map(toL);
   const holes = G.holes.map((h) => {
-    const L = h.poly.map(toL);
+    let L = h.poly.map(toL);
+    if (sArea(L) < 0) L = L.slice().reverse(); // clipping needs counter-clockwise
+    L = L.filter(
+      (q, i) =>
+        Math.hypot(
+          q[0] - L[(i + 1) % L.length][0],
+          q[1] - L[(i + 1) % L.length][1],
+        ) > 1e-9,
+    );
     return {
       L,
       P: clipConvex(regionL, L),
@@ -914,7 +948,7 @@ function compute(s) {
             : (p.notch
                 ? p.arc
                   ? "◠ "
-                  : p.cutX || p.cutY || (p.ax && !p.hl)
+                  : p.ax && (p.cutX || p.cutY || !p.hl)
                     ? "L "
                     : p.hl
                       ? "⊙ "
@@ -1109,7 +1143,7 @@ function pieceNote(p) {
   if (p.taper) n.push(t("noteTaper"));
   else if (p.taperW);
   else if (p.arc);
-  else if (p.notch && (p.cutX || p.cutY || (p.ax && !p.hl))) n.push(t("noteL"));
+  else if (p.notch && p.ax && (p.cutX || p.cutY || !p.hl)) n.push(t("noteL"));
   else if (p.notch && !p.hl) n.push(t("noteAng"));
   if (p.hl) n.push(...[...new Set(p.hl)].map((x) => t(x)));
   if (p.c === "bad") n.push("⚠ " + t("legBad"));

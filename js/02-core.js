@@ -124,6 +124,110 @@ function clipConvex(subj, clip) {
   }
   return out;
 }
+/* C minus H as outline loops (any simple polygons). Boundary tracing: keep C's edges that lie
+   outside H and H's edges that lie inside C (reversed), then chain them into loops.
+   Returns [] when nothing is left; outer loops are counter-clockwise, inner ones clockwise. */
+function polyDiff(C, H) {
+  const ccw = (q) => (sArea(q) < 0 ? q.slice().reverse() : q);
+  C = ccw(C);
+  H = ccw(H);
+  const E = 1e-7;
+  const cross = (a, b, c, d) => {
+    const rx = b[0] - a[0],
+      ry = b[1] - a[1],
+      sx = d[0] - c[0],
+      sy = d[1] - c[1],
+      den = rx * sy - ry * sx;
+    if (Math.abs(den) < 1e-12) return null;
+    const qx = c[0] - a[0],
+      qy = c[1] - a[1],
+      t = (qx * sy - qy * sx) / den,
+      u = (qx * ry - qy * rx) / den;
+    return t > -E && t < 1 + E && u > -E && u < 1 + E ? [t, u] : null;
+  };
+  // split every edge of A at its crossings with B (and at B's vertices lying on it)
+  const split = (A, B) => {
+    const segs = [];
+    for (let i = 0; i < A.length; i++) {
+      const a = A[i],
+        b = A[(i + 1) % A.length],
+        ts = [0, 1],
+        L2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2;
+      if (L2 < 1e-14) continue;
+      for (let j = 0; j < B.length; j++) {
+        const c = B[j],
+          d = B[(j + 1) % B.length],
+          r = cross(a, b, c, d);
+        if (r) ts.push(Math.min(1, Math.max(0, r[0])));
+        // B's vertex on this edge (covers collinear overlaps)
+        const t =
+          ((c[0] - a[0]) * (b[0] - a[0]) + (c[1] - a[1]) * (b[1] - a[1])) / L2;
+        if (t > E && t < 1 - E) {
+          const px = a[0] + t * (b[0] - a[0]),
+            py = a[1] + t * (b[1] - a[1]);
+          if (Math.hypot(px - c[0], py - c[1]) < 1e-6) ts.push(t);
+        }
+      }
+      ts.sort((x, y) => x - y);
+      for (let k = 0; k < ts.length - 1; k++) {
+        if (ts[k + 1] - ts[k] < 1e-9) continue;
+        const p0 = [a[0] + ts[k] * (b[0] - a[0]), a[1] + ts[k] * (b[1] - a[1])],
+          p1 = [
+            a[0] + ts[k + 1] * (b[0] - a[0]),
+            a[1] + ts[k + 1] * (b[1] - a[1]),
+          ];
+        segs.push([p0, p1]);
+      }
+    }
+    return segs;
+  };
+  // a point just to the left / right of a segment's middle
+  const side = (sg, k) => {
+    const [a, b] = sg,
+      l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1,
+      d = Math.min(1e-3, l * 0.01);
+    return [
+      (a[0] + b[0]) / 2 - ((b[1] - a[1]) / l) * d * k,
+      (a[1] + b[1]) / 2 + ((b[0] - a[0]) / l) * d * k,
+    ];
+  };
+  const inC = (q) => pip(C, q[0], q[1]),
+    inH = (q) => pip(H, q[0], q[1]);
+  const keep = [];
+  split(C, H).forEach((sg) => {
+    // C's own edge stays where the piece side (left) is not taken by H
+    if (!inH(side(sg, 1))) keep.push(sg);
+  });
+  split(H, C).forEach((sg) => {
+    const l = side(sg, 1), // inside H
+      r = side(sg, -1); // outside H
+    if (inC(r) && !inH(r) && inC(l)) keep.push([sg[1], sg[0]]);
+  });
+  // chain into loops
+  const key = (q) => Math.round(q[0] * 1e5) + "," + Math.round(q[1] * 1e5);
+  const from = new Map();
+  keep.forEach((sg, i) => {
+    const k = key(sg[0]);
+    if (!from.has(k)) from.set(k, []);
+    from.get(k).push(i);
+  });
+  const used = new Array(keep.length).fill(false),
+    loops = [];
+  for (let i = 0; i < keep.length; i++) {
+    if (used[i]) continue;
+    const loop = [];
+    let j = i,
+      guard = 0;
+    while (j != null && !used[j] && guard++ < 10000) {
+      used[j] = true;
+      loop.push(keep[j][0]);
+      const nx = (from.get(key(keep[j][1])) || []).find((m) => !used[m]);
+      j = nx == null ? null : nx;
+    }
+    if (loop.length >= 3 && Math.abs(sArea(loop)) > 1e-6) loops.push(loop);
+  }
+  return loops;
+}
 function pip(p, x, y) {
   let c = false;
   for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
