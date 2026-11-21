@@ -622,6 +622,27 @@ function act(a, arg, b) {
       draw();
       if (!$("#modal").hidden && arg !== "x") closeModal();
       break;
+    case "sitePrev":
+      siteStep(-1);
+      break;
+    case "siteNext":
+      siteStep(1);
+      break;
+    case "secGrp":
+      secGrp(arg);
+      break;
+    case "wzOpen":
+      S.wz = null;
+      wzOpen();
+      break;
+    case "wzRoom":
+    case "wzNext":
+    case "wzBack":
+    case "wzCeil":
+    case "wzTile":
+    case "wzBuild":
+      wzAct(a, arg);
+      break;
     case "frAuto":
     case "frDel":
     case "frAdd":

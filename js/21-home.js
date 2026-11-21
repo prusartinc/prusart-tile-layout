@@ -79,7 +79,7 @@ function renderHome() {
   if (P && DB.projects.includes(P) && !projBlank(P))
     h += `<button class="hcont" data-act="homeOpen:${P.id}"><span>${t("hContinue")}</span><b>${esc(P.name)}</b><small>${esc(P.client || "")}</small><i>→</i></button>`;
   h += `<button class="hnew" data-act="nhStart"><span>＋</span><div><b>${t("newProj")}</b><small>${t("hNewHint")}</small></div></button>`;
-  h += `<button class="hnew hnew2" data-act="homeNewPlan"><span>📐</span><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
+  h += `<button class="hnew hnew2" data-act="wzOpen"><span>📐</span><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
   h += `<div class="hsearch"><input id="hq" type="search" placeholder="🔎 ${t("hSearch")}" value="${esc(S.hq || "")}"></div>`;
   h += `<p class="hsec">${t("projects")} · ${shown.length}</p><div class="hgrid">`;
   h += list
