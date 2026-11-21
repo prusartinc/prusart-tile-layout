@@ -100,7 +100,8 @@ function planSheet() {
       h +=
         F(pt("plX"), p + "x", "len", "p") + F(pt("plY"), p + "y", "len", "p");
     }
-    if (!K.pt) h += F(K.glass ? pt("plGl") : pt("plW"), p + "w", "len", "p");
+    if (!K.pt && it.k !== "pony")
+      h += F(K.glass ? pt("plGl") : pt("plW"), p + "w", "len", "p");
     if (K.glass) {
       h +=
         F(pt("plAng"), p + "ang", "num", "p") +
@@ -111,8 +112,14 @@ function planSheet() {
       );
       if (it.door !== "none") h += F(pt("plDw"), p + "dw", "len", "p");
     }
-    if (!K.inwall && !K.pt && !K.floor)
+    if (!K.inwall && !K.pt && !K.floor && it.k !== "pony")
       h += F(pt("plDp"), p + "dp", "len", "p");
+    if (it.k === "pony") {
+      const out = ponyNorm(it).orient === "out";
+      h +=
+        F(pnt("len"), p + (out ? "dp" : "w"), "len", "p") +
+        F(pnt("thick"), p + (out ? "w" : "dp"), "len", "p");
+    }
     if (it.k === "register") h += F(pt("plDp"), p + "dp", "len", "p");
     if (it.k === "niche") h += F(pt("plDp"), p + "dp", "len", "p");
     if (!K.floor && it.k !== "shower") h += F(pt("plHh"), p + "h", "len", "p");
@@ -136,6 +143,7 @@ function planSheet() {
           F(sht("shCutA"), p + "pcut.a", "len", "p") +
           F(sht("shCutB"), p + "pcut.b", "len", "p");
     }
+    if (it.k === "pony") h += ponySheet(it, p);
     if (it.k === "cab")
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
@@ -679,6 +687,28 @@ function planItemTop(it, pts, k, sel) {
       }
       h += poly(rect(s0, s1, -W.th, 0)) + ` fill="transparent"/>`;
       h += lbl(c, -W.th / 2, `${fmtIn(w)}`, 7 * k);
+      break;
+    }
+    case "pony": {
+      // a framed wall: hatched like the room walls, tiled faces drawn thicker
+      const o = ponyNorm(it),
+        F = rect(s0, s1, 0, dp),
+        pid = "ph" + it.id;
+      h += `<defs><pattern id="${pid}" width="${4 * k}" height="${4 * k}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="${4 * k}" stroke="${PLC.wall}" stroke-width="${0.6 * k}"/></pattern></defs>`;
+      h +=
+        poly(F) + ` fill="url(#${pid})" stroke="${stc}" stroke-width="${sw}"/>`;
+      const T = (A, B) =>
+        `<path d="M${A.join(" ")}L${B.join(" ")}" stroke="#2f6fb5" stroke-width="${2.2 * k}" stroke-linecap="round"/>`;
+      if (o.orient === "out") {
+        if (o.faces.a) h += T(at(s0, 0), at(s0, dp));
+        if (o.faces.b) h += T(at(s1, 0), at(s1, dp));
+        if (o.faces.e) h += T(at(s0, dp), at(s1, dp));
+      } else {
+        if (o.faces.f) h += T(at(s0, dp), at(s1, dp));
+        if (o.faces.l) h += T(at(s0, 0), at(s0, dp));
+        if (o.faces.r) h += T(at(s1, 0), at(s1, dp));
+      }
+      h += lbl(c, dp + 5 * k, `Pony ${fmtIn(+it.h)}″`, 7 * k);
       break;
     }
     case "window":

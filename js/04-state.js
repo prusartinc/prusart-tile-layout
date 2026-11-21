@@ -72,6 +72,7 @@ function newSurface(type, name) {
     pts: "0,0; 60,0; 60,40; 30,40; 30,72; 0,72",
     openings: [],
     trim: { l: false, r: false, t: false, b: false },
+    trimK: { l: "sch", r: "sch", t: "sch", b: "sch" },
     extraLF: 0,
     base: 0,
     link: true,
@@ -311,6 +312,10 @@ function migrate(p) {
         return o;
       });
     s.trim = s.trim || {};
+    s.trimK = Object.assign(
+      { l: "sch", r: "sch", t: "sch", b: "sch" },
+      s.trimK || {},
+    );
     if (s.base == null) s.base = 0;
     s.uneven = s.uneven || { on: false, l: 0, r: 0, m: 0, mOn: false };
     if (s.wet == null) s.wet = s.type !== "floor";

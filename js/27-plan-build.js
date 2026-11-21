@@ -106,7 +106,7 @@ function planBuild() {
           dia: 5,
           face: "auto",
         });
-      } else if (it.k === "tub" || it.k === "shower") {
+      } else if (it.k === "tub" || it.k === "shower" || it.k === "pony") {
         // cut the floor along the real outline (a pan with a cut corner, a tub on an angled wall)
         f.openings.push(planCutOf(it, pts));
       } else if (
@@ -213,6 +213,8 @@ function planBuild() {
       s.curb.on = !it.cl;
       panApplyShape(s);
     });
+  // pony walls: one surface per tiled face, edges finished as set on the plan
+  if (typeof ponyBuild === "function") ponyBuild(pl, get, fresh);
   // drop surfaces whose plan wall lost its tile
   P.surfaces = P.surfaces.filter((s) => {
     const m = /^w(\d+)$/.exec(s.fromPlan || "");
@@ -805,7 +807,9 @@ function planCutSync() {
   } catch (e) {
     return false;
   }
-  const items = pl.items.filter((i) => i.k === "shower" || i.k === "tub");
+  const items = pl.items.filter(
+    (i) => i.k === "shower" || i.k === "tub" || i.k === "pony",
+  );
   let moved = false;
   f.openings.forEach((o) => {
     if (!o.pl || o.type !== "cutout") return;
@@ -833,5 +837,6 @@ function planCutSync() {
 function opName(o) {
   if (o && o.pk === "shower") return t("panCut");
   if (o && o.pk === "tub") return t("tubCut");
+  if (o && o.pk === "pony") return PLT[lang === "ru" ? "ru" : "en"].k_pony;
   return t(o.type);
 }

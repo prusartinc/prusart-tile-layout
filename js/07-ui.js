@@ -522,6 +522,33 @@ function renderPrepRes() {
     h += `<table>${pp.strips.map((q, i) => `<tr><td>${t("stripN")} ${i + 1}</td><td class="n"><b>${ftin(q.b1 - q.b0)}</b></td></tr>`).join("")}</table>`;
   el.innerHTML = h;
 }
+const EDGEKT = {
+  ru: {
+    kind: "Чем закрыть край",
+    sch: "Schluter (профиль)",
+    pencil: "Карандаш (pencil liner)",
+    bull: "Bullnose (плитка со скруглением)",
+    miter: "Запил 45° (miter)",
+    pencilW: "Ширина карандаша",
+    mPencil: "Карандаш (pencil liner)",
+    mBull: "Bullnose — край",
+    mMiter: "Запил 45° (miter) — длина реза",
+    pcs: "шт",
+  },
+  en: {
+    kind: "Edge finish",
+    sch: "Schluter (profile)",
+    pencil: "Pencil liner",
+    bull: "Bullnose tile",
+    miter: "45° miter",
+    pencilW: "Pencil width",
+    mPencil: "Pencil liner",
+    mBull: "Bullnose edge",
+    mMiter: "45° miter — cut length",
+    pcs: "pcs",
+  },
+};
+const edgeKT = (k) => (EDGEKT[lang] || EDGEKT.en)[k] || k;
 function profFields(s) {
   s.prof = s.prof || { type: "inherit", size: "auto", vis: null };
   const ep = edgeProf(s);
@@ -780,7 +807,30 @@ function renderPanel() {
     t("edges"),
     profFields(s) +
       (s.shape === "rect"
-        ? `<p class="hint">${t("edgeHint")}</p><div class="grid">${CHK(t("edgeL"), "trim.l")}${CHK(t("edgeR"), "trim.r")}${CHK(t("edgeT"), "trim.t")}${CHK(t("edgeB"), "trim.b")}</div>`
+        ? `<p class="hint">${t("edgeHint")}</p><div class="grid">${[
+            "l",
+            "r",
+            "t",
+            "b",
+          ]
+            .map(
+              (k) =>
+                CHK(t("edge" + k.toUpperCase()), "trim." + k) +
+                (s.trim[k]
+                  ? SEL(
+                      edgeKT("kind"),
+                      "trimK." + k,
+                      EDGE_KINDS,
+                      1,
+                      "s",
+                      "",
+                      (o) => edgeKT(o),
+                    )
+                  : `<div></div>`),
+            )
+            .join(
+              "",
+            )}${["l", "r", "t", "b"].some((k) => s.trim[k] && edgeKind(s, k) === "pencil") ? F(edgeKT("pencilW"), "pencilW") : ""}</div>`
         : `<p class="hint">${t("edgeNonRect")}</p>`) +
       `<div class="grid">${F(t("extraLF"), "extraLF")}</div>`,
   );

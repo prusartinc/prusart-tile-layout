@@ -659,6 +659,22 @@ function countSheets(region, T) {
   return n;
 }
 
+/* ================= edge finishes =================
+   A finished (outside) edge of a rect surface: trim.<side> turns it on, trimK.<side> says how:
+   sch — Schluter profile (inset by its visible width), pencil — pencil liner row (inset by the
+   liner width), bull — bullnose tile on the edge row, miter — 45° mitered tile, miterx — the
+   other half of a miter already counted on the neighbouring face. */
+const EDGE_KINDS = ["sch", "pencil", "bull", "miter"];
+function edgeKind(s, k) {
+  const v = s.trimK && s.trimK[k];
+  return v || "sch";
+}
+function edgeInset(s, k, sw) {
+  const kd = edgeKind(s, k);
+  if (kd === "sch") return sw;
+  if (kd === "pencil") return +s.pencilW || 0.75;
+  return 0;
+}
 /* ================= surface geometry ================= */
 function geom(s) {
   const sw = edgeProf(s).vis,
@@ -672,11 +688,12 @@ function geom(s) {
       b = tr.b && !isUneven(s) && !isTub(s) ? sw : 0;
     region = wallPoly(s, l, r, tp, b);
   } else if (s.shape === "rect") {
-    const tr = s.trim;
-    const l = tr.l ? sw : 0,
-      r = tr.r ? sw : 0,
-      b = tr.b ? sw : 0,
-      tp = tr.t ? sw : 0;
+    const tr = s.trim,
+      ins = (k) => (tr[k] ? edgeInset(s, k, sw) : 0);
+    const l = ins("l"),
+      r = ins("r"),
+      b = ins("b"),
+      tp = ins("t");
     region = rectPoly(l, b, s.w - l - r, s.h - b - tp);
   }
   const line = transTabs(s, outer);
@@ -805,7 +822,10 @@ function prep(s) {
       P: clipConvex(regionL, L),
       bb: bboxOf(L),
       type:
-        h.o && h.o.pk ? (h.o.pk === "shower" ? "panCut" : "tubCut") : h.type,
+        h.o && h.o.pk
+          ? { shower: "panCut", tub: "tubCut", pony: "ponyCut" }[h.o.pk] ||
+            h.type
+          : h.type,
       o: h.o,
     };
   });
@@ -977,9 +997,16 @@ function compute(s) {
     }
   });
   let lf = 0;
+  const edgeLF = { pencil: 0, bull: 0, miter: 0 };
   if (s.shape === "rect") {
     const q = s.trim;
-    lf += (q.l ? s.h : 0) + (q.r ? s.h : 0) + (q.t ? s.w : 0) + (q.b ? s.w : 0);
+    ["l", "r", "t", "b"].forEach((k) => {
+      if (!q[k]) return;
+      const len = k === "l" || k === "r" ? +s.h : +s.w,
+        kd = edgeKind(s, k);
+      if (kd === "sch") lf += len;
+      else if (edgeLF[kd] != null) edgeLF[kd] += len;
+    });
   }
   s.openings.forEach((o) => {
     if (o.trim && TRIMMABLE[o.type] && o.type !== "niche")
@@ -990,6 +1017,7 @@ function compute(s) {
   const R = {
     ...X,
     err: false,
+    edgeLF,
     main,
     nich,
     nichOwn,

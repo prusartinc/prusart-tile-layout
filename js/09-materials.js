@@ -258,6 +258,25 @@ function materials() {
       `${(pf[k] / 12).toFixed(1)} ft`,
     ]),
   );
+  // pencil liner, bullnose and miter edges (pony walls, half walls, window returns…)
+  {
+    const E = { pencil: 0, bull: 0, miter: 0 };
+    P.surfaces.forEach((s2) => {
+      const R2 = compute(s2);
+      if (R2.edgeLF) for (const k in E) E[k] += R2.edgeLF[k] || 0;
+    });
+    const len = +P.pencilLen || 12;
+    if (E.pencil > 0)
+      rows.push([
+        edgeKT("mPencil"),
+        `${Math.ceil((E.pencil / len) * 1.1)} ${edgeKT("pcs")} × ${fmtIn(len)}″`,
+        `${(E.pencil / 12).toFixed(1)} ft`,
+      ]);
+    if (E.bull > 0)
+      rows.push([edgeKT("mBull"), `${(E.bull / 12).toFixed(1)} ft`, `+10%`]);
+    if (E.miter > 0)
+      rows.push([edgeKT("mMiter"), `${(E.miter / 12).toFixed(1)} ft`, ""]);
+  }
   // kitchen / backsplash extras
   {
     const bsw = P.surfaces.filter((x) => x.bs && x.bs.on);

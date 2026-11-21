@@ -462,16 +462,41 @@ function surfBody(s, R, o) {
   });
   const sw = edgeProf(s).vis,
     TR = 'fill="#c3c8d0" stroke="#7f8690" stroke-width="' + px(0.8) + '"';
-  if (s.shape === "rect" && sw > 0) {
+  if (s.shape === "rect") {
     const q = s.trim;
-    if (q.l)
-      h += `<rect x="0" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
-    if (q.r)
-      h += `<rect x="${s.w - sw}" y="${-s.h}" width="${sw}" height="${s.h}" ${TR}/>`;
-    if (q.t)
-      h += `<rect x="0" y="${-s.h}" width="${s.w}" height="${sw}" ${TR}/>`;
-    if (q.b)
-      h += `<rect x="0" y="${-sw}" width="${s.w}" height="${sw}" ${TR}/>`;
+    // each finished edge drawn by its kind: Schluter strip, pencil liner, bullnose line, miter ticks
+    ["l", "r", "t", "b"].forEach((k) => {
+      if (!q[k]) return;
+      const kd = edgeKind(s, k),
+        wd = kd === "sch" ? sw : kd === "pencil" ? +s.pencilW || 0.75 : 0,
+        R4 =
+          k === "l"
+            ? [0, -s.h, wd, s.h]
+            : k === "r"
+              ? [s.w - wd, -s.h, wd, s.h]
+              : k === "t"
+                ? [0, -s.h, s.w, wd]
+                : [0, -wd, s.w, wd];
+      if (kd === "sch" && wd > 0)
+        h += `<rect x="${R4[0]}" y="${R4[1]}" width="${R4[2]}" height="${R4[3]}" ${TR}/>`;
+      else if (kd === "pencil")
+        h += `<rect x="${R4[0]}" y="${R4[1]}" width="${R4[2]}" height="${R4[3]}" fill="#c9a66b" stroke="#8a6d3b" stroke-width="${px(0.8)}"/>`;
+      else {
+        // bullnose / miter: a marked edge line
+        const L =
+          k === "l"
+            ? [0, 0, 0, -s.h]
+            : k === "r"
+              ? [s.w, 0, s.w, -s.h]
+              : k === "t"
+                ? [0, -s.h, s.w, -s.h]
+                : [0, 0, s.w, 0];
+        if (kd === "bull")
+          h += `<line x1="${L[0]}" y1="${L[1]}" x2="${L[2]}" y2="${L[3]}" stroke="#2f6fb5" stroke-width="${px(5)}" stroke-linecap="round" opacity=".75"/>`;
+        else
+          h += `<line x1="${L[0]}" y1="${L[1]}" x2="${L[2]}" y2="${L[3]}" stroke="#7a4fb3" stroke-width="${px(3)}" stroke-dasharray="${px(2)} ${px(3)}"/>`;
+      }
+    });
   }
   const lbl = (B, txt, maxW, col, inside) => {
     // big cut-outs (pan, tub, window…) carry their name inside, where it can't drift away
