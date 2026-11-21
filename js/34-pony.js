@@ -43,6 +43,19 @@ const PNT = {
     thick: "Толщина (каркас + борд)",
     built: "Поверхности стенки создаются автоматически при выходе из плана.",
     name: "Pony",
+    niche: "Ниша в стенке",
+    nFace: "На какой стороне",
+    nW: "Ширина ниши",
+    nH: "Высота ниши",
+    nZ: "Низ ниши от пола",
+    nX: "Край ниши от стены",
+    nDeep: "Глубина ниши (не больше стойки)",
+    glass: "Стекло сверху",
+    gTop: "Верх стекла от пола",
+    gIs: "Стекло",
+    gBlock:
+      "Под стекло: в верх стенки — сплошная обвязка (2× 2×6 или 2×4 + фанера) под U-канал/зажимы; если стенка не к стене, нужна сквозная шпилька или стальная пластина у основания.",
+    nTooDeep: "Ниша глубже стойки — уменьшится до",
   },
   en: {
     orient: "Placement",
@@ -76,6 +89,19 @@ const PNT = {
     built:
       "The wall's surfaces are made automatically when you leave the plan.",
     name: "Pony",
+    niche: "Niche in the wall",
+    nFace: "On which face",
+    nW: "Niche width",
+    nH: "Niche height",
+    nZ: "Niche bottom from floor",
+    nX: "Niche edge from the wall",
+    nDeep: "Niche depth (stud width max)",
+    glass: "Glass on top",
+    gTop: "Glass top from floor",
+    gIs: "Glass",
+    gBlock:
+      "For the glass: solid top plate in the wall (2× 2×6, or 2×4 + plywood) for the U-channel/clamps; a freestanding wall needs a through rod or a steel plate at the base.",
+    nTooDeep: "Niche deeper than the stud — it will be cut to",
   },
 };
 const pnt = (k) => (PNT[lang] || PNT.en)[k] || k;
@@ -113,6 +139,19 @@ function ponyNorm(it) {
     it.dp = w;
   }
   o.was = o.orient;
+  o.niche = Object.assign(
+    {
+      on: false,
+      face: o.orient === "out" ? "a" : "f",
+      w: 12,
+      h: 12,
+      z: 18,
+      x: 6,
+      d: 3.5,
+    },
+    o.niche || {},
+  );
+  o.glass = Object.assign({ on: false, top: 76 }, o.glass || {});
   o.faces = o.faces || {};
   o.edge = o.edge || {};
   ["a", "b", "e", "f", "l", "r", "c"].forEach((k) => {
@@ -164,6 +203,29 @@ function ponySheet(it, p) {
       (x) => (x === "none" ? pnt("none") : edgeKT(x)),
     );
   });
+  // niche in a face
+  h += `</div>${CHK(pnt("niche"), p + "pony.niche.on", 1, "p")}<div class="grid2">`;
+  if (o.niche.on) {
+    const nf = D.faces.filter((f) => f !== "c" && o.faces[f]);
+    h += SEL(pnt("nFace"), p + "pony.niche.face", nf, 1, "p", "", (x) =>
+      pnt("f_" + x),
+    );
+    h +=
+      F(pnt("nW"), p + "pony.niche.w", "len", "p") +
+      F(pnt("nH"), p + "pony.niche.h", "len", "p") +
+      F(pnt("nZ"), p + "pony.niche.z", "len", "p") +
+      F(pnt("nX"), p + "pony.niche.x", "len", "p") +
+      F(pnt("nDeep"), p + "pony.niche.d", "len", "p");
+    const maxD = Math.max(0, d.T - 1);
+    if (+o.niche.d > maxD)
+      h += `</div><p class="hint">⚠ ${pnt("nTooDeep")} ${fmtIn(maxD)}″</p><div class="grid2">`;
+  }
+  // glass on top
+  h += `</div>${CHK(pnt("glass"), p + "pony.glass.on", 1, "p")}<div class="grid2">`;
+  if (o.glass.on) {
+    h += F(pnt("gTop"), p + "pony.glass.top", "len", "p");
+    h += `</div><p class="hint">${pnt("gIs")}: <b>${fmtIn(d.L)}″ × ${fmtIn(Math.max(0, +o.glass.top - d.H))}″</b>. ${pnt("gBlock")}</p><div class="grid2">`;
+  }
   h += `</div><p class="hint">${pnt("built")}</p><div class="grid2">`;
   return h;
 }
@@ -207,6 +269,24 @@ function ponyBuild(pl, get, fresh) {
         s.trimK = { l: "sch", r: "sch", t: "sch", b: "sch" };
         if (isNew) fresh.push(s);
         S2[f] = s;
+        const n = o.niche;
+        if (n.on && n.face === f) {
+          const dd = Math.min(+n.d || 3.5, Math.max(0.5, d.T - 1)),
+            // the face's left edge is at the wall for side 1 / face; side 2 is seen from the other side
+            fromWall = f === "b" ? s.w - +n.x - +n.w : +n.x;
+          s.openings.push({
+            id: uid(),
+            pl: 1,
+            type: "niche",
+            shape: "rect",
+            trim: true,
+            x: Math.max(0, Math.min(s.w - +n.w, fromWall)),
+            y: +n.z,
+            w: +n.w,
+            h: +n.h,
+            d: dd,
+          });
+        }
       });
       D.edges.forEach(([id, fx, sx, fy, sy]) => {
         let kd = o.edge[id] || "sch";
@@ -234,4 +314,49 @@ function ponyBuild(pl, get, fresh) {
   P.surfaces = P.surfaces.filter(
     (s) => !/^pony:/.test(s.fromPlan || "") || keep.has(s.fromPlan),
   );
+}
+
+/* glass on top of a pony wall: a plan glass item that follows the wall's top centre line */
+function ponyGlassSync() {
+  const pl = P && P.plan;
+  if (!pl || !pl.items) return;
+  let pts;
+  try {
+    pts = planPts();
+  } catch (e) {
+    return;
+  }
+  pl.items
+    .filter((it) => it.k === "pony")
+    .forEach((it) => {
+      const o = ponyNorm(it);
+      let g = o.glass.gid && pl.items.find((x) => x.id === o.glass.gid);
+      if (!o.glass.on) {
+        if (g) pl.items.splice(pl.items.indexOf(g), 1);
+        delete o.glass.gid;
+        return;
+      }
+      const W = planWall(it.wall, pts),
+        c = +it.c,
+        dp = +it.dp || 0,
+        A = o.orient === "out" ? plAt(W, c, 0) : plAt(W, c - +it.w / 2, dp / 2),
+        B =
+          o.orient === "out" ? plAt(W, c, dp) : plAt(W, c + +it.w / 2, dp / 2),
+        d = ponyDims(it);
+      if (!g) {
+        g = Object.assign(
+          { id: uid(), k: "glass", door: "none", dw: 24, dsn: 1 },
+          {},
+        );
+        pl.items.push(g);
+        o.glass.gid = g.id;
+      }
+      g.x = (A[0] + B[0]) / 2;
+      g.y = (A[1] + B[1]) / 2;
+      g.ang = (Math.atan2(B[1] - A[1], B[0] - A[0]) * 180) / Math.PI;
+      g.w = Math.round(d.L * 16) / 16;
+      g.z = d.H;
+      g.h = Math.max(0, +o.glass.top - d.H);
+      g.gpony = it.id; // glass that sits on a pony wall
+    });
 }

@@ -214,7 +214,11 @@ function planBuild() {
       panApplyShape(s);
     });
   // pony walls: one surface per tiled face, edges finished as set on the plan
-  if (typeof ponyBuild === "function") ponyBuild(pl, get, fresh);
+  if (typeof ponyBuild === "function") {
+    ponyGlassSync();
+    ponyBuild(pl, get, fresh);
+  }
+  if (typeof winBuild === "function") winBuild(pl, get, fresh);
   // drop surfaces whose plan wall lost its tile
   P.surfaces = P.surfaces.filter((s) => {
     const m = /^w(\d+)$/.exec(s.fromPlan || "");
@@ -286,6 +290,7 @@ function planWallOps(i, pts, ox, oy, s) {
             y: z,
             w: +it.w,
             h: +it.h,
+            pi: it.id,
           });
           break;
         case "niche":

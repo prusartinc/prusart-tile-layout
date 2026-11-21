@@ -144,6 +144,7 @@ function planSheet() {
           F(sht("shCutB"), p + "pcut.b", "len", "p");
     }
     if (it.k === "pony") h += ponySheet(it, p);
+    if (it.k === "window") h += winSheet(it, p);
     if (it.k === "cab")
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
@@ -378,6 +379,7 @@ function planDraw() {
   // a pan / tub moved or reshaped on the plan: the floor cut-out follows now
   try {
     if (typeof planCutSync === "function") planCutSync();
+    if (typeof ponyGlassSync === "function") ponyGlassSync();
   } catch (e) {}
   const W0 = box.clientWidth || 360,
     H0 = box.clientHeight || 360;
