@@ -545,6 +545,8 @@ function planGlassEnds(it) {
 // curb: { w, len } — a shower with a curb also takes the curb's strip in front of the pan
 function planFoot(it, pts, curb) {
   const K = PL_KINDS[it.k];
+  if (it.k === "bench" && typeof benchFoot === "function")
+    return benchFoot(it, pts);
   if (K.glass) {
     const g = planGlassEnds(it),
       t = 0.25;

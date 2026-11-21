@@ -622,6 +622,9 @@ function act(a, arg, b) {
       draw();
       if (!$("#modal").hidden && arg !== "x") closeModal();
       break;
+    case "benchHow":
+      benchHow(arg);
+      break;
     case "glToggle":
     case "glShift":
     case "glSet":

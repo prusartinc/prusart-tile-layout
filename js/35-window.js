@@ -105,7 +105,7 @@ function winBuild(pl, get, fresh) {
         });
         if (isNew || !s.name || s.name === s.plName)
           s.name =
-            s.plName = `${wnt("name")} ${pt("plWall")} ${+it.wall + 1} · ${wnt("p_" + k)}`;
+            s.plName = `${wnt("name")} ${pt("plWall")} ${+it.wall + 1} · ${wnt("p_" + k)}${k === "s" && r.slope ? " ↘" : ""}`;
         s.shape = "rect";
         s.w = Math.round(parts[k][0] * 16) / 16;
         s.h = Math.round(parts[k][1] * 16) / 16;

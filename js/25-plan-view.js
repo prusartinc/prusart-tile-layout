@@ -100,7 +100,7 @@ function planSheet() {
       h +=
         F(pt("plX"), p + "x", "len", "p") + F(pt("plY"), p + "y", "len", "p");
     }
-    if (!K.pt && it.k !== "pony")
+    if (!K.pt && it.k !== "pony" && it.k !== "bench")
       h += F(K.glass ? pt("plGl") : pt("plW"), p + "w", "len", "p");
     if (K.glass) {
       h +=
@@ -112,7 +112,7 @@ function planSheet() {
       );
       if (it.door !== "none") h += F(pt("plDw"), p + "dw", "len", "p");
     }
-    if (!K.inwall && !K.pt && !K.floor && it.k !== "pony")
+    if (!K.inwall && !K.pt && !K.floor && it.k !== "pony" && it.k !== "bench")
       h += F(pt("plDp"), p + "dp", "len", "p");
     if (it.k === "pony") {
       const out = ponyNorm(it).orient === "out";
@@ -122,7 +122,8 @@ function planSheet() {
     }
     if (it.k === "register") h += F(pt("plDp"), p + "dp", "len", "p");
     if (it.k === "niche") h += F(pt("plDp"), p + "dp", "len", "p");
-    if (!K.floor && it.k !== "shower") h += F(pt("plHh"), p + "h", "len", "p");
+    if (!K.floor && it.k !== "shower" && it.k !== "bench")
+      h += F(pt("plHh"), p + "h", "len", "p");
     if (["window", "ucab", "mirror", "niche", "shelf"].includes(it.k))
       h += F(pt("plZ"), p + "z", "len", "p");
     if (K.pt) h += F(pt("plZc"), p + "z", "len", "p");
@@ -145,6 +146,7 @@ function planSheet() {
     }
     if (it.k === "pony") h += ponySheet(it, p);
     if (it.k === "window") h += winSheet(it, p);
+    if (it.k === "bench") h += benchSheet(it, p);
     if (it.k === "cab")
       h += `</div><p class="hsec">${pt("plCt")}</p><div class="grid2">${F(pt("plCtt"), p + "ctt", "len", "p")}${F(pt("plCtf"), p + "ctf", "len", "p")}${F(pt("plCtl"), p + "ctl", "len", "p")}${F(pt("plCtr"), p + "ctr", "len", "p")}`;
     if (it.k === "shower") {
@@ -689,6 +691,15 @@ function planItemTop(it, pts, k, sel) {
       }
       h += poly(rect(s0, s1, -W.th, 0)) + ` fill="transparent"/>`;
       h += lbl(c, -W.th / 2, `${fmtIn(w)}`, 7 * k);
+      break;
+    }
+    case "bench": {
+      const F = benchFootSD(it).map(([s2, d2]) => at(s2, d2)),
+        bid = "bh" + it.id;
+      h += `<defs><pattern id="${bid}" width="${5 * k}" height="${5 * k}" patternUnits="userSpaceOnUse"><circle cx="${2.5 * k}" cy="${2.5 * k}" r="${0.6 * k}" fill="${PLC.wall}"/></pattern></defs>`;
+      h +=
+        poly(F) + ` fill="url(#${bid})" stroke="${stc}" stroke-width="${sw}"/>`;
+      h += lbl(c, dp / 2, `${pt("k_bench")} ${fmtIn(+it.h)}″`, 6.5 * k);
       break;
     }
     case "pony": {

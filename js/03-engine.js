@@ -823,8 +823,12 @@ function prep(s) {
       bb: bboxOf(L),
       type:
         h.o && h.o.pk
-          ? { shower: "panCut", tub: "tubCut", pony: "ponyCut" }[h.o.pk] ||
-            h.type
+          ? {
+              shower: "panCut",
+              tub: "tubCut",
+              pony: "ponyCut",
+              bench: "benchCut",
+            }[h.o.pk] || h.type
           : h.type,
       o: h.o,
     };

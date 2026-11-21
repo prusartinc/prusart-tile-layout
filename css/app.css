@@ -2193,3 +2193,9 @@ body.site .mbox {
 .glsh{display:flex;align-items:center;gap:8px;margin:6px 0}
 .glsh span{flex:1;color:var(--mut);font-size:14px}
 .glsh b{min-width:46px;text-align:center}
+.cutt{width:100%;border-collapse:collapse;font-size:15px}
+.cutt td{border-bottom:1px solid var(--line);padding:6px 4px;vertical-align:top}
+.cutt td.n{text-align:right;white-space:nowrap}
+.bpan{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;align-items:flex-end}
+.bpan figure{margin:0;text-align:center;font-size:12px;color:var(--mut)}
+.bpan figcaption b{color:var(--ink,#222)}

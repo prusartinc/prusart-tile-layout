@@ -219,6 +219,10 @@ function planBuild() {
     ponyBuild(pl, get, fresh);
   }
   if (typeof winBuild === "function") winBuild(pl, get, fresh);
+  if (typeof benchBuild === "function") {
+    benchBuild(pl, get, fresh);
+    benchCuts(pl, pts);
+  }
   // drop surfaces whose plan wall lost its tile
   P.surfaces = P.surfaces.filter((s) => {
     const m = /^w(\d+)$/.exec(s.fromPlan || "");
@@ -843,5 +847,6 @@ function opName(o) {
   if (o && o.pk === "shower") return t("panCut");
   if (o && o.pk === "tub") return t("tubCut");
   if (o && o.pk === "pony") return PLT[lang === "ru" ? "ru" : "en"].k_pony;
+  if (o && o.pk === "bench") return PLT[lang === "ru" ? "ru" : "en"].k_bench;
   return t(o.type);
 }
