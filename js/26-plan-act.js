@@ -23,6 +23,9 @@ function planAct(a, arg) {
       V.zx = V.zy = 0;
       if (V.v !== "top") V.wsel = V.v;
       break;
+    case "plFrame":
+      V.frame = !V.frame;
+      break;
     case "plLayerE":
       V.hideE = !V.hideE;
       break;

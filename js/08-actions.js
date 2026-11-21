@@ -622,6 +622,11 @@ function act(a, arg, b) {
       draw();
       if (!$("#modal").hidden && arg !== "x") closeModal();
       break;
+    case "frAuto":
+    case "frDel":
+    case "frAdd":
+      frAct(a, arg);
+      break;
     case "benchHow":
       benchHow(arg);
       break;

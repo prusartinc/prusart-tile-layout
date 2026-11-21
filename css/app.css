@@ -2199,3 +2199,6 @@ body.site .mbox {
 .bpan{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;align-items:flex-end}
 .bpan figure{margin:0;text-align:center;font-size:12px;color:var(--mut)}
 .bpan figcaption b{color:var(--ink,#222)}
+.frl{display:flex;flex-wrap:wrap;gap:6px}
+.frl label{display:flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:8px;padding:2px 2px 2px 6px}
+.frl input{width:64px;border:0;background:transparent;font-size:15px;color:inherit}

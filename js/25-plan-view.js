@@ -72,7 +72,7 @@ function renderPlan() {
     )
     .join(
       "",
-    )}<span class="plsep"></span><button data-act="plLayerE" class="lay ${V.hideE ? "" : "on2"}">⚡ ${pt("plElec")}</button>${V.v !== "top" ? `<button data-act="plTiles" class="lay ${V.noTiles ? "" : "on2"}">▦ ${pt("plTilesL")}</button>` : ""}<button data-act="plPdf" class="lay">📄 PDF</button></div>`;
+    )}<span class="plsep"></span><button data-act="plLayerE" class="lay ${V.hideE ? "" : "on2"}">⚡ ${pt("plElec")}</button>${V.v !== "top" ? `<button data-act="plFrame" class="lay ${V.frame ? "on2" : ""}">🪵 ${frt("btn")}</button>` : ""}${V.v !== "top" ? `<button data-act="plTiles" class="lay ${V.noTiles ? "" : "on2"}">▦ ${pt("plTilesL")}</button>` : ""}<button data-act="plPdf" class="lay">📄 PDF</button></div>`;
   h += `<div class="plsvg" id="plsvg"></div><div class="plsheet" id="plsheet">${planSheet()}</div>`;
   el.innerHTML = h;
   planDraw();
@@ -1256,6 +1256,8 @@ function planElevSVG(i, W0, H0) {
         12 * k,
       );
   if (Z.length > 2) h += plDim([xr, Y(0)], [xr, Y(H)], fmt(H), k, 28 * k);
+  // framing on top while the layer is on, so studs can be grabbed
+  if (V.frame) h += frameSVG(i, W, L, H, k, Y);
   // which corner is which
   const lc = W.flip ? (i + 1) % n : i,
     rc = W.flip ? i : (i + 1) % n;
