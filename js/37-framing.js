@@ -300,7 +300,7 @@ document.addEventListener("change", (e) => {
       const x = p.matrixTransform(D.m).x,
         st = frWall(D.i).studs,
         L = planWall(D.i).L;
-      st.sort((a, b) => a - b);
+      // no re-sorting while dragging: the finger keeps the same stud even past a neighbour
       st[D.j] = Math.max(
         STUD / 2,
         Math.min(L - STUD / 2, Math.round((D.x0 + x - D.p0) * 8) / 8),
@@ -320,6 +320,8 @@ document.addEventListener("change", (e) => {
     "pointerup",
     () => {
       if (!D) return;
+      const st = frWall(D.i).studs;
+      if (st) st.sort((a, b) => a - b);
       D = null;
       saveSoon();
       renderPlan();

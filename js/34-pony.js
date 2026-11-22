@@ -331,6 +331,8 @@ function ponyGlassSync() {
     .forEach((it) => {
       const o = ponyNorm(it);
       let g = o.glass.gid && pl.items.find((x) => x.id === o.glass.gid);
+      // a copied pony wall points at the original's glass: give it its own
+      if (g && g.gpony && g.gpony !== it.id) g = null;
       if (!o.glass.on) {
         if (g) pl.items.splice(pl.items.indexOf(g), 1);
         delete o.glass.gid;
@@ -359,4 +361,12 @@ function ponyGlassSync() {
       g.h = Math.max(0, +o.glass.top - d.H);
       g.gpony = it.id; // glass that sits on a pony wall
     });
+  // glass left behind by a deleted pony wall (or one whose glass was turned off)
+  for (let i = pl.items.length - 1; i >= 0; i--) {
+    const g = pl.items[i];
+    if (g.k !== "glass" || !g.gpony) continue;
+    const o = pl.items.find((x) => x.id === g.gpony && x.k === "pony");
+    if (!o || !o.pony || !o.pony.glass.on || o.pony.glass.gid !== g.id)
+      pl.items.splice(i, 1);
+  }
 }

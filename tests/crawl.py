@@ -17,6 +17,15 @@ SETUPS={
  'plan_door':"()=>{showHome(false);act('plan');S.plan.sel=P.plan.items.find(i=>i.k==='door').id;renderPlan()}",
  'plan_glass':"()=>{showHome(false);act('plan');const g=P.plan.items.find(i=>i.k==='glass');S.plan.sel=g&&g.id;renderPlan()}",
  'plan_elev':"()=>{showHome(false);act('plan');S.plan.view='w0';S.plan.sel=null;renderPlan()}",
+ 'plan_pony':"()=>{showHome(false);act('plan');planAct('plAdd','pony');const it=P.plan.items.find(i=>i.k==='pony');ponyNorm(it);it.pony.niche.on=true;it.pony.glass.on=true;S.plan.sel=it.id;renderPlan()}",
+ 'plan_bench':"()=>{showHome(false);act('plan');planAct('plAdd','bench');const it=P.plan.items.find(i=>i.k==='bench');const sh=P.plan.items.find(i=>i.k==='shower');if(sh){it.wall=sh.wall;it.c=+sh.c-+sh.w/2+18;}it.w=36;it.dp=15;S.plan.sel=it.id;renderPlan()}",
+ 'plan_window':"()=>{showHome(false);act('plan');planAct('plAdd','window');const it=P.plan.items.find(i=>i.k==='window');it.wall=0;P.plan.walls[0].tile=true;winNorm(it).on=true;S.plan.sel=it.id;renderPlan()}",
+ 'plan_frame':"()=>{showHome(false);act('plan');const n=P.plan.items.find(i=>i.k==='niche')||P.plan.items.find(i=>i.k==='shower');planAct('plView',String(n?n.wall:0));planAct('plFrame')}",
+ 'layout_pony':"()=>{showHome(false);act('plan');planAct('plAdd','pony');const it=P.plan.items.find(i=>i.k==='pony');ponyNorm(it).niche.on=true;planClose();navGo('lay');S.tab=P.surfaces.findIndex(s=>/^pony/.test(s.fromPlan||''));if(S.tab<0)S.tab=0;['tile','trim','open'].forEach(k=>S.open.add(k));renderAll()}",
+ 'layout_bench':"()=>{showHome(false);act('plan');planAct('plAdd','bench');const it=P.plan.items.find(i=>i.k==='bench');const sh=P.plan.items.find(i=>i.k==='shower');if(sh){it.wall=sh.wall;it.c=+sh.c-+sh.w/2+18;}planClose();navGo('lay');S.tab=P.surfaces.findIndex(s=>/^bench/.test(s.fromPlan||''));if(S.tab<0)S.tab=0;renderAll()}",
+ 'layout_window':"()=>{showHome(false);act('plan');planAct('plAdd','window');const it=P.plan.items.find(i=>i.k==='window');it.wall=0;P.plan.walls[0].tile=true;winNorm(it).on=true;planClose();navGo('lay');S.tab=P.surfaces.findIndex(s=>/^win/.test(s.fromPlan||''));if(S.tab<0)S.tab=0;renderAll()}",
+ 'site':"()=>{showHome(false);if(typeof navGo==='function')navGo('lay');S.site=true;S.tab=P.surfaces.findIndex(s=>s.type==='floor');renderAll()}",
+ 'wizard':"()=>{showHome(true);act('wzOpen')}",
 }
 def main(TPL,ONLY):
   out={}
