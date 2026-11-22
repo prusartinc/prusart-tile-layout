@@ -22,7 +22,8 @@ const BNT = {
     len: "Длина вдоль стены",
     dep: "Глубина сиденья",
     hgt: "Высота сиденья (готовая, с плиткой)",
-    slope: "Уклон сиденья к краю (на всю глубину)",
+    slope: "Уклон сиденья к краю, на 1 фут",
+    slopeAll: "на всю глубину",
     sys: "Из чего строим",
     s_wood: "каркас из дерева (2×4 + фанера + борд)",
     s_kerdi: "Schluter KERDI-BOARD",
@@ -61,10 +62,12 @@ const BNT = {
     sheets: "Листов",
     glue: "Все стыки панелей — на герметик системы (KERDI-FIX / wedi Joint Sealant), швы проклеить лентой, крепить к стенам и поддону по инструкции системы.",
     woodNote:
-      "Каркас: перед как маленькая стенка (обвязка + стойки через 16″), брус на стене, лаги от бруса к верхней обвязке с клином под уклон. Сверху фанера ¾″, затем борд ½″ и мембрана.",
+      "Каркас: перед как маленькая стенка (обвязка + стойки через 16″), брус на стене. Верх бруса и верх обвязки переда на одной высоте — лаги лежат на них плоским низом, а верх лаги срезан на клин под уклон. Сверху фанера ¾″, затем борд ½″ и мембрана.",
     slopeNote: "Перед ниже стены на",
     hFrame: "Верх каркаса у стены / у края",
     ledTop: "верх бруса от поддона",
+    plTop: "верх от поддона",
+    sideTop: "верх с уклоном",
   },
   en: {
     shape: "Shape",
@@ -76,7 +79,8 @@ const BNT = {
     len: "Length along the wall",
     dep: "Seat depth",
     hgt: "Seat height (finished, with tile)",
-    slope: "Seat fall to the front (over the depth)",
+    slope: "Seat fall to the front, per foot",
+    slopeAll: "over the depth",
     sys: "Built from",
     s_wood: "wood framing (2×4 + plywood + board)",
     s_kerdi: "Schluter KERDI-BOARD",
@@ -115,10 +119,12 @@ const BNT = {
     sheets: "Sheets",
     glue: "Every panel joint on the system's sealant (KERDI-FIX / wedi Joint Sealant), seams banded, fixed to walls and pan as the system says.",
     woodNote:
-      "Framing: the front like a small wall (plates + studs at 16″), a ledger on the wall, joists from ledger to the top plate ripped to the slope. Then ¾″ plywood, ½″ board and membrane.",
+      "Framing: the front like a small wall (plates + studs at 16″) and a ledger on the wall. Ledger top and front top plate are at the same height — joists sit flat on both, their top ripped to the slope. Then ¾″ plywood, ½″ board and membrane.",
     slopeNote: "Front lower than the wall by",
     hFrame: "Frame top at the wall / at the edge",
     ledTop: "ledger top above the pan",
+    plTop: "top above the pan",
+    sideTop: "sloped top",
   },
 };
 const bnt = (k) => (BNT[lang] || BNT.en)[k] || k;
@@ -145,7 +151,7 @@ function benchNorm(it) {
   b.sysWas = b.sys;
   if (b.sw == null) b.sw = BENCH_SHEET[b.sys][0];
   if (b.sl == null) b.sl = BENCH_SHEET[b.sys][1];
-  if (b.slope == null) b.slope = 0.5;
+  if (b.spf == null) b.spf = 0.25; // seat fall per foot (¼″ standard)
   b.faces = Object.assign(
     { f: true, t: true, l: false, r: false },
     b.faces || {},
@@ -157,6 +163,14 @@ function benchNorm(it) {
   return b;
 }
 // the bench's footprint in the wall's frame: s along the wall, d out from it
+// seat fall at the front edge: per-foot slope × the farthest run from the wall
+function benchFall(it) {
+  const b = benchNorm(it),
+    L = +it.w || 0,
+    D = +it.dp || 0,
+    run = b.shape === "corner" ? (L * D) / (Math.hypot(L, D) || 1) : D;
+  return Math.round(Math.max(0, +b.spf || 0) * (run / 12) * 16) / 16;
+}
 function benchFootSD(it) {
   const b = benchNorm(it),
     c = +it.c,
@@ -193,28 +207,35 @@ function benchCut(it) {
     L = +it.w,
     D = +it.dp,
     H = +it.h,
-    sl = Math.max(0, +b.slope || 0),
     corner = b.shape === "corner",
     front = corner ? Math.hypot(L, D) : L,
+    sl = benchFall(it),
     tileAll = 0.5, // tile + thinset on the seat
     rows = [],
     panels = [];
   const hWall = H - tileAll,
     hEdge = H - tileAll - sl;
   if (b.sys === "wood") {
-    const fTop = hEdge - 0.75 - 0.5, // under plywood and board
+    // joists sit flat on the ledger and the front top plate (both at one height);
+    // only the joist top is ripped to the slope
+    const seat = hWall - 0.75 - 0.5, // joist top at the wall: under plywood and board
+      plTop = seat - 3.5, // ledger top = front top plate top
       n = Math.max(2, Math.ceil(front / 16) + 1);
-    rows.push([bnt("plate"), 2, `${fmtIn(front)}″`]);
-    rows.push([bnt("stud"), n, `${fmtIn(fTop - 3)}″`]);
+    rows.push([
+      bnt("plate"),
+      2,
+      `${fmtIn(front)}″ · ${bnt("plTop")} ${fmtIn(plTop)}″`,
+    ]);
+    rows.push([bnt("stud"), n, `${fmtIn(Math.max(0.5, plTop - 3))}″`]);
     rows.push([
       bnt("ledger"),
       1,
-      `${fmtIn(L)}″ · ${bnt("ledTop")} ${fmtIn(hWall - 1.25 - 3.5)}″`,
+      `${fmtIn(L)}″ · ${bnt("ledTop")} ${fmtIn(plTop)}″`,
     ]);
     rows.push([
       bnt("joist"),
       corner ? Math.max(2, Math.ceil(L / 16)) : n,
-      `${fmtIn(Math.max(1, D - 3.5 - 0.5))}″ (${fmtIn(3.5)}→${fmtIn(Math.max(0.5, 3.5 - sl))}″)`,
+      `${fmtIn(Math.max(1, D - 1.5))}″ (${fmtIn(3.5)}→${fmtIn(Math.max(0.5, 3.5 - sl))}″)`,
     ]);
     rows.push([
       bnt("ply"),
@@ -245,8 +266,10 @@ function benchCut(it) {
   if (!corner)
     for (let i = 0; i < nSup; i++)
       panels.push({ k: "sup", w: D - t, h: fH, h2: hWall - t });
-  if (b.faces.l && !corner) panels.push({ k: "side", w: D - t, h: fH });
-  if (b.faces.r && !corner) panels.push({ k: "side", w: D - t, h: fH });
+  if (b.faces.l && !corner)
+    panels.push({ k: "side", w: D - t, h: fH, h2: hWall - t });
+  if (b.faces.r && !corner)
+    panels.push({ k: "side", w: D - t, h: fH, h2: hWall - t });
   rows.push([bnt("front"), 1, `${fmtIn(front)} × ${fmtIn(fH)}″`]);
   rows.push([
     bnt("top"),
@@ -260,7 +283,12 @@ function benchCut(it) {
       `${fmtIn(D - t)} × ${fmtIn(fH)}→${fmtIn(hWall - t)}″`,
     ]);
   const sides = (b.faces.l && !corner ? 1 : 0) + (b.faces.r && !corner ? 1 : 0);
-  if (sides) rows.push([bnt("side"), sides, `${fmtIn(D - t)} × ${fmtIn(fH)}″`]);
+  if (sides)
+    rows.push([
+      bnt("side"),
+      sides,
+      `${fmtIn(D - t)} × ${fmtIn(fH)}→${fmtIn(hWall - t)}″`,
+    ]);
   const area = panels.reduce(
     (a, p) =>
       a + (p.tri ? (p.tri[0] * p.tri[1]) / 2 : p.w * Math.max(p.h, p.h2 || 0)),
@@ -294,7 +322,8 @@ function benchSheet(it, p) {
     F(bnt("len"), p + "w", "len", "p") +
     F(bnt("dep"), p + "dp", "len", "p") +
     F(bnt("hgt"), p + "h", "len", "p") +
-    F(bnt("slope"), p + "bench.slope", "len", "p");
+    F(bnt("slope"), p + "bench.spf", "len", "p");
+  h += `<p class="hint">${bnt("slopeAll")}: <b>${fmtIn(benchFall(it))}″</b></p>`;
   h += SEL(
     bnt("sys"),
     p + "bench.sys",
@@ -336,7 +365,7 @@ function benchHow(id) {
   const b = benchNorm(it),
     C = benchCut(it);
   let h = `<h3>${bnt("how")} — ${esc(bnt("s_" + b.sys))}</h3>`;
-  h += `<p class="hint">${bnt("hFrame")}: <b>${fmtIn(C.hWall)}″ / ${fmtIn(C.hEdge)}″</b> · ${bnt("slopeNote")} <b>${fmtIn(+b.slope || 0)}″</b></p>`;
+  h += `<p class="hint">${bnt("hFrame")}: <b>${fmtIn(C.hWall)}″ / ${fmtIn(C.hEdge)}″</b> · ${bnt("slopeNote")} <b>${fmtIn(benchFall(it))}″</b> (${fmtIn(+b.spf || 0)}″ / 1′)</p>`;
   h += `<p class="hsec">${bnt("cut")}</p><table class="cutt">${C.rows.map((r) => `<tr><td>${esc(r[0])}</td><td class="n"><b>${esc(String(r[1]))}</b></td><td class="n">${esc(r[2])}</td></tr>`).join("")}</table>`;
   if (C.panels.length) h += benchSVG(C.panels);
   h += `<p class="hint">${C.note}</p><div class="btns"><button class="btn p" data-act="closeModal">${t("done")}</button></div>`;
@@ -377,7 +406,8 @@ function benchBuild(pl, get, fresh) {
         D = +it.dp,
         H = +it.h,
         front = rect ? L : Math.hypot(L, D),
-        size = { f: [front, H], t: [L, D], l: [D, H], r: [D, H] },
+        fall = benchFall(it),
+        size = { f: [front, H - fall], t: [L, D], l: [D, H], r: [D, H] },
         S2 = {};
       (rect ? ["f", "t", "l", "r"] : ["f", "t"]).forEach((f) => {
         if (!b.faces[f]) return;
@@ -390,7 +420,7 @@ function benchBuild(pl, get, fresh) {
         });
         if (isNew || !s.name || s.name === s.plName)
           s.name =
-            s.plName = `${bnt("name")} · ${bnt("f_" + f)}${f === "t" && +b.slope ? " ↘" : ""}`;
+            s.plName = `${bnt("name")} · ${bnt("f_" + f)}${f === "t" && +b.spf ? " ↘" : ""}${(f === "l" || f === "r") && fall ? ` (${bnt("sideTop")} ↘${fmtIn(fall)}″)` : ""}`;
         if (f === "t" && !rect) {
           s.shape = "walk";
           s.segs = polyToSegs(
