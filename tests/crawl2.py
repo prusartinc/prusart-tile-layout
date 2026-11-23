@@ -19,7 +19,7 @@ with sync_playwright() as p:
   pg.on('dialog',lambda d:d.accept())
   def fresh():
     pg.goto(URL);pg.wait_for_function('()=>typeof P!=="undefined"&&P&&typeof planTemplate==="function"');pg.wait_for_timeout(150)
-    pg.evaluate("()=>{lang='ru';DB.kp=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.open=()=>null;HTMLAnchorElement.prototype.click=function(){};}")
+    pg.evaluate("()=>{lang='ru';DB.kp=false;S.pcol=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.open=()=>null;HTMLAnchorElement.prototype.click=function(){};}")
     pg.evaluate(SETUPS[ONLY]); pg.wait_for_timeout(80)
   def click(a,scope='document'):
     return pg.evaluate("([a,sc])=>{const r=sc==='modal'?document.querySelector('#modal'):document;const e=[...r.querySelectorAll('[data-act]')].find(x=>x.dataset.act===a);if(!e)return false;e.click();return true}",[a,scope])

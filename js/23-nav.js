@@ -14,8 +14,9 @@ const NAVT = {
     gFloor: "Пол",
     gPan: "Душ",
     gBs: "Фартук",
-    pcolHide: "Скрыть настройки",
+    pcolHide: "Свернуть настройки",
     pcolShow: "Настройки",
+    cliShow: "Показать клиенту",
     qaJoint: "Шов сюда",
     qaCenter: "Центр по плитке",
     qaDeco: "Декор / вставка",
@@ -35,6 +36,7 @@ const NAVT = {
     gBs: "Backsplash",
     pcolHide: "Hide settings",
     pcolShow: "Settings",
+    cliShow: "Show the client",
     qaJoint: "Joint here",
     qaCenter: "Center on tile",
     qaDeco: "Deco / insert",
@@ -170,18 +172,28 @@ function surfGroup(s) {
 }
 
 /* ---------- settings drawer (phones): hide the panel so the drawing gets the screen ---------- */
+// phone-sized screen; innerWidth alone can read wide for a moment while the page re-renders
+function narrowW() {
+  return Math.min(innerWidth, (screen && screen.width) || innerWidth) < 900;
+}
+// folded unless the user opened them (S.pcol === false)
+function pcolOn() {
+  return S.pcol !== false && narrowW() && !S.client;
+}
 function pcolBar() {
-  if (innerWidth >= 900 || S.client) return "";
-  return `<button class="pcol" data-act="pcol">${S.pcol ? "▲ " + nt("pcolShow") : "▼ " + nt("pcolHide")}</button>`;
+  if (!narrowW() || S.client) return "";
+  return pcolOn()
+    ? `<div class="pcol pcolbar"><button class="btn" data-act="pcol">${nt("pcolShow")}</button><button class="btn p" data-act="client">${nt("cliShow")}</button></div>`
+    : `<div class="pcol pcolbar open"><i aria-hidden="true"></i><button data-act="pcol">${nt("pcolHide")}</button></div>`;
 }
 {
   const rp = renderPanel;
   renderPanel = function () {
     rp();
     const p = $("#panel");
-    if (p && innerWidth < 900 && !S.client)
+    if (p && narrowW() && !S.client)
       p.insertAdjacentHTML("afterbegin", pcolBar());
-    document.body.classList.toggle("pcol", !!S.pcol && innerWidth < 900);
+    document.body.classList.toggle("pcol", pcolOn());
   };
   const ra = renderAll;
   renderAll = function () {

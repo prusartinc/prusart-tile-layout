@@ -44,9 +44,23 @@ function act(a, arg, b) {
     return renderTabs();
   }
   if (a === "pcol") {
-    S.pcol = !S.pcol;
+    // phones: settings start folded (drawing gets the screen); this opens/closes them
+    S.pcol = pcolOn() ? false : true;
     renderPanel();
     applyPin();
+    if (!S.pcol) {
+      const p = $("#panel");
+      if (p && typeof motionRestart === "function")
+        motionRestart(p, "c-sheetin", 700);
+      requestAnimationFrame(() => {
+        const vw = $("#vw"),
+          y = p ? p.getBoundingClientRect().top + window.scrollY : 0;
+        window.scrollTo({
+          top: Math.max(0, y - (vw ? vw.offsetHeight : 0) + 4),
+          behavior: "smooth",
+        });
+      });
+    } else window.scrollTo({ top: 0, behavior: "smooth" });
     return requestAnimationFrame(() => draw());
   }
   if (/^tex/.test(a) && a !== "texToggle") {

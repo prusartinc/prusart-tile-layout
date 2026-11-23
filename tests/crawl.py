@@ -40,12 +40,12 @@ def main(TPL,ONLY):
     pg.on('download',lambda d:None)
     pg.goto(URL);pg.wait_for_timeout(1500)
     # build a rich project from the bath template once and keep it as the base
-    pg.evaluate("()=>{lang='ru';DB.kp=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.__base=JSON.stringify(P);}")
+    pg.evaluate("()=>{lang='ru';DB.kp=false;S.pcol=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.__base=JSON.stringify(P);}")
     pg.evaluate("()=>{window.open=()=>null;HTMLAnchorElement.prototype.click=function(){};HTMLInputElement.prototype.showPicker=function(){};}")
     reset="()=>{const id=P.id;const np=JSON.parse(window.__base);Object.keys(P).forEach(k=>delete P[k]);Object.assign(P,np);try{closeModal()}catch(e){};if(S.plan)try{planClose()}catch(e){};S.plan=null;S.sel=null;S.ptEdit=false;}"
     def fresh():
       pg.goto(URL);pg.wait_for_function('()=>typeof P!=="undefined"&&P&&typeof planTemplate==="function"');pg.wait_for_timeout(150)
-      pg.evaluate("()=>{lang='ru';DB.kp=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.open=()=>null;HTMLAnchorElement.prototype.click=function(){};}")
+      pg.evaluate("()=>{lang='ru';DB.kp=false;S.pcol=false;showHome(false);delete P.plan;P.surfaces=[];planEnsure();planTemplate('"+TPL+"');planBuild();window.open=()=>null;HTMLAnchorElement.prototype.click=function(){};}")
     for name,setup in SETUPS.items():
       if name!=ONLY: continue
       fresh(); errs.clear()
