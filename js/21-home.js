@@ -73,24 +73,39 @@ function renderHome() {
           month: "short",
         })
       : "";
-  const sy = DB.sync && DB.sync.on;
-  let h = `<div class="hhead"><div class="hbrand">${($("header .brand svg") || {}).outerHTML || ""}<div><b>PrusArt Inc</b><small>${t("app")}</small></div></div><div class="hhb"><button data-act="lang">${lang === "ru" ? "EN" : "RU"}</button><button data-act="homeTheme">${THEME === "dark" ? "☀︎" : "☾"}</button></div></div>`;
-  h += `<div class="hwrap">`;
+  const sy = DB.sync && DB.sync.on,
+    ru = lang === "ru",
+    I = (d) =>
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`,
+    tot = shown.reduce(
+      (a, p) => {
+        const st = projStats(p);
+        a.sf += st.sf;
+        a.n += st.w + st.f;
+        return a;
+      },
+      { sf: 0, n: 0 },
+    );
+  let h = `<div class="hhead"><div class="hbar"><div class="hbrand">${($("header .brand svg") || {}).outerHTML || ""}<div><b>PrusArt Inc</b><small>${t("app")}</small></div></div><div class="hhb"><button data-act="lang">${ru ? "EN" : "RU"}</button><button data-act="homeTheme" aria-label="theme">${THEME === "dark" ? I('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>') : I('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>')}</button></div></div>`;
+  h += `<div class="hstats"><div><b data-count="${shown.length}">${shown.length}</b><small>${ru ? "проектов" : "projects"}</small></div><div><b data-count="${Math.round(tot.sf)}">${Math.round(tot.sf)}</b><small>${ru ? "sf плитки" : "sf of tile"}</small></div><div><b data-count="${tot.n}">${tot.n}</b><small>${ru ? "поверхностей" : "surfaces"}</small></div></div>`;
+  h += `<button class="hnew" data-act="nhStart">${I('<path d="M12 5v14M5 12h14"/>')}<b>${t("newProj").replace(/^[+＋]\s*/, "")}</b></button></div>`;
+  h += `<div class="hwrap hstag">`;
+  let k = 0;
+  const st = () => ` style="--i:${k++}"`;
   if (P && DB.projects.includes(P) && !projBlank(P))
-    h += `<button class="hcont" data-act="homeOpen:${P.id}"><span>${t("hContinue")}</span><b>${esc(P.name)}</b><small>${esc(P.client || "")}</small><i>→</i></button>`;
-  h += `<button class="hnew" data-act="nhStart"><span>＋</span><div><b>${t("newProj")}</b><small>${t("hNewHint")}</small></div></button>`;
-  h += `<button class="hnew hnew2" data-act="wzOpen"><span>📐</span><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
-  h += `<div class="hsearch"><input id="hq" type="search" placeholder="🔎 ${t("hSearch")}" value="${esc(S.hq || "")}"></div>`;
-  h += `<p class="hsec">${t("projects")} · ${shown.length}</p><div class="hgrid">`;
+    h += `<button class="hcont" data-act="homeOpen:${P.id}"${st()}><span>${t("hContinue")}</span><b>${esc(P.name)}</b><small>${esc(P.client || "")}</small><i>${I('<path d="M5 12h14M13 6l6 6-6 6"/>')}</i></button>`;
+  h += `<button class="hnew2" data-act="wzOpen"${st()}><i>${I('<path d="M4 4h16v16H4zM4 12h7v8M11 4v5"/>')}</i><div><b>${pt("plNewT")}</b><small>${pt("plNewHint")}</small></div></button>`;
+  h += `<div class="hsearch"${st()}>${I('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>')}<input id="hq" type="search" placeholder="${t("hSearch")}" value="${esc(S.hq || "")}"></div>`;
+  h += `<p class="hsec"${st()}>${t("projects")} · ${shown.length}</p><div class="hgrid">`;
   h += list
     .map((p) => {
-      const st = projStats(p);
-      return `<div class="hcard ${P && p.id === P.id ? "on" : ""}"><button class="hopen" data-act="homeOpen:${p.id}">${homeThumb(p)}<div class="hinfo"><b>${esc(p.name)}</b><small>${esc([p.client, p.addr].filter(Boolean).join(" · "))}</small><span>${st.w ? `${st.w} ${t("hWalls")}` : ""}${st.w && st.f ? " · " : ""}${st.f ? `${st.f} ${t("hFloors")}` : ""} · ${Math.round(st.sf)} sf · ${fmtD(p.updated)}</span></div></button><button class="hplan" data-act="homePlan:${p.id}" title="${pt("plT")}">📐</button><button class="hmore" data-act="homeMenu:${p.id}">⋯</button></div>`;
+      const ps = projStats(p);
+      return `<div class="hcard ${P && p.id === P.id ? "on" : ""}"${st()}><button class="hopen" data-act="homeOpen:${p.id}">${homeThumb(p)}<div class="hinfo"><b>${esc(p.name)}</b><small>${esc([p.client, p.addr].filter(Boolean).join(" · "))}</small><span>${ps.w ? `${ps.w} ${t("hWalls")}` : ""}${ps.w && ps.f ? " · " : ""}${ps.f ? `${ps.f} ${t("hFloors")}` : ""} · ${Math.round(ps.sf)} sf · ${fmtD(p.updated)}</span></div></button><button class="hplan" data-act="homePlan:${p.id}" title="${pt("plT")}" aria-label="${pt("plT")}">${I('<path d="M4 4h16v16H4zM4 12h7v8M11 4v5"/>')}</button><button class="hmore" data-act="homeMenu:${p.id}" aria-label="menu">${I('<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>')}</button></div>`;
     })
     .join("");
   if (!list.length)
-    h += `<p class="hint">${shown.length ? t("hNone") : lang === "ru" ? "Проектов пока нет — создай новый выше." : "No projects yet — start a new one above."}</p>`;
-  h += `</div><p class="hsec">${t("hTools")}</p><div class="htools"><button data-act="lib">📚<span>${t("lib")}</span></button><button data-act="bkModal">💾<span>${t("bkT")}</span></button><button data-act="syModal">🔄<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">⬆<span>${t("importT")}</span></button></div></div>`;
+    h += `<p class="hint">${shown.length ? t("hNone") : ru ? "Проектов пока нет — создай новый выше." : "No projects yet — start a new one above."}</p>`;
+  h += `</div><p class="hsec"${st()}>${t("hTools")}</p><div class="htools"${st()}><button data-act="lib">${I('<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>')}<span>${t("lib")}</span></button><button data-act="bkModal">${I('<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h8V4M8 20v-6h8v6"/>')}<span>${t("bkT")}</span></button><button data-act="syModal">${I('<path d="M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4"/>')}<span>${sy ? t("syOnShort") : t("syT")}</span></button><button data-act="homeImport">${I('<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>')}<span>${t("importT")}</span></button></div></div>`;
   el.innerHTML = h;
   const inp = $("#hq");
   if (inp)

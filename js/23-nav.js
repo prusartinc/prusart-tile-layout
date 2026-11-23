@@ -59,15 +59,30 @@ function renderBtab() {
     el.id = "btab";
     document.body.appendChild(el);
   }
-  const c = navCur(),
-    B = (k, ic, label) =>
-      `<button data-act="nav:${k}" class="${c === k ? "on" : ""}"><span>${ic}</span>${label}</button>`;
-  el.innerHTML =
-    B("home", "⌂", nt("nHome")) +
-    B("plan", "📐", nt("nPlan")) +
-    B("lay", "▦", nt("nLay")) +
-    B("mat", "Σ", nt("nMat")) +
-    B("pdf", "📄", nt("nPdf"));
+  const keys = ["home", "plan", "lay", "mat"],
+    c = navCur(),
+    lab = { home: "nHome", plan: "nPlan", lay: "nLay", mat: "nMat" },
+    sig = lang + "|" + keys.join();
+  // keep the bar between renders so the highlight slides instead of jumping
+  if (el.dataset.sig !== sig) {
+    el.dataset.sig = sig;
+    el.innerHTML =
+      `<i class="bind" aria-hidden="true"></i>` +
+      keys
+        .map(
+          (k) =>
+            `<button data-act="nav:${k}" data-k="${k}">${nt(lab[k])}</button>`,
+        )
+        .join("");
+  }
+  const i = Math.max(0, keys.indexOf(c));
+  el.style.setProperty("--bi", i);
+  el.querySelectorAll("button").forEach((b) => {
+    const on = b.dataset.k === c;
+    b.classList.toggle("on", on);
+    if (on) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  });
   document.body.classList.toggle("nobtab", !!(S.full || S.client));
 }
 function navGo(k) {
