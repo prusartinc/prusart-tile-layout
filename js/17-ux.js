@@ -182,6 +182,7 @@ function siteToggle() {
   } else if (S.siteWas) Object.assign(S, S.siteWas);
   document.body.classList.toggle("full", !!S.full);
   document.body.classList.toggle("site", !!S.site);
+  applyTheme(); // on-site mode switches to the dark palette, back after
   closeModal();
   renderAll();
 }

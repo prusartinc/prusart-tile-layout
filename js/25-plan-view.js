@@ -87,7 +87,7 @@ function planSheet() {
     const it = pl.items[idx],
       K = PL_KINDS[it.k],
       p = `plan.items.${idx}.`;
-    let h = `<h4>${K.ic} ${pt("k_" + it.k)}</h4><div class="grid2">`;
+    let h = `<h4><span class="ic">${K.ic}</span> ${pt("k_" + it.k)}</h4><div class="grid2">`;
     if (!K.floor) {
       h += `<label class="f"><span>${pt("plWall")}</span><select data-k="${p}wall" data-sc="p" data-t="sel" data-rb="1">${pl.room.segs
         .map(

@@ -365,7 +365,7 @@ function renderMat() {
   );
   let h = `<datalist id="supl">${known.map((k) => `<option value="${esc(k)}">`).join("")}</datalist>`;
   order.forEach((g) => {
-    h += `<p class="hsec" style="margin-top:10px">🏬 ${esc(g)}</p><table><tr><th>${t("matItem")}</th><th class="n">${t("matQty")}</th></tr>${groups[
+    h += `<p class="hsec matsup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v10h16V10M3 10l2-6h14l2 6M3 10h18M10 20v-5h4v5"/></svg>${esc(g)}</p><table><tr><th>${t("matItem")}</th><th class="n">${t("matQty")}</th></tr>${groups[
       g
     ]
       .map(
@@ -374,7 +374,7 @@ function renderMat() {
       )
       .join("")}</table>`;
   });
-  h += `<div class="btns"><button class="btn" data-act="matCopy">📋 ${ru ? "Скопировать заказ по поставщикам" : "Copy order by supplier"}</button></div><p class="hint">${t("matNoteAll")}</p>`;
+  h += `<div class="btns"><button class="btn" data-act="matCopy">${ru ? "Скопировать заказ по поставщикам" : "Copy order by supplier"}</button></div><p class="hint">${t("matNoteAll")}</p>`;
   el.innerHTML = h;
 }
 document.addEventListener("change", (e) => {

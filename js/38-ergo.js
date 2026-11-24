@@ -116,7 +116,7 @@ function siteBar() {
       done = cuts.filter((p) => s.cutDone && s.cutDone[decoKey(p, T)]).length;
     prog = ` ${done}/${cuts.length}`;
   }
-  el.innerHTML = `<button data-act="sitePrev" ${i <= 0 ? "disabled" : ""}>${ert("prev")}</button><div class="sbn">${esc(s ? s.name : "")}<small>${i + 1}/${n}</small></div><button data-act="siteNext" ${i >= n - 1 ? "disabled" : ""}>${ert("next")}</button><button data-act="cutSheet" title="${ert("cut")}">✂<b>${prog}</b></button><button data-act="glToggle" class="${DB.glOff ? "" : "on"}" title="${ert("line")}">⊹</button>`;
+  el.innerHTML = `<button data-act="sitePrev" aria-label="prev" ${i <= 0 ? "disabled" : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div class="sbn">${esc(s ? s.name : "")}<small>${i + 1}/${n}</small></div><button data-act="siteNext" aria-label="next" ${i >= n - 1 ? "disabled" : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button><button data-act="cutSheet" title="${ert("cut")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M8.5 7.5L20 18M8.5 16.5L20 6"/></svg><b>${prog}</b></button><button data-act="glToggle" class="${DB.glOff ? "" : "on"}" title="${ert("line")}" aria-label="${ert("line")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" aria-hidden="true"><path d="M12 2v20M2 12h20"/></svg></button>`;
 }
 function siteStep(d) {
   const i = Math.max(0, Math.min(P.surfaces.length - 1, (+S.tab || 0) + d));
@@ -227,25 +227,30 @@ function wzRender() {
             `<button class="btn sm" data-act="wzTile:${k}:${q[0]}:${q[1]}">${q[0]}×${q[1]}</button>`,
         )
         .join("")}</div></label>`;
-  let h = `<h3>${ert("wz")} · ${ert("step")} ${z.step} ${ert("of")} ${N}</h3><div class="wzbar"><span style="width:${(z.step / N) * 100}%"></span></div>`;
+  const Q = (k) => `<h2 class="wzq">${ert(k)}</h2>`,
+    WI = (d) => `<svg viewBox="0 0 54 44" aria-hidden="true">${d}</svg>`,
+    RIC = {
+      walkin:
+        '<rect x="2" y="2" width="50" height="40" fill="var(--hl)" stroke="currentColor" stroke-width="2"/><rect x="2" y="36" width="50" height="6" fill="#a8a390"/><circle cx="27" cy="20" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>',
+      tub: '<rect x="2" y="10" width="50" height="26" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 36v6M46 36v6" stroke="currentColor" stroke-width="2"/>',
+      blank:
+        '<rect x="2" y="2" width="50" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>',
+    };
+  let h = `<div class="wz"><div class="wztop"><span>${ert("wz")}</span><b>${ert("step")} ${z.step} ${ert("of")} ${N}</b></div><div class="wzseg">${Array.from({ length: N }, (_, i) => `<i class="${i < z.step ? "on" : ""}"></i>`).join("")}</div>`;
   if (z.step === 1) {
-    h += `<p class="hsec">${ert("q1")}</p><div class="wzpick">${[
-      "walkin",
-      "tub",
-      "blank",
-    ]
+    h += `${Q("q1")}<div class="wzpick">${["walkin", "tub", "blank"]
       .map(
         (r) =>
-          `<button class="btn ${z.room === r ? "p" : ""}" data-act="wzRoom:${r}">${ert("r_" + r)}</button>`,
+          `<button class="wzcard ${z.room === r ? "on" : ""}" data-act="wzRoom:${r}">${WI(RIC[r])}<b>${ert("r_" + r)}</b></button>`,
       )
       .join(
         "",
       )}</div><div class="grid"><label class="f"><span>${ert("name")}</span><input data-wz="name" value="${esc(z.name)}"></label><label class="f"><span>${ert("client")}</span><input data-wz="client" value="${esc(z.client)}"></label></div>`;
   }
   if (z.step === 2)
-    h += `<p class="hsec">${ert("q2")}</p><div class="grid">${inp("W", ert("rw"))}${inp("L", ert("rl"))}${inp("H", ert("rh"))}</div>`;
+    h += `${Q("q2")}<div class="grid">${inp("W", ert("rw"))}${inp("L", ert("rl"))}${inp("H", ert("rh"))}</div>`;
   if (z.step === 3) {
-    h += `<p class="hsec">${ert(z.room === "tub" ? "q3t" : "q3s")}</p><div class="grid">${inp("sw", ert("sw"))}${inp("sd", ert("sd"))}`;
+    h += `${Q(z.room === "tub" ? "q3t" : "q3s")}<div class="grid">${inp("sw", ert("sw"))}${inp("sd", ert("sd"))}`;
     if (z.room === "walkin")
       h += `<label class="f w2"><span>${ert("sys")}</span><select data-wz="sys">${Object.keys(
         PAN_SYS,
@@ -260,14 +265,14 @@ function wzRender() {
     h += `</div>`;
   }
   if (z.step === 4)
-    h += `<p class="hsec">${ert("q4")}</p>${pair("tf", ert("tf"))}${pair("tw", ert("tw"))}${z.room === "walkin" ? pair("tp", ert("tp")) : ""}`;
+    h += `${Q("q4")}${pair("tf", ert("tf"))}${pair("tw", ert("tw"))}${z.room === "walkin" ? pair("tp", ert("tp")) : ""}`;
   if (z.step === 5)
-    h += `<p class="hsec">${ert("q5")}</p><div class="grid">${inp("th", "″")}<button class="btn" data-act="wzCeil">${ert("toCeil")} (${fmtIn(z.H)}″)</button></div>`;
-  h += `<div class="btns">${z.step > 1 ? `<button class="btn" data-act="wzBack">${ert("back")}</button>` : `<button class="btn" data-act="closeModal">${t("cancel")}</button>`}${
+    h += `${Q("q5")}<div class="grid">${inp("th", "″")}<button class="btn" data-act="wzCeil">${ert("toCeil")} (${fmtIn(z.H)}″)</button></div>`;
+  h += `<div class="btns wznav">${z.step > 1 ? `<button class="btn" data-act="wzBack">${ert("back")}</button>` : `<button class="btn" data-act="closeModal">${t("cancel")}</button>`}${
     z.step < N
       ? `<button class="btn p" data-act="wzNext">${ert("nextB")}</button>`
       : `<button class="btn p" data-act="wzBuild">${ert("build")}</button>`
-  }</div>`;
+  }</div></div>`;
   modal(h);
 }
 document.addEventListener("change", (e) => {

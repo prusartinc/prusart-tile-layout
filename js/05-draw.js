@@ -30,6 +30,7 @@ let LOGOIMG = null;
 })();
 function applyTheme() {
   const dark =
+    (typeof S !== "undefined" && S && S.site) || // on-site mode is always dark
     THEME === "dark" ||
     (THEME === "auto" &&
       window.matchMedia &&

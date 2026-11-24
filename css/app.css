@@ -3204,3 +3204,443 @@ body.full #stat {
   opacity: 1;
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
 }
+
+/* ---------- design C, part 3: plan + materials ---------- */
+#plan {
+  background: var(--bg);
+}
+.plhead {
+  background: #161512;
+  border-radius: 0 0 22px 22px;
+  padding: calc(8px + env(safe-area-inset-top)) 12px 10px;
+}
+.plhead button {
+  height: 42px;
+  min-width: 42px;
+  border-radius: 21px;
+  border-color: #3a3832;
+  font-weight: 700;
+}
+.plhead b {
+  font-weight: 800;
+}
+.plhead b small {
+  color: #c9c4b0;
+}
+.plviews {
+  background: transparent;
+  border-bottom: 0;
+  padding: 10px 12px 8px;
+  gap: 8px;
+}
+.plviews button {
+  height: 40px;
+  border-radius: 20px;
+  padding: 0 14px;
+  background: var(--card);
+  font-weight: 600;
+}
+.plviews button.on {
+  background: #161512;
+  color: #f2efe8;
+  border-color: #161512;
+  font-weight: 800;
+}
+.plviews button.lay.on2 {
+  background: var(--hl);
+  border-color: var(--hl);
+  color: var(--ink);
+}
+html[data-theme="dark"] .plviews button.on {
+  background: #a8a390;
+  color: #161512;
+  border-color: #a8a390;
+}
+.plsvg {
+  margin: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--stage);
+}
+.plsheet {
+  margin-top: 10px;
+  border-top: 0;
+  border-radius: 26px 26px 0 0;
+  background: var(--card);
+  box-shadow: 0 -6px 24px rgba(22, 21, 18, 0.07);
+  padding: 8px 16px calc(var(--btab) + 12px);
+}
+.plsheet::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line);
+  margin: 0 auto 10px;
+}
+.plsheet h4 {
+  font-size: 18px;
+  font-weight: 800;
+}
+.plsheet input,
+.plsheet select {
+  border-radius: 14px;
+  background: var(--bg);
+}
+.pllib button {
+  border-radius: 18px;
+  background: var(--bg);
+  font-weight: 600;
+}
+.pllib button span,
+.plsheet h4 .ic {
+  filter: grayscale(1) contrast(1.1);
+  opacity: 0.85;
+}
+.plnudge .btn {
+  border-radius: 14px;
+}
+body.tot #panel .secnav {
+  display: none;
+}
+.mathead {
+  padding: 6px 4px 12px;
+}
+.mathead small {
+  color: var(--mut);
+  font-size: 13px;
+}
+.mathead h2 {
+  margin: 2px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.matsum {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 16px;
+  border-radius: 22px;
+  background: #161512;
+  color: #f2efe8;
+}
+html[data-theme="dark"] .matsum {
+  background: #24221d;
+}
+.matsum small {
+  display: block;
+  font-size: 12px;
+  color: #c9c4b0;
+}
+.matsum b {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.matsum i {
+  font-style: normal;
+  font-size: 13px;
+  color: #c9c4b0;
+  margin-left: 4px;
+}
+.matbtns {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.matbtns .btn {
+  flex: 1;
+  min-height: 50px;
+  border-radius: 16px;
+  font-weight: 800;
+}
+.matbtns .btn:not(.p) {
+  background: transparent;
+  border-color: var(--ink);
+}
+.matsup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.matsup svg {
+  width: 18px;
+  height: 18px;
+}
+#panel table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ---------- design C, part 4: on-site mode + wizard ---------- */
+body.site {
+  background: #161512;
+}
+body.site #stage {
+  background: #22211d;
+}
+body.site #tools button {
+  border-radius: 26px;
+  background: rgba(34, 33, 29, 0.85);
+  border-color: #3a3832;
+  color: #f2efe8;
+}
+body.site #tools button.on {
+  background: #f2efe8;
+  color: #161512;
+  border-color: #f2efe8;
+}
+body.site #stat {
+  background: #161512 !important;
+}
+body.site #stat > span:not(.more) {
+  background: #22211d;
+  border-color: #3a3832;
+  color: #c9c4b0;
+}
+body.site #stat > span:not(.more) b {
+  color: #f2efe8;
+}
+#sitebar {
+  left: 10px;
+  right: 10px;
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  padding: 6px;
+  gap: 6px;
+  border-radius: 34px;
+  background: #f2efe8;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+#sitebar button {
+  min-height: 56px;
+  min-width: 56px;
+  border-radius: 28px;
+  background: #e2ddd1;
+  color: #161512;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+#sitebar button svg {
+  width: 22px;
+  height: 22px;
+}
+#sitebar button.on {
+  background: #161512;
+  color: #f2efe8;
+}
+#sitebar button b {
+  color: inherit;
+  font-weight: 800;
+  font-size: 17px;
+}
+#sitebar .sbn {
+  color: #161512;
+  font-size: 17px;
+}
+#sitebar .sbn small {
+  color: #5f5a48;
+}
+body.sitebar #stat {
+  bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+}
+body.sitebar.full #stage {
+  padding-bottom: 80px;
+}
+/* wizard */
+.mbox:has(.wz) {
+  min-height: min(88vh, 760px);
+  display: flex;
+  flex-direction: column;
+}
+#mbody:has(.wz) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.wz {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.wztop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--mut);
+  font-weight: 700;
+}
+.wzseg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 6px;
+  margin: 10px 0 4px;
+}
+.wzseg i {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line);
+  transition: background-color 0.4s var(--ease);
+}
+.wzseg i.on {
+  background: var(--ink);
+}
+.wzq {
+  margin: 18px 0 14px;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.wzpick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.wzcard {
+  min-height: 116px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--ink);
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.wzcard svg {
+  width: 46px;
+  height: 38px;
+}
+.wzcard b {
+  font-size: 14px;
+  font-weight: 800;
+}
+.wzcard.on {
+  border: 2px solid var(--ink);
+  background: var(--hl);
+}
+.wz .chk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 44px;
+}
+.wz .wzpre .btn {
+  border-radius: 12px;
+}
+.wznav {
+  margin-top: auto;
+  padding-top: 18px;
+}
+.wznav .btn {
+  min-height: 54px;
+  border-radius: 18px;
+  font-weight: 800;
+}
+.wznav .btn:not(.p) {
+  flex: 0 0 auto;
+  min-width: 110px;
+  background: transparent;
+  border-color: var(--ink);
+}
+.wznav .btn.p {
+  flex: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wz .wzq,
+  .wz .wzpick,
+  .wz .grid,
+  .wz > label {
+    animation: c-rise 0.45s var(--ease) both;
+  }
+  .wz .wzpick,
+  .wz .grid {
+    animation-delay: 70ms;
+  }
+}
+.wz .chk {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+.wz .chk input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: #161512;
+}
+
+/* ---------- design C, part 5: icons in menus ---------- */
+.ico {
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  flex: none;
+}
+.emo {
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0.8;
+}
+.mmgrid {
+  gap: 8px;
+}
+.mm {
+  border-radius: 18px;
+  min-height: 92px;
+  background: var(--bg);
+  font-weight: 600;
+}
+.mm span {
+  font-size: 22px;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.mm span .ico {
+  width: 26px;
+  height: 26px;
+  vertical-align: 0;
+}
+.mm.on {
+  background: #161512;
+  color: #f2efe8;
+  border-color: #161512;
+}
+html[data-theme="dark"] .mm.on {
+  background: #a8a390;
+  color: #161512;
+  border-color: #a8a390;
+}
+.mbox h3 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mbox .btns .btn {
+  min-height: 48px;
+  border-radius: 16px;
+}
+.mbox .librow {
+  border-radius: 16px;
+}
+.cutprog {
+  border-radius: 14px;
+}

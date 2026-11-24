@@ -60,6 +60,7 @@ function countUp(root) {
     const from = navCur();
     ng.apply(this, arguments);
     const to = navCur();
+    if (to === "mat" && from !== to) countUp($("#matsum"));
     if (from === to || to === "home") return;
     motionRestart(to === "plan" ? $("#plan") : $("#app"), "c-enter", 600);
   };

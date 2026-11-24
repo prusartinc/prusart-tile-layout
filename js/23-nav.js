@@ -178,10 +178,10 @@ function narrowW() {
 }
 // folded unless the user opened them (S.pcol === false)
 function pcolOn() {
-  return S.pcol !== false && narrowW() && !S.client;
+  return S.pcol !== false && narrowW() && !S.client && S.tab !== "tot";
 }
 function pcolBar() {
-  if (!narrowW() || S.client) return "";
+  if (!narrowW() || S.client || S.tab === "tot") return ""; // materials live in the panel
   return pcolOn()
     ? `<div class="pcol pcolbar"><button class="btn" data-act="pcol">${nt("pcolShow")}</button><button class="btn p" data-act="client">${nt("cliShow")}</button></div>`
     : `<div class="pcol pcolbar open"><i aria-hidden="true"></i><button data-act="pcol">${nt("pcolHide")}</button></div>`;

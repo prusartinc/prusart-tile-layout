@@ -653,7 +653,16 @@ function renderPanel() {
   const el = $("#panel");
   document.body.classList.toggle("tot", S.tab === "tot");
   if (S.tab === "tot") {
+    const ruM = lang === "ru";
     el.innerHTML =
+      `<div class="mathead"><small>${esc(P.name || "")}</small><h2>${ruM ? "Материалы" : "Materials"}</h2></div><div id="matsum" class="matsum"></div><div class="matbtns"><button class="btn" data-act="pdf:cut">${ruM ? "Лист резки PDF" : "Cut sheet PDF"}</button><button class="btn p" data-act="matCopy">${ruM ? "Скопировать список" : "Copy the list"}</button></div>` +
+      SEC("tot", t("totTitle"), '<div id="tot"></div>') +
+      SEC("mat", t("materials"), '<div id="mat"></div>' + matSettingsHTML()) +
+      SEC(
+        "pdfs",
+        "PDF",
+        `<div class="btns"><button class="btn p" data-act="pdf:client">${t("pdfClient")}</button><button class="btn" data-act="pdf:cut">${t("pdfCut")}</button></div><p class="hint">${t("pdfHint")}</p>`,
+      ) +
       SEC(
         "proj",
         t("proj"),
@@ -666,13 +675,6 @@ function renderPanel() {
           "w2",
           (o) => o,
         )}</div><p class="hint">${t("storeNote")}</p>${themePicker()}`,
-      ) +
-      SEC("tot", t("totTitle"), '<div id="tot"></div>') +
-      SEC("mat", t("materials"), '<div id="mat"></div>' + matSettingsHTML()) +
-      SEC(
-        "pdfs",
-        "PDF",
-        `<div class="btns"><button class="btn p" data-act="pdf:client">${t("pdfClient")}</button><button class="btn" data-act="pdf:cut">${t("pdfCut")}</button></div><p class="hint">${t("pdfHint")}</p>`,
       );
     renderTot();
     return;
@@ -968,6 +970,26 @@ function renderTot() {
     }
   });
   let tileCost = 0;
+  const sm = $("#matsum");
+  if (sm) {
+    let sf = 0,
+      need = 0,
+      ord = 0,
+      box = 0,
+      boxKnown = true;
+    rows.forEach(({ R }) => {
+      sf += +R.area || 0;
+      need += +R.need || 0;
+    });
+    Object.values(g).forEach((e) => {
+      const o = Math.ceil(e.need * (1 + (+P.waste || 0) / 100));
+      ord += o;
+      if (e.perBox) box += Math.ceil(o / e.perBox);
+      else boxKnown = false;
+    });
+    const ru = lang === "ru";
+    sm.innerHTML = `<div><small>${ru ? "Площадь" : "Area"}</small><b data-count="${Math.round(sf / 144)}">${Math.round(sf / 144)}</b><i>sf</i></div><div><small>${ru ? "Плиток нужно" : "Tiles needed"}</small><b data-count="${need}">${need}</b></div><div><small>${ru ? "Заказать" : "Order"}</small><b data-count="${ord}">${ord}</b>${boxKnown && box ? `<i>${box} ${ru ? "кор." : "box"}</i>` : ""}</div>`;
+  }
   let h = `<p><b>${t("surfaces")}</b></p><table><tr><th>${t("name")}</th><th>${t("tile")}</th><th class="n">sf</th><th class="n">${t("need")}</th></tr>${rows.map(({ s, R }) => `<tr><td>${esc(s.name)}${R.bad ? " ⚠︎" : ""}</td><td>${esc(tileDesc(R.T))}<br><small style="color:var(--mut)">${esc(patName(R.T))}</small></td><td class="n">${sq(R.area)}</td><td class="n">${R.need}</td></tr>`).join("")}</table>`;
   h += `<p style="margin-top:14px"><b>${t("byTile")}</b></p><table><tr><th>${t("tile")}</th><th class="n">${t("need")}</th><th class="n">${t("order")}</th><th class="n">${t("boxes")}</th></tr>${Object.values(
     g,
