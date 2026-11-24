@@ -19,6 +19,7 @@ function planAct(a, arg) {
       return;
     case "plView":
       V.v = arg === "top" ? "top" : +arg;
+      V.zf = null;
       V.z = 1;
       V.zx = V.zy = 0;
       if (V.v !== "top") V.wsel = V.v;

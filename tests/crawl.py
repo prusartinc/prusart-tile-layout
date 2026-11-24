@@ -18,6 +18,7 @@ SETUPS={
  'plan_glass':"()=>{showHome(false);act('plan');const g=P.plan.items.find(i=>i.k==='glass');S.plan.sel=g&&g.id;renderPlan()}",
  'plan_meas':"()=>{showHome(false);P.plan.meas='frame';P.plan.walls[1].meas='tile';act('plan');S.plan.sel=null;S.plan.wsel=null;renderPlan()}",
  'plan_meas_wall':"()=>{showHome(false);P.plan.meas='dry';act('plan');S.plan.sel=null;S.plan.wsel=2;renderPlan()}",
+ 'plan_zf':"()=>{showHome(false);act('plan');planAct('plView','3');const g=P.surfaces.find(x=>/^z3/.test(x.fromPlan||''));planAct('plZf',g?g.fromPlan:'')}",
  'plan_elev':"()=>{showHome(false);act('plan');S.plan.view='w0';S.plan.sel=null;renderPlan()}",
  'plan_pony':"()=>{showHome(false);act('plan');planAct('plAdd','pony');const it=P.plan.items.find(i=>i.k==='pony');ponyNorm(it);it.pony.niche.on=true;it.pony.glass.on=true;S.plan.sel=it.id;renderPlan()}",
  'plan_bench':"()=>{showHome(false);act('plan');planAct('plAdd','bench');const it=P.plan.items.find(i=>i.k==='bench');const sh=P.plan.items.find(i=>i.k==='shower');if(sh){it.wall=sh.wall;it.c=+sh.c-+sh.w/2+18;}it.w=36;it.dp=15;S.plan.sel=it.id;renderPlan()}",

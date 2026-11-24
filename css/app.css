@@ -3673,3 +3673,45 @@ html[data-theme="dark"] .mm.on {
 .grid2 > .w2 {
   grid-column: 1 / -1;
 }
+/* tile-area close-up bar on the plan */
+.plsvg {
+  position: relative;
+}
+.zfbar {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.zfbar > * {
+  pointer-events: auto;
+}
+.zfbar .btn {
+  min-height: 40px;
+  border-radius: 20px;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(22, 21, 18, 0.12);
+}
+.zfbar .btn:not(.p) {
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.zfhint {
+  margin: 0 auto;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--mut);
+  font-size: 12.5px;
+  font-weight: 600;
+  pointer-events: none !important;
+}
+body.zfon .plsvg {
+  flex-basis: auto;
+  min-height: min(66vh, 640px);
+}

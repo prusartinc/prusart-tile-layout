@@ -396,6 +396,7 @@ function planDraw() {
   box.innerHTML =
     S.plan.v === "top" ? planTopSVG(W0, H0) : planElevSVG(+S.plan.v, W0, H0);
   plZoomApply();
+  if (typeof zfBar === "function") zfBar(box);
 }
 /* pinch zoom: S.plan.z = scale, zx/zy = offset of the visible window from the fitted one (plan units) */
 function plZoomApply() {
@@ -900,7 +901,20 @@ function planElevSVG(i, W0, H0) {
     V = S.plan;
   const thL = planWall(W.flip ? (i + 1) % n : (i - 1 + n) % n, pts).th,
     thR = planWall(W.flip ? (i - 1 + n) % n : (i + 1) % n, pts).th;
-  const bb = { x0: -thL - 16, x1: L + thR + 44, y0: -H - 14, y1: 40 },
+  // tapped tile area: frame just that surface so the layout can be read
+  const zs2 =
+      V.zf &&
+      P.surfaces.find(
+        (x) => x.fromPlan === V.zf && x.plOrg && x.type === "wall",
+      ),
+    bb = zs2
+      ? {
+          x0: zs2.plOrg[0] - 8,
+          x1: zs2.plOrg[0] + +zs2.w + 26,
+          y0: -(zs2.plOrg[1] + +zs2.h) - 22,
+          y1: -zs2.plOrg[1] + 22,
+        }
+      : { x0: -thL - 16, x1: L + thR + 44, y0: -H - 14, y1: 40 },
     F0 = plFit(bb, W0, H0, 6),
     k = F0.k,
     Y = (z) => -z;
@@ -953,7 +967,7 @@ function planElevSVG(i, W0, H0) {
               m: 0,
               noDims: 1,
             });
-          h += `<g transform="translate(${s2.plOrg[0]} ${-s2.plOrg[1]})" opacity=".9">${body}</g>`;
+          h += `<g transform="translate(${s2.plOrg[0]} ${-s2.plOrg[1]})" opacity=".9" data-zf="${esc(s2.fromPlan)}" style="cursor:zoom-in">${body}</g>`;
         } catch (e) {}
       });
   // items on this wall, then side views of items standing against it from other walls
