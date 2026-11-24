@@ -248,7 +248,7 @@ function wzRender() {
       )}</div><div class="grid"><label class="f"><span>${ert("name")}</span><input data-wz="name" value="${esc(z.name)}"></label><label class="f"><span>${ert("client")}</span><input data-wz="client" value="${esc(z.client)}"></label></div>`;
   }
   if (z.step === 2)
-    h += `${Q("q2")}<div class="grid">${inp("W", ert("rw"))}${inp("L", ert("rl"))}${inp("H", ert("rh"))}</div>`;
+    h += `${Q("q2")}<div class="grid">${inp("W", ert("rw"))}${inp("L", ert("rl"))}${inp("H", ert("rh"))}<label class="f w2"><span>${mt("room")}</span><select data-wz="meas">${MEAS_K.map((o) => `<option value="${o}" ${(z.meas || "frame") === o ? "selected" : ""}>${esc(mt("m_" + o))}</option>`).join("")}</select></label></div>`;
   if (z.step === 3) {
     h += `${Q(z.room === "tub" ? "q3t" : "q3s")}<div class="grid">${inp("sw", ert("sw"))}${inp("sd", ert("sd"))}`;
     if (z.room === "walkin")
@@ -280,7 +280,8 @@ document.addEventListener("change", (e) => {
   if (!el.dataset || el.dataset.wz == null || !S.wz) return;
   const [k, j] = el.dataset.wz.split("."),
     z = S.wz;
-  if (k === "name" || k === "client" || k === "sys") z[k] = el.value;
+  if (k === "name" || k === "client" || k === "sys" || k === "meas")
+    z[k] = el.value;
   else if (k === "cl") z.cl = el.checked;
   else {
     const v = parseLen(el.value);
@@ -329,6 +330,7 @@ function wzBuild() {
   ptsToWalk(pl.room, rectPoly(0, 0, W, L));
   pl.walls = pl.room.segs.map(() => ({ th: 4.5, tile: false, tileH: null }));
   pl.H = z.H;
+  pl.meas = z.meas || "frame";
   // walls: 0 door wall, 1 right, 2 far (wet area), 3 left
   if (z.room === "walkin") {
     const sh = N("shower", 2, W - sw / 2, {

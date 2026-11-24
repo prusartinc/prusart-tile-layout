@@ -27,7 +27,15 @@ function planOpen() {
 }
 /* surfaces made from the plan follow it: rebuild when leaving the plan if anything changed */
 function planHash(pl) {
-  const s = JSON.stringify([pl.room, pl.walls, pl.H, pl.items]);
+  const s = JSON.stringify([
+    pl.room,
+    pl.walls,
+    pl.H,
+    pl.items,
+    pl.meas,
+    pl.dryT,
+    pl.oldT,
+  ]);
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
   return h;

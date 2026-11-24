@@ -690,10 +690,12 @@ function geom(s) {
   } else if (s.shape === "rect") {
     const tr = s.trim,
       ins = (k) => (tr[k] ? edgeInset(s, k, sw) : 0);
-    const l = ins("l"),
-      r = ins("r"),
-      b = ins("b"),
-      tp = ins("t");
+    // bIns: board on the walls around a pan that was sized stud to stud
+    const bi = s.bIns || {},
+      l = ins("l") + (+bi.l || 0),
+      r = ins("r") + (+bi.r || 0),
+      b = ins("b") + (+bi.b || 0),
+      tp = ins("t") + (+bi.t || 0);
     region = rectPoly(l, b, s.w - l - r, s.h - b - tp);
   }
   const line = transTabs(s, outer);
