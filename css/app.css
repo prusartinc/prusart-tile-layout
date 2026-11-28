@@ -3903,3 +3903,10 @@ body.full #sdots {
     animation: c-swr 0.36s var(--ease) both;
   }
 }
+.nhdraw {
+  margin: 4px 0 14px;
+  border: 1.5px dashed var(--ink);
+}
+.mbox .nhdraw {
+  margin: 12px 0 4px;
+}

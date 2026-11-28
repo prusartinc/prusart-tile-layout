@@ -315,3 +315,27 @@ function swDots() {
     true,
   );
 }
+
+/* plan: mouse wheel zooms around the pointer (computers) */
+document.addEventListener(
+  "wheel",
+  (e) => {
+    const svg = e.target.closest && e.target.closest("#plsvg svg");
+    if (!svg || !S.plan || !svg.dataset.vb0) return;
+    e.preventDefault();
+    const V = S.plan,
+      [, , bw, bh] = svg.dataset.vb0.split(" ").map(Number),
+      r = svg.getBoundingClientRect(),
+      z0 = V.z || 1,
+      z = Math.max(1, Math.min(10, z0 * (e.deltaY < 0 ? 1.15 : 1 / 1.15))),
+      fx = (e.clientX - r.left) / r.width,
+      fy = (e.clientY - r.top) / r.height,
+      px = (V.zx || 0) + (fx * bw) / z0,
+      py = (V.zy || 0) + (fy * bh) / z0;
+    V.z = z;
+    V.zx = px - (fx * bw) / z;
+    V.zy = py - (fy * bh) / z;
+    planDraw();
+  },
+  { passive: false },
+);

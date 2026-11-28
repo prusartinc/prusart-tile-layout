@@ -211,7 +211,15 @@ svg.addEventListener("pointerdown", (e) => {
   } catch (_) {}
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (ptrs.size === 2) {
-    pinch = { d: dist(), z: S.view.zoom };
+    const [a1, b1] = [...ptrs.values()];
+    pinch = {
+      d: dist(),
+      z: S.view.zoom,
+      m: [(a1.x + b1.x) / 2, (a1.y + b1.y) / 2],
+      px: S.view.panX || 0,
+      py: S.view.panY || 0,
+      upp: S.upp || 1,
+    };
     drag = null;
   }
 });
@@ -220,6 +228,11 @@ svg.addEventListener("pointermove", (e) => {
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pinch && ptrs.size >= 2) {
     S.view.zoom = Math.min(14, Math.max(0.4, (pinch.z * dist()) / pinch.d));
+    // two fingers also move the whole drawing (the midpoint follows the fingers)
+    const [a1, b1] = [...ptrs.values()],
+      upp = (pinch.upp * pinch.z) / S.view.zoom;
+    S.view.panX = pinch.px - ((a1.x + b1.x) / 2 - pinch.m[0]) * upp;
+    S.view.panY = pinch.py + ((a1.y + b1.y) / 2 - pinch.m[1]) * upp;
     drawSoon();
     return;
   }

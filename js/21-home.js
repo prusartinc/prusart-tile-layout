@@ -185,6 +185,8 @@ function renderInterview() {
   const any = JOBS.some((j) => N.jobs[j]);
   let h = `<div class="hhead"><button class="hback" data-act="nhBack">←</button><div class="hsteps">${steps.map((_, i) => `<i class="${i + 1 <= N.step ? "on" : ""}"></i>`).join("")}</div><button class="hback" data-act="nhCancel">✕</button></div><div class="hwrap nh">`;
   if (k === "info") {
+    const ruD = lang === "ru";
+    h += `<button class="hnew2 nhdraw" data-act="homeNewPlan"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20V4h10v6h8v10z"/><path d="M14 17l5-5 2 2-5 5h-2z"/></svg></i><div><b>${ruD ? "Нарисовать план комнаты" : "Draw the room plan"}</b><small>${ruD ? "Своя форма: стены, углы, двери, поддон — поверхности построятся по плану" : "Any shape: walls, corners, doors, pan — surfaces are built from the plan"}</small></div></button>`;
     h += `<h2>${t("nhInfoT")}</h2><div class="grid">${F(t("projName"), "name", "text", "h", "w2")}${F(t("hClient"), "client", "text", "h", "w2")}${F(t("hAddr"), "addr", "text", "h", "w2")}</div>`;
   } else if (k === "jobs") {
     h += `<h2>${t("nhJobsT")}</h2><p class="hint">${t("nhJobsHint")}</p><div class="jobs">${JOBS.map(

@@ -28,7 +28,7 @@ const ERT = {
     q1: "Что за комната?",
     r_walkin: "Ванная с душем (поддон)",
     r_tub: "Ванная с ванной",
-    r_blank: "Пустой план — нарисую сам",
+    r_blank: "Нарисовать свой план",
     q2: "Размер комнаты",
     rw: "Ширина (стена с дверью)",
     rl: "Длина",
@@ -69,7 +69,7 @@ const ERT = {
     q1: "What room is it?",
     r_walkin: "Bathroom with a shower pan",
     r_tub: "Bathroom with a tub",
-    r_blank: "Blank plan — I'll draw it",
+    r_blank: "Draw your own plan",
     q2: "Room size",
     rw: "Width (door wall)",
     rl: "Length",
@@ -234,7 +234,7 @@ function wzRender() {
         '<rect x="2" y="2" width="50" height="40" fill="var(--hl)" stroke="currentColor" stroke-width="2"/><rect x="2" y="36" width="50" height="6" fill="#a8a390"/><circle cx="27" cy="20" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>',
       tub: '<rect x="2" y="10" width="50" height="26" rx="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 36v6M46 36v6" stroke="currentColor" stroke-width="2"/>',
       blank:
-        '<rect x="2" y="2" width="50" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>',
+        '<path d="M4 40V6h24v14h22v20z" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/><path d="M34 30l12-12 4 4-12 12h-4z" fill="none" stroke="currentColor" stroke-width="2"/>',
     };
   let h = `<div class="wz"><div class="wztop"><span>${ert("wz")}</span><b>${ert("step")} ${z.step} ${ert("of")} ${N}</b></div><div class="wzseg">${Array.from({ length: N }, (_, i) => `<i class="${i < z.step ? "on" : ""}"></i>`).join("")}</div>`;
   if (z.step === 1) {
@@ -295,6 +295,12 @@ function wzAct(a, arg) {
   const z = S.wz;
   if (!z) return;
   if (a === "wzRoom") {
+    // own shape: straight to the plan editor, nothing else to ask
+    if (arg === "blank") {
+      closeModal();
+      S.wz = null;
+      return homeAct("homeNewPlan");
+    }
     z.room = arg;
     if (arg === "tub") {
       z.sd = 30;

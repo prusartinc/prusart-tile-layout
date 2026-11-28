@@ -430,7 +430,8 @@ function plZoomApply() {
   if (!svg) return;
   const b = svg.getAttribute("viewBox").split(" ").map(Number);
   svg.dataset.vb0 = b.join(" ");
-  if (!(V.z > 1.01)) return;
+  if (!(V.z > 1.01) && !V.zx && !V.zy) return;
+  V.z = V.z || 1;
   svg.setAttribute(
     "viewBox",
     `${b[0] + (V.zx || 0)} ${b[1] + (V.zy || 0)} ${b[2] / V.z} ${b[3] / V.z}`,
@@ -1364,9 +1365,10 @@ function plPinchMove() {
     fy = (m[1] - d.r.top) / d.r.height,
     px = d.zx0 + (fx0 * bw) / d.z0,
     py = d.zy0 + (fy0 * bh) / d.z0;
+  // two fingers zoom and move the drawing together
   V.z = z;
-  V.zx = z > 1.01 ? px - (fx * bw) / z : 0;
-  V.zy = z > 1.01 ? py - (fy * bh) / z : 0;
+  V.zx = px - (fx * bw) / z;
+  V.zy = py - (fy * bh) / z;
   planDraw();
 }
 function planDown(e) {
@@ -1460,7 +1462,7 @@ function planDown(e) {
       $("#plsheet").innerHTML = planSheet();
       planDraw();
     }
-    if (!(V.z > 1.01)) return;
+    // empty space: drag moves the whole drawing like a map (zoomed in or not)
     const r = svg.getBoundingClientRect(),
       vb0 = svg.dataset.vb0.split(" ").map(Number);
     plDrag = {

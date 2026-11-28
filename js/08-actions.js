@@ -355,7 +355,7 @@ function act(a, arg, b) {
       break;
     case "addMenu":
       modal(
-        `<h3>${t("addWhat")}</h3><div class="btns">${["wall", "floor", "pan"].map((x) => `<button class="btn p" data-act="addSurf:${x}">${ICON[x]} ${t(x)}</button>`).join("")}<button class="btn" data-act="closeModal">${t("close")}</button></div>`,
+        `<h3>${t("addWhat")}</h3><div class="btns">${["wall", "floor", "pan"].map((x) => `<button class="btn p" data-act="addSurf:${x}">${ICON[x]} ${t(x)}</button>`).join("")}</div><button class="hnew2 nhdraw" data-act="plan"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20V4h10v6h8v10z"/><path d="M14 17l5-5 2 2-5 5h-2z"/></svg></i><div><b>${lang === "ru" ? "Из плана комнаты" : "From the room plan"}</b><small>${lang === "ru" ? "Нарисовать или поправить план — стены, пол и поддон построятся по нему" : "Draw or fix the plan — walls, floor and pan are built from it"}</small></div></button><div class="btns"><button class="btn" data-act="closeModal">${t("close")}</button></div>`,
       );
       break;
     case "addSurf":
