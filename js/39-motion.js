@@ -73,7 +73,10 @@ function countUp(root) {
   closeModal = function () {
     const m = $("#modal"),
       open = m && !m.hidden,
-      box = open && MOTION() ? $("#mbody").cloneNode(true) : null;
+      box =
+        open && MOTION() && !window.__mswipe
+          ? $("#mbody").cloneNode(true)
+          : null;
     cm.apply(this, arguments);
     if (!box) return;
     box.removeAttribute("id");
