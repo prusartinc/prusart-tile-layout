@@ -3711,7 +3711,195 @@ html[data-theme="dark"] .mm.on {
   font-weight: 600;
   pointer-events: none !important;
 }
-body.zfon .plsvg {
-  flex-basis: auto;
-  min-height: min(66vh, 640px);
+@media (min-width: 900px) {
+  body.zfon .plsvg {
+    min-height: min(66vh, 640px);
+  }
+}
+
+/* ---------- sheets with a grip (phones) ---------- */
+@media (max-width: 899px) {
+  body.sheet {
+    overflow: hidden;
+  }
+  body.sheet #vw {
+    position: static;
+    box-shadow: none;
+  }
+  body.sheet #panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--btab);
+    height: var(--shH, 46vh);
+    margin: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    z-index: 9;
+    border-radius: 26px 26px 0 0;
+    box-shadow: 0 -10px 30px rgba(22, 21, 18, 0.14);
+    transition: height 0.38s var(--ease);
+  }
+  body.sheet.shdrag #panel,
+  body.shdrag .plsheet {
+    transition: none;
+  }
+  body.sheet #panel .pcolbar.open {
+    position: sticky;
+    top: -6px;
+    z-index: 7;
+    margin: -6px -12px 4px;
+    padding: 8px 12px 2px;
+    background: var(--card);
+    cursor: grab;
+    touch-action: none;
+  }
+  body.sheet #panel .pcolbar.open i {
+    width: 54px;
+    height: 6px;
+  }
+  body.sheet #panel .secnav {
+    top: 46px;
+  }
+  .plsheet {
+    flex: none;
+    max-height: none;
+    transition: height 0.38s var(--ease);
+    padding-top: 0;
+  }
+  .plsheet::before {
+    display: none;
+  }
+  .shgrip {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    margin: 0 -16px 6px;
+    padding: 10px 0 8px;
+    background: var(--card);
+    display: flex;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+  }
+  .shgrip i {
+    width: 54px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--line);
+  }
+  .plsvg {
+    flex: 1 1 auto;
+    min-height: 120px;
+  }
+}
+body.shdrag,
+body.shdrag * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.shgrip,
+.pcolbar,
+.plhead,
+.plviews,
+.plsvg {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.plblk {
+  margin: 10px 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg);
+  padding: 0 12px;
+}
+.plblk > summary {
+  padding: 14px 2px;
+  font-weight: 800;
+  font-size: 15.5px;
+  cursor: pointer;
+}
+.plblk[open] {
+  padding-bottom: 12px;
+}
+.lpm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.lpm .btn {
+  min-height: 52px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  justify-content: flex-start;
+  padding: 0 18px;
+}
+.btn.d {
+  color: #b3261e;
+}
+#stage svg,
+#plsvg svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#sdots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 0 0;
+}
+#sdots[hidden] {
+  display: none;
+}
+#sdots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  transition:
+    width 0.35s var(--ease),
+    background-color 0.35s var(--ease);
+}
+#sdots i.on {
+  width: 18px;
+  background: var(--ink);
+}
+#sdots b {
+  font-size: 12px;
+  color: var(--mut);
+}
+body.full #sdots {
+  display: none;
+}
+@keyframes c-swl {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes c-swr {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #svg.c-swl {
+    animation: c-swl 0.36s var(--ease) both;
+  }
+  #svg.c-swr {
+    animation: c-swr 0.36s var(--ease) both;
+  }
 }

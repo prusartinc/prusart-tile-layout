@@ -279,24 +279,49 @@ function planSheet() {
   else if (pl.items.length) h += `<p class="hint">✓ ${pt("plChkOk")}</p>`;
   if (wk.gap > 0.1)
     h += `<div class="note">⚠ ${pt("plGap")}: ${fmt(wk.gap)} <button class="btn sm" data-act="plFit">${pt("plFit")}</button></div>`;
-  h += `<h4>${pt("plRoom")}</h4><div class="grid2">${F(pt("plH"), "plan.H", "len", "p")}${SEL(sht("dref"), "dref", ["frame", "prep", "finish"], 1, "p", "", (o) => sht("dr_" + o))}</div><p class="hint">${pt("plRefHint")}</p>`;
-  h += `<p class="hint">${pt("plWalls")}</p><div class="plwalls">${pl.room.segs
+  h += `${plBlk("room", pt("plRoom"), `<div class="grid2">${F(pt("plH"), "plan.H", "len", "p")}${SEL(sht("dref"), "dref", ["frame", "prep", "finish"], 1, "p", "", (o) => sht("dr_" + o))}</div><p class="hint">${pt("plRefHint")}</p>`)}<!--/room-->`;
+  h += `<details class="plblk" data-pd="walls" ${plBlkOpen("walls") ? "open" : ""}><summary>${lang === "ru" ? "Стены" : "Walls"} · ${pl.room.segs.length}</summary><p class="hint">${pt("plWalls")}</p><div class="plwalls">${pl.room.segs
     .map(
       (g, i) =>
         `<div class="plwrow"><b data-act="plWsel:${i}">${i + 1}</b>${F(pt("plLen"), `plan.room.segs.${i}.l`, "len", "p")}${F(pt("plTurn"), `plan.room.segs.${i}.a`, "num", "p")}${F(pt("plTh"), `plan.walls.${i}.th`, "len", "p")}<button class="btn sm" data-act="plWdel:${i}" ${pl.room.segs.length <= 3 ? "disabled" : ""}>✕</button></div>`,
     )
     .join(
       "",
-    )}</div><div class="btns">${B("plWadd", "+ " + pt("plWall"))}${B("plRot", "↻ 90°")}${B("plMirror", "⇋ " + pt("plMirror"))}</div>`;
+    )}</div><div class="btns">${B("plWadd", "+ " + pt("plWall"))}${B("plRot", "↻ 90°")}${B("plMirror", "⇋ " + pt("plMirror"))}</div></details>`;
   const built = P.surfaces
     .map((s2, i) => [s2, i])
     .filter(([s2]) => s2.fromPlan);
-  if (built.length)
-    h += `<p class="hsec">▦ ${nt("plOpenL")}</p><div class="btns plgo">${built.map(([s2, i]) => B("plGo:" + i, esc(s2.name))).join("")}</div>`;
-  h += `<p class="hsec">${pt("plTpl")}</p><div class="btns">${["bath58", "walkin", "kitchen"].map((k2) => B("plTpl:" + k2, pt("tpl_" + k2))).join("")}</div>`;
-  h += `<div class="btns">${B("plBuild", "⇄ " + pt("plBuild"), "p")}${P.surfaces.some((s) => s.type === "floor") ? B("plFromFloor", pt("plFromFloor")) : ""}</div><p class="hint">${pt("plBuildHint")}</p>`;
+  h += plBlk(
+    "surf",
+    `▦ ${nt("plOpenL")}${built.length ? " · " + built.length : ""}`,
+    `${built.length ? `<div class="btns plgo">${built.map(([s2, i]) => B("plGo:" + i, esc(s2.name))).join("")}</div>` : ""}<div class="btns">${B("plBuild", "⇄ " + pt("plBuild"), "p")}${P.surfaces.some((s) => s.type === "floor") ? B("plFromFloor", pt("plFromFloor")) : ""}</div><p class="hint">${pt("plBuildHint")}</p>`,
+  );
+  h += plBlk(
+    "tpl",
+    pt("plTpl"),
+    `<div class="btns">${["bath58", "walkin", "kitchen"].map((k2) => B("plTpl:" + k2, pt("tpl_" + k2))).join("")}</div>`,
+  );
   return h;
 }
+
+/* collapsible blocks of the room sheet; which are open is remembered for the session */
+function plBlkOpen(k) {
+  const o = (S.plOpen = S.plOpen || { room: 1, surf: 1 });
+  return !!o[k];
+}
+function plBlk(k, title, body) {
+  return `<details class="plblk" data-pd="${k}" ${plBlkOpen(k) ? "open" : ""}><summary>${title}</summary>${body}</details>`;
+}
+document.addEventListener(
+  "toggle",
+  (e) => {
+    const d = e.target;
+    if (!d || !d.dataset || !d.dataset.pd) return;
+    S.plOpen = S.plOpen || {};
+    S.plOpen[d.dataset.pd] = d.open ? 1 : 0;
+  },
+  true,
+);
 
 /* ---------- drawing ---------- */
 const PLC = {

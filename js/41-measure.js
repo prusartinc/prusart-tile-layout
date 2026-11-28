@@ -378,8 +378,12 @@ function measWallHTML(pl, i) {
           ? h.replace(mark, measWallHTML(pl, V.wsel) + mark)
           : h + measWallHTML(pl, V.wsel);
       } else if (V.sel == null && V.wsel == null) {
-        const mark = `${pt("plRefHint")}</p>`;
-        if (h.includes(mark)) h = h.replace(mark, mark + measRoomHTML(pl));
+        const mark = `<!--/room-->`;
+        if (h.includes(mark))
+          h = h.replace(
+            mark,
+            `<details class="plblk" data-pd="meas" ${plBlkOpen("meas") || measOn(pl) ? "open" : ""}><summary>${mt("title")}${measOn(pl) ? " · " + mt("m_" + (pl.meas || "fin")) : ""}</summary>${measRoomHTML(pl).replace(`<p class="hsec">${mt("title")}</p>`, "")}</details>`,
+          );
       }
     } catch (e) {
       console.error(e);

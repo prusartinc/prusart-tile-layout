@@ -46,6 +46,11 @@ function zfSet(k) {
   if (!V) return;
   const was = !!V.zf;
   V.zf = k || null;
+  // close-up: fold the sheet to its peek so the tile area gets the screen
+  if (V.zf && !was) {
+    V.shlPrev = V.shl;
+    V.shl = "peek";
+  } else if (!V.zf && was) V.shl = V.shlPrev || "half";
   V.z = 1;
   V.zx = V.zy = 0;
   if (V.v !== "top") V.wsel = +V.v; // keep this wall's sheet below
