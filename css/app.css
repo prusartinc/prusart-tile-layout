@@ -3910,3 +3910,207 @@ body.full #sdots {
 .mbox .nhdraw {
   margin: 12px 0 4px;
 }
+
+/* ---------- layout screen, phones: less on screen ---------- */
+#bUndo,
+#bRedo {
+  display: none;
+}
+.lprows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+.lprow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.lprow .ico {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.lprow b {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+}
+.lprow small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--mut);
+}
+.lprow.p {
+  background: #161512;
+  color: #f2efe8;
+  border-color: #161512;
+}
+html[data-theme="dark"] .lprow.p {
+  background: #a8a390;
+  color: #161512;
+}
+.mm4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.mm.d {
+  color: #b3261e;
+}
+#stat small {
+  display: block;
+  font-size: 10.5px;
+  color: var(--mut);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 899px) {
+  header .ttl {
+    min-width: 0;
+  }
+  body:not(.client) #bLang,
+  body:not(.client) #bProj,
+  body:not(.client) #bCli {
+    display: none;
+  }
+  body:not(.client) #bUndo,
+  body:not(.client) #bRedo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    min-width: 42px;
+    padding: 0;
+  }
+  #bUndo .ico,
+  #bRedo .ico {
+    width: 20px;
+    height: 20px;
+  }
+  header .shareb {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+  }
+  header .shareb .ico {
+    width: 18px;
+    height: 18px;
+  }
+  body:not(.full) #tools [data-act="undo"],
+  body:not(.full) #tools [data-act="redo"],
+  body:not(.full) #tools [data-act="fit"],
+  body:not(.full) #tools .sp {
+    display: none;
+  }
+  #tools {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  #tools::-webkit-scrollbar {
+    display: none;
+  }
+  #tools button {
+    flex: none;
+    padding: 0 12px;
+  }
+  #tools [data-act="full"] {
+    margin-left: auto;
+  }
+  #sbar {
+    display: none !important;
+  }
+  /* surface tabs with pictures */
+  #tabs.ttabs {
+    gap: 8px;
+    padding: 8px 12px 8px;
+    scroll-behavior: smooth;
+  }
+  #tabs .tt {
+    flex: none;
+    height: auto;
+    width: 76px;
+    padding: 6px 4px 6px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: var(--card);
+    font-weight: 600;
+  }
+  #tabs .tt .tth {
+    height: 34px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #tabs .tt .tth svg {
+    width: auto;
+    height: auto;
+    max-width: 58px;
+    max-height: 32px;
+  }
+  #tabs .tt .tti {
+    font-style: normal;
+    font-size: 16px;
+    letter-spacing: -2px;
+  }
+  #tabs .tt .ttl {
+    max-width: 70px;
+    font-size: 11.5px;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #tabs .tt.on {
+    background: #161512;
+    color: #f2efe8;
+    border-color: #161512;
+    font-weight: 800;
+  }
+  #tabs .tt.on .tth svg polygon {
+    fill: #a8a390;
+    stroke: #f2efe8;
+  }
+  html[data-theme="dark"] #tabs .tt.on {
+    background: #a8a390;
+    color: #161512;
+  }
+  #tabs .tt.add {
+    border-style: dashed;
+    background: transparent;
+  }
+  #tabs .tt.add .ico {
+    width: 22px;
+    height: 22px;
+  }
+  #stat {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 899px) {
+  body:not(.client) header .brand svg {
+    display: none;
+  }
+  #tools button.ic {
+    font-size: 20px;
+    min-width: 42px;
+    padding: 0;
+    letter-spacing: 1px;
+  }
+}

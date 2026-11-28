@@ -158,7 +158,10 @@ function renderStat() {
       return;
     }
     const a = aggItems();
-    el.innerHTML = `<span>${t("full")} <b>${a.full}</b></span><span>${t("cuts")} <b>${a.cuts}</b></span><span class="${a.bad ? "bad" : ""}">${t("minCut")} <b>${a.minc < 1e8 ? fmt(a.minc) : "—"}</b></span><span>${t("need")} <b>${a.need}</b></span><span>${t("order")} <b>${a.order}</b></span>`;
+    if (statCompact())
+      el.innerHTML = statCards(a.full, a.cuts, a.minc, a.bad, a.need, a.order);
+    else
+      el.innerHTML = `<span>${t("full")} <b>${a.full}</b></span><span>${t("cuts")} <b>${a.cuts}</b></span><span class="${a.bad ? "bad" : ""}">${t("minCut")} <b>${a.minc < 1e8 ? fmt(a.minc) : "—"}</b></span><span>${t("need")} <b>${a.need}</b></span><span>${t("order")} <b>${a.order}</b></span>`;
     if (S.client) renderClient();
     return;
   }
@@ -175,7 +178,9 @@ function renderStat() {
   const sheet = (R.T.sheet && R.T.sheet.on) || R.sheetLevel;
   el.innerHTML = sheet
     ? `<span>${t("sheets")} <b>${R.sheets}</b></span><span>${t("order")} <b>${R.order}</b></span><span>${t("area")} <b>${sq(R.area)}</b></span>`
-    : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
+    : statCompact()
+      ? statCards(R.full, R.cuts, R.minc, R.bad, R.need, R.order)
+      : `<span>${t("full")} <b>${R.full}</b></span><span>${t("cuts")} <b>${R.cuts}</b></span><span class="${R.bad ? "bad" : ""}">${t("minCut")} <b>${R.minc < 1e8 ? fmt(R.minc) : "—"}</b></span><span>${t("need")} <b>${R.need}</b></span><span>${t("order")} <b>${R.order}</b></span>`;
   // narrow pieces: say so and offer the one-tap fix
   if (!sheet && R.bad && canEdit() && !S.client)
     el.innerHTML += `<button class="btn sm warnfix" data-act="auto">⚠ ${lang === "ru" ? "Узких кусков: " + R.bad + " — подобрать раскладку" : "Narrow pieces: " + R.bad + " — fix the layout"}</button>`;
@@ -183,6 +188,14 @@ function renderStat() {
     `<span class="more">${S.statX ? "▴" : "▾"}</span>` +
     (S.statX ? statDetails(R, cur()) : "");
   if (S.client) renderClient();
+}
+/* phones: three cards instead of five (whole + cut, smallest piece, to order) */
+function statCompact() {
+  return typeof narrowW === "function" && narrowW() && !S.site;
+}
+function statCards(full, cuts, minc, bad, need, order) {
+  const ru = lang === "ru";
+  return `<span>${ru ? "Плиток" : "Tiles"} <b>${full} + ${cuts}</b><small>${ru ? "целых + резов" : "whole + cut"}</small></span><span class="${bad ? "bad" : ""}">${ru ? "Мин. кусок" : "Smallest"} <b>${minc < 1e8 ? fmt(minc) : "—"}</b><small>${bad ? (ru ? "узких: " : "narrow: ") + bad : "&nbsp;"}</small></span><span>${t("order")} <b>${order}</b><small>${ru ? "нужно " : "need "}${need}</small></span>`;
 }
 function patName(T) {
   const p = patOf(T);
