@@ -4114,3 +4114,73 @@ html[data-theme="dark"] .lprow.p {
     letter-spacing: 1px;
   }
 }
+
+/* ---------- plan: sketch the outline, wall size locks ---------- */
+#dsvg.pldsvg {
+  width: 100%;
+  height: 56vh;
+  background: #fbfaf7;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  touch-action: none;
+  display: block;
+}
+.pldrawb {
+  min-height: 52px;
+}
+.plk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  min-width: 0;
+  min-height: 0;
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--mut);
+  vertical-align: middle;
+  cursor: pointer;
+}
+.plk .ico {
+  width: 15px;
+  height: 15px;
+}
+.plk.on {
+  background: #161512;
+  color: #f2efe8;
+}
+html[data-theme="dark"] .plk.on {
+  background: #a8a390;
+  color: #161512;
+}
+
+/* new-project steps: back · progress · close in one row */
+#home .hhead:has(> .hsteps) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 18px;
+}
+#home .hhead:has(> .hsteps) .hsteps {
+  flex: 1;
+  margin: 0;
+}
+#home .hhead:has(> .hsteps) .hback {
+  flex: none;
+  margin: 0;
+}
+.job.jroom {
+  grid-column: 1 / -1;
+}
+#home .hhead:has(> .hsteps) .hsteps {
+  display: flex;
+  gap: 6px;
+}
+#home .hhead:has(> .hsteps) .hsteps i {
+  flex: 1;
+}

@@ -8,7 +8,9 @@
     back = () => $("#modal");
   let d = null; // drag state
   const skip = (el) =>
-    el.closest('input[type="range"],textarea,select,.kp,.nopull,[data-nopull]');
+    el.closest(
+      'input[type="range"],textarea,select,.kp,.nopull,[data-nopull],#dsvg,canvas',
+    );
   const reset = (b) => {
     b.style.transform = b.style.transition = "";
     back().style.background = back().style.transition = "";

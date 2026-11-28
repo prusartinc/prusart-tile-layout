@@ -163,8 +163,22 @@ function lpGo(k) {
       let what = null;
       if (inPlan) {
         const g = e.target.closest("[data-pi]");
-        if (!g) return;
-        what = { plan: g.getAttribute("data-pi") };
+        if (g) what = { plan: g.getAttribute("data-pi") };
+        else if (
+          S.plan &&
+          S.plan.v === "top" &&
+          typeof lpPlanWall === "function"
+        ) {
+          // a corner or a wall on the room outline: add / remove corners
+          const pc = e.target.closest("[data-pc]"),
+            pw = e.target.closest("[data-pw]"),
+            svg = e.target.closest("svg");
+          if (pc) what = { pc: +pc.getAttribute("data-pc") };
+          else if (pw && svg) {
+            const q = plPoint(svg, e);
+            what = { pw: +pw.getAttribute("data-pw"), q: [q[0], -q[1]] };
+          } else return;
+        } else return;
       } else what = { lay: 1 };
       const x = e.clientX,
         y = e.clientY;
@@ -177,6 +191,21 @@ function lpGo(k) {
           let ok = false;
           if (what.plan) {
             lpPlan(what.plan);
+            ok = true;
+          } else if (what.pc != null) {
+            // a held corner was being dragged: put it back where it was
+            if (
+              typeof plDrag !== "undefined" &&
+              plDrag &&
+              plDrag.kind === "corner"
+            ) {
+              if (plDrag.moved) return;
+              plDrag = null;
+            }
+            lpPlanCorner(what.pc);
+            ok = true;
+          } else if (what.pw != null) {
+            lpPlanWall(what.pw, what.q);
             ok = true;
           } else ok = lpLay(x, y);
           if (ok) {
